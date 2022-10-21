@@ -43,7 +43,7 @@
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <LFLAGS value="-D&quot;&quot; -GCImage -Rr -Gz -c- -aa -Tpe -x -Gn"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -59,6 +59,8 @@
       <FILE FILENAME="Graphic.cpp" FORMNAME="Form3" UNITNAME="Graphic" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Table.cpp" FORMNAME="Form2" UNITNAME="Table" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MainSource.cpp" FORMNAME="Form1" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="OptimizationMtds.h" FORMNAME="" UNITNAME="OptimizationMtds.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer.todo" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -68,9 +70,9 @@
 IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=2
-MinorVer=0
+MinorVer=1
 Release=0
-Build=5
+Build=6
 Debug=0
 PreRelease=1
 Special=0
@@ -82,26 +84,14 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=2.0.0.5
+FileVersion=2.1.0.6
 InternalName=MES Система
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=2.0
+ProductVersion=2.1
 Comments=mail:  psylonaut@mail.ru
-
-[HistoryLists\hlIncludePath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
-
-[HistoryLists\hlLibraryPath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
-
-[HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

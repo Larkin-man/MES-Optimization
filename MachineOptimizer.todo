@@ -1,3 +1,5 @@
-{TODO : ”становить опции заключительной компил€ции}
-{TODO : ‘айл справки}
-
+{TODO -oовнер -cкатегори€ :
+          2 списка убрать
+Node *Item = PushBack(Record,pItem);
+          Node *Itemn = PushBack(NotOptimal,pItem);
+}

@@ -46,7 +46,7 @@ private:
      *minimal[2],   //Минимальный на первом станке 0, на втором 1
      *NotOptimal;
      
-     int n;
+     int n,m;
 
 Node *CreateItem (double A, double B, int i)
 {                //Функция создает новый элемент

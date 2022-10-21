@@ -191,9 +191,9 @@ object AboutBox1: TAboutBox1
     object ProductName: TLabel
       Left = 16
       Top = 8
-      Width = 70
+      Width = 161
       Height = 13
-      Caption = 'MES '#1057#1080#1089#1090#1077#1084#1072
+      Caption = #1055#1083#1072#1085#1080#1088#1086#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099' '#1089#1090#1072#1085#1082#1086#1074' '
       IsControl = True
     end
     object Version: TLabel
@@ -201,7 +201,7 @@ object AboutBox1: TAboutBox1
       Top = 32
       Width = 53
       Height = 13
-      Caption = 'Version 2.0'
+      Caption = 'Version 2.1'
       IsControl = True
     end
     object Copyright: TLabel

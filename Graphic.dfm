@@ -11,7 +11,6 @@ object Form3: TForm3
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 13
   object Graph: TLabel
@@ -29,5 +28,6 @@ object Form3: TForm3
     Height = 25
     Caption = #1054#1087#1090#1080#1084#1080#1079#1080#1088#1086#1074#1072#1090#1100' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1074#1082#1083#1102#1095#1077#1085#1080#1081
     TabOrder = 0
+    OnClick = Button1Click
   end
 end
