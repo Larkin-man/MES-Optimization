@@ -14,8 +14,6 @@
 #include <ComCtrls.hpp>
 #include <Buttons.hpp>
 #include "About.h"
-#include "Table.h"
-#include "Graphic.h"
 #include "OptimizationMtds.h"
 #include <math.h>
 #include <ToolWin.hpp>
@@ -23,6 +21,7 @@
 #include <Grids.hpp>
 //---------------------------------------------------------------------------
 
+#define max(A,B) (A>B ? A : B)
 MachineOptimizer *Optimizer = new MachineOptimizer;
 
 class TForm1 : public TForm
@@ -96,7 +95,7 @@ __published:	// IDE-managed Components
      TSpeedButton *RUN;
      TBevel *Bevel3;
      TStringGrid *StringGrid1;
-     TMenuItem *N24;
+     TSpeedButton *SpeedButton1;
      void __fastcall N4Click(TObject *Sender);
      void __fastcall N13Click(TObject *Sender);
      void __fastcall N2Click(TObject *Sender);
@@ -113,12 +112,10 @@ __published:	// IDE-managed Components
           TShiftState Shift);
      void __fastcall Edit4KeyDown(TObject *Sender, WORD &Key,
           TShiftState Shift);
-     void __fastcall N10Click(TObject *Sender);
      void __fastcall N21Click(TObject *Sender);
      void __fastcall N23Click(TObject *Sender);
      void __fastcall N22Click(TObject *Sender);
      void __fastcall N12Click(TObject *Sender);
-     void __fastcall U1Click(TObject *Sender);
      void __fastcall FormPaint(TObject *Sender);
      void __fastcall N25Click(TObject *Sender);
      void __fastcall N27Click(TObject *Sender);
@@ -127,6 +124,7 @@ __published:	// IDE-managed Components
      void __fastcall N30Click(TObject *Sender);
      void __fastcall RUNClick(TObject *Sender);
      void __fastcall RadioGroup1Click(TObject *Sender);
+     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 private:	// User declarations
 //Только в пределах данного модуля
      void __fastcall F1(char c);
@@ -140,102 +138,109 @@ public:		// User declarations
      double min[2];
      double SA,XC;
      bool graphik,ultima;
-
-
-     struct Node    //Cписок деталей
-     {
-     int n;         //Номер детали
-     double A;      //Длительность обработки на первом станке
-     double B;      //Длительность обработки на втором станке
-     Node *Next;    //Следующая деталь
-     Node *Prev;    //Предыдущая деталь
-     }
-     *Record,       //Исходный список
-     *Optimal,      //Список по Джонсону
-     *minimal[2],   //Минимальный на первом станке 0, на втором 1
-     *NotOptimal;   
+     int *top;
 
      __fastcall TForm1(TComponent* Owner);  //Объявление конструктора
 
-void tests(Node *Item)
-{
-     if (Item->A==3)
-          Item =NULL;
-
-}
+//void PrintMatrix(MachineOptimizer::Link *list,int m,bool prev=false);
 
 void view() //Проверка видимости элементов
 {
      Memo1->Visible=N8->Checked;
      Panel1->Visible=N20->Checked;
      RUN->Enabled=(RadioGroup1->ItemIndex!=-1);
-     //SpeedButton5->Enabled=StringGrid1->ComponentCount;
+     StringGrid1->Visible=(RadioGroup1->ItemIndex!=0);
+     Xsl->Visible=(RadioGroup1->ItemIndex==0);
+     Ysl->Visible=(RadioGroup1->ItemIndex==0);
+     ListBox1->Visible=(RadioGroup1->ItemIndex==0);
+     ListBox2->Visible=(RadioGroup1->ItemIndex==0);
 }
-     /*
-void print(MachineOptimizer::Node *Item)
+
+
+void paint(MachineOptimizer::Link *list)
 {
-     while(Item != NULL)
+     for(;list != NULL;list = list->next)
      {
-     Memo1->Text=Memo1->Text+IntToStr(Item->n)+" ";
-     Item = Item->Next;
+     //Memo1->Lines->Add(list->curr->n);
+     Memo1->Text=Memo1->Text+" "+FloatToStr(list->curr->T[0]);
      }
-}                   */
-
-Node *CreateItem (double A, double B, int i)
-{                //Функция создает новый элемент
-   Node *pItem = new Node;
-   pItem->A=A;
-   pItem->B=B;
-   pItem->n=i;
-   pItem->Next=NULL;
-   pItem->Prev=NULL;
-   return pItem;
 }
 
-Node *InsertAfter (Node *parent, Node *Item)
-{                 //Функция связывает два элемента
-   if (parent != NULL)
-   {
-      //Item->Next=parent->Next;
-      parent->Next=Item;
-      Item->Prev=parent;
-   }
-   return Item;
-}
-
-void concatenate(Node *parent, Node *Item)
-{              //Функция соединяет два элемента
-     if (parent != NULL)
-          parent->Next=Item;
-     if (Item!=NULL)
-          Item->Prev=parent;
-}
-
-
-Node *getTail (Node *head)
-{             //Функция поиска последного элемента ы списке
-   if(head == NULL)
-      return NULL;
-   Node *Item=head;
-   while(Item->Next != NULL)
-      Item = Item->Next;
-   return Item;
-}
-
-Node *PushBack (Node *head, Node *Item)
-{              //Функция вставляет элемент в конец списка
-   Node *tail = getTail(head);
-   return InsertAfter (tail, Item);
-}
-
-void paint(Node *Item)
+void PrintMatrix(MachineOptimizer::Link *list,int m,bool prev)
 {
-     while(Item->Next != NULL)
+     if (list != NULL)
      {
-     Memo1->Lines->Add(Item->n);
-     Item = Item->Next;
+          if (!prev)
+          {
+               Memo1->Lines->Add(IntToStr(list->curr->n)+"  |  ");
+               for (int i = 0;i<m;i++)
+                    Memo1->Text=Memo1->Text+IntToStr(list->curr->T[i])+"  ";
+               list = list->next;
+               PrintMatrix(list,m,prev);
+          }
+          else
+          {
+               Memo1->Lines->Add(IntToStr(list->prev->curr->n)+"  |  ");
+               for (int i = 0;i<m;i++)
+                    Memo1->Text=Memo1->Text+IntToStr(list->prev->curr->T[i])+"  ";
+               list = list->next;
+               PrintMatrix(list,m,prev);
+          }
      }
-     Memo1->Lines->Add(Item->n);
+}
+
+void PrintMatrixPS(MachineOptimizer::Link *list,int m,int one,int left)
+{
+     if (list != NULL)
+     {
+          Memo1->Lines->Add(IntToStr(list->curr->n)+"  |  ");
+          one+=list->prev->curr->T[0];
+          //ShowMessage("one = "+IntToStr(list->prev->curr->T[1]));
+          Memo1->Text=Memo1->Text+IntToStr(one)+"  ";
+          left = one;
+          int S=0;
+          for (int i = 1;i<m;i++)
+          {
+
+               if (list->prev == NULL)
+               {
+
+                    S+=list->prev->curr->T[i];
+                    top[i]=S;
+                    //ShowMessage("S = "+IntToStr(S));
+               }
+               else
+               {
+                    S=max(top[i],left)+list->prev->curr->T[i];
+
+                    left=S;
+                    top[i]=S;
+
+               }
+               //ShowMessage("S = "+IntToStr(S));
+               Memo1->Text=Memo1->Text+IntToStr(S)+"  ";
+          }
+          list = list->next;
+          PrintMatrixPS(list,m,one,left);
+     }
+}
+
+void paintn(MachineOptimizer::Link *list)
+{
+     for(;list != NULL;list = list->next)
+     {
+     //Memo1->Lines->Add(list->curr->n);
+     Memo1->Text=Memo1->Text+" "+FloatToStr(list->curr->n);
+     }
+}
+
+void paintUUU(MachineOptimizer::Link *list)
+{
+     for(;list != NULL;list = list->next)
+     {
+     //Memo1->Lines->Add(list->curr->n);
+     Memo1->Text=Memo1->Text+" "+FloatToStr(list->prev->curr->T[0]);
+     }
 }
 
 void PaintBlock(MachineOptimizer::Link *Item)
@@ -243,12 +248,12 @@ void PaintBlock(MachineOptimizer::Link *Item)
      SA=0,XC=0;
      for (;Item != NULL;Item = Item->next)
      {
-          SA+=Item->curr->A;
-          Label2->Canvas->Rectangle((SA-Item->curr->A)*scale,vt,SA*scale,vt+30);
-          XC = (SA >= XC)? SA+Item->curr->B : XC+Item->curr->B;
-          Label2->Canvas->Rectangle((XC-Item->curr->B)*scale,vt+40,XC*scale,vt+70);
-          Label2->Canvas->TextOut((SA-Item->curr->A)*scale+6,vt+6,Item->curr->n);
-          Label2->Canvas->TextOut((XC-Item->curr->B)*scale+6,vt+46,Item->curr->n);
+          SA+=Item->curr->T[0];
+          Label2->Canvas->Rectangle((SA-Item->curr->T[0])*scale,vt,SA*scale,vt+30);
+          XC = (SA >= XC)? SA+Item->curr->T[1] : XC+Item->curr->T[1];
+          Label2->Canvas->Rectangle((XC-Item->curr->T[1])*scale,vt+40,XC*scale,vt+70);
+          Label2->Canvas->TextOut((SA-Item->curr->T[0])*scale+6,vt+6,Item->curr->n);
+          Label2->Canvas->TextOut((XC-Item->curr->T[1])*scale+6,vt+46,Item->curr->n);
      }
      Label2->Canvas->TextOut(10,vt+75,"Время работы:");
      Label2->Canvas->TextOut(125,vt+75,XC);
@@ -256,50 +261,50 @@ void PaintBlock(MachineOptimizer::Link *Item)
 
 void PaintGant()
 {
-     //if (NotOptimal == NULL) return;
+     if (Optimizer->Optimal == NULL) return;
      Label2->Repaint();
-     Label2->Canvas->Pen->Width=1;  
+     Label2->Canvas->Pen->Width=1;
      Label2->Canvas->TextOut(5,5,"Исходные данные:");
      vt=30;
      PaintBlock(Optimizer->InitBegin);
 
      Label2->Canvas->TextOut(10,140,"Оптимизированные данные:");
      vt=165;  
-     PaintBlock(Optimizer->DJBegin);
-     
+     PaintBlock(Optimizer->Optimal);
+     /*
      if (ultima)
      {
           vt=290;
           SA=0,XC=0;
-          MachineOptimizer::Link *Item= Optimizer->DJBegin;
-          for (;;Item = Item->next)
+          Node *Item=Optimal;
+          for (;;Item = Item->Next)
           {
-               SA+=Item->curr->A;
-               Label2->Canvas->Rectangle((SA-Item->curr->A)*scale,vt,SA*scale,vt+30);
-               XC = (SA >= XC)? SA+Item->curr->B : XC+Item->curr->B;
+               SA+=Item->A;
+               Label2->Canvas->Rectangle((SA-Item->A)*scale,vt,SA*scale,vt+30);
+               XC = (SA >= XC)? SA+Item->B : XC+Item->B;
                //Label2->Canvas->Rectangle((XC-Item->B)*scale,vt+40,XC*scale,vt+70);
-               Label2->Canvas->TextOut((SA-Item->curr->A)*scale+6,vt+6,Item->curr->n);
+               Label2->Canvas->TextOut((SA-Item->A)*scale+6,vt+6,Item->n);
                //Label2->Canvas->TextOut((XC-Item->B)*scale+6,vt+46,Item->n);
-               if (Item->next == NULL)      //Условие выхода из бесконечного цикла
+               if (Item->Next == NULL)      //Условие выхода из бесконечного цикла
                     break;
           }
           Label2->Canvas->TextOut(10,vt+75,"Время работы:");
           Label2->Canvas->TextOut(130,vt+75,XC);
 
 
-          for (;;Item = Item->prev)
+          for (;;Item = Item->Prev)
           {
-               Label2->Canvas->Rectangle((XC-Item->curr->B)*scale,vt+40,XC*scale,vt+70);
-               Label2->Canvas->TextOut((XC-Item->curr->B)*scale+6,vt+46,Item->curr->n);
-               XC-=Item->curr->B;
-               if (Item->prev == NULL)      //Условие выхода из бесконечного цикла
+               Label2->Canvas->Rectangle((XC-Item->B)*scale,vt+40,XC*scale,vt+70);
+               Label2->Canvas->TextOut((XC-Item->B)*scale+6,vt+46,Item->n);
+               XC-=Item->B;
+               if (Item->Prev == NULL)      //Условие выхода из бесконечного цикла
                     break;
           }
           //Label2->Canvas->TextOut(10,vt+75,"Время работы:");
           ///Label2->Canvas->TextOut(130,vt+75,XC);
-     }
+     } */
 }
-
+     /*
 void DeleteList (Node *Item)
 {               //Функция удаляет список
      del++;
@@ -311,67 +316,68 @@ void DeleteList (Node *Item)
    delete Item;
    Item = NULL;
    ListBox1->Items->Add(Item->B);
-}
+}           */
 
 void DjonsonRun()
 {
-(ListBox1->Items->Count)>(ListBox2->Items->Count) ? m = ListBox2->Items->Count : m = ListBox1->Items->Count;
-     //             Edit5->Text=Optimal->n;
+     (ListBox1->Items->Count)>(ListBox2->Items->Count) ? m = ListBox2->Items->Count : m = ListBox1->Items->Count;
+
      //m = point-1;
-     StatusBar1->SimpleText=("");
-     //n=StrToInt (Edit1->Text);
-     //m = ListBox1->Items->Count;
-     StatusBar1->SimpleText=(m);
-	//X=new double [m];
-	//Y=new double [m];
+     StatusBar1->SimpleText=("DjonsonRun");
 
-     double T[2];
+     int T[2];
 
-     //}
      for (int i=0;i<m;i++)
-          {
-          a=atof(ListBox1->Items->Strings[i].c_str());
-          b=atof(ListBox2->Items->Strings[i].c_str());
-          T[0]=a;
-          T[1]=b;
-          Optimizer->add(2,T);
-          }
-
-          Memo1->Lines->Add("Record");
-          /*MachineOptimizer::Node *gt = Optimizer->Record;
-          while(gt->Next != NULL)
      {
-     Memo1->Lines->Add("n="+FloatToStr(gt->n)+" T[0]="+FloatToStr(gt->B));
-     gt = gt->Next;
+          T[0]=atoi(ListBox1->Items->Strings[i].c_str());
+          T[1]=atoi(ListBox2->Items->Strings[i].c_str());
+          Optimizer->add(2,T);
      }
-     Memo1->Lines->Add("n="+FloatToStr(gt->n)+" T[0]="+FloatToStr(gt->B));
 
-     Memo1->Lines->Add("NEW LINKER");     */
-
-          MachineOptimizer::Link *list = Optimizer->InitBegin;
-          while(list->next != NULL)       {
-     Memo1->Lines->Add("n="+FloatToStr(list->curr->n)+" B="+FloatToStr(list->curr->B));
-     list = list->next;          }
-     Memo1->Lines->Add("n="+FloatToStr(list->curr->n)+" B="+FloatToStr(list->curr->B));
 
           Optimizer->DjonsonRun();
-     Memo1->Lines->Add("Optimal");
-          list = Optimizer->DJBegin;
-          while(list->next != NULL)
-     {
-     Memo1->Lines->Add("n="+FloatToStr(list->curr->n)+" T[0]="+FloatToStr(list->curr->B));
-     list = list->next;
-     }
-     Memo1->Lines->Add("n="+FloatToStr(list->curr->n)+" T[0]="+FloatToStr(list->curr->B));
+          Memo1->Lines->Add("Исходная последовательность:");
 
+          //MachineOptimizer::Link *list = Optimizer->InitBegin;
+          paint(Optimizer->InitBegin);
+          Memo1->Lines->Add("Оптимальная последовательность запуска деталей:");
+          paint(Optimizer->Optimal);
 
-     //return;
-
-     
-     Memo1->Lines->Add("Оптимальная последовательность запуска деталей:");
-     //print(Optimizer->Optimal);
      graphik = true;
      PaintGant();
+}
+
+void PetrovSokolRun()
+{
+     //Memo1->Lines->Add(StringGrid1->Rows[2]);
+     //Memo1->Lines->Add(StringGrid1->Cells[4][1]);
+     m=StringGrid1->ColCount-1;
+     int *T = new int[m];
+     for (int i = 1;i<StringGrid1->RowCount;i++)
+     {
+          for (int j = 1;j<StringGrid1->ColCount;j++)
+          {
+               T[j-1]=atof(StringGrid1->Cells[j][i].c_str());
+          }
+          //for (int k=0;k<StringGrid1->ColCount-1;k++)
+          Optimizer->add(4,T);
+     }
+     Memo1->Lines->Add("INPUT:");
+     PrintMatrix(Optimizer->InitBegin,4,false);
+
+     Optimizer->PetrovSokolRun();
+
+     Memo1->Lines->Add("PSBEGIN:");
+     PrintMatrix(Optimizer->PSBegin,3,false);
+     Memo1->Lines->Add("PSBEGIN PREV:");
+     PrintMatrix(Optimizer->PSBegin,4,true);
+     Memo1->Lines->Add("MATRIX PS:");
+     top = new int[4];
+     for (int i=0;i<4;i++)
+          top[i]=0;
+     PrintMatrixPS(Optimizer->PSBegin,4,0,0);
+
+     //StatusBar1->SimpleText=("rowconub"+IntToStr(StringGrid1->RowCount)+" COLconub"+IntToStr(StringGrid1->ColCount));
 }
 
 };
@@ -381,32 +387,4 @@ extern PACKAGE TForm1 *Form1;
 //Сюда могут помещатся объявления типов, переменных, функций
 //которые не включаются в класс формы
 
-float future;
-float doublekill(int a)
-{
-     Form1->Memo1->Lines->Add(a);
-     return a+future;
-}
-
-class PetrovSokol
-{
-public:
-int n,m;
-int **M;
-
-void runclick()
-{
-     n=4;
-     for(int i =1;i<Form1->StringGrid1->RowCount;i++)
-     {
-          Form1->StringGrid1->Cells[i][0]=i;//"Станок №"+i;
-     }
-     for(int i =1;i<Form1->StringGrid1->ColCount;i++)
-     {
-          Form1->StringGrid1->Cells[0][i]=i;//"Станок №"+i;
-     }
-     Form1->Memo1->Lines->Add("RowCount="+IntToStr(Form1->StringGrid1->RowCount));
-     Form1->Memo1->Lines->Add("ColCount="+IntToStr(Form1->StringGrid1->ColCount));
-}
-};
 #endif

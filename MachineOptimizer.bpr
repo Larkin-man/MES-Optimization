@@ -4,12 +4,12 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="MachineOptimizer.exe"/>
-    <OBJFILES value="MachineOptimizer.obj About.obj Graphic.obj Table.obj MainSource.obj"/>
+    <OBJFILES value="MachineOptimizer.obj About.obj MainSource.obj"/>
     <RESFILES value="MachineOptimizer.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
-    <RESDEPEN value="$(RESFILES) About.dfm Graphic.dfm Table.dfm MainSource.dfm"/>
+    <RESDEPEN value="$(RESFILES) About.dfm MainSource.dfm"/>
     <LIBFILES value=""/>
     <LIBRARIES value="rtl.lib vcl.lib"/>
     <SPARELIBS value="vcl.lib rtl.lib"/>
@@ -56,11 +56,9 @@
       <FILE FILENAME="MachineOptimizer.res" FORMNAME="" UNITNAME="MachineOptimizer.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.cpp" FORMNAME="" UNITNAME="MachineOptimizer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="About.cpp" FORMNAME="AboutBox1" UNITNAME="About" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Graphic.cpp" FORMNAME="Form3" UNITNAME="Graphic" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Table.cpp" FORMNAME="Form2" UNITNAME="Table" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MainSource.cpp" FORMNAME="Form1" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="OptimizationMtds.h" FORMNAME="" UNITNAME="OptimizationMtds.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer.todo" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -68,11 +66,11 @@
   <IDEOPTIONS>
 [Version Info]
 IncludeVerInfo=1
-AutoIncBuild=0
+AutoIncBuild=1
 MajorVer=2
-MinorVer=3
+MinorVer=4
 Release=0
-Build=8
+Build=9
 Debug=0
 PreRelease=1
 Special=0
@@ -83,15 +81,27 @@ CodePage=1251
 
 [Version Info Keys]
 CompanyName=СФУ
-FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=2.3.0.8
-InternalName=MES Система
+FileDescription=Оптимизация запуска деталей в производство
+FileVersion=2.4.0.9
+InternalName=Mes Система
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=2.3
+ProductVersion=2.4
 Comments=mail:  psylonaut@mail.ru
+
+[HistoryLists\hlIncludePath]
+Count=1
+Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=1
+Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

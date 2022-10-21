@@ -24,8 +24,6 @@ __fastcall TForm1::TForm1(TComponent* Owner)
      Memo1->Visible=true;
      Panel1->Visible=false;
      del=0;
-     Record=NULL;
-     Optimal=NULL;
      RUN->Enabled=false;
      Label2->Canvas->Pen->Color=clHotLight;
      Form1->StringGrid1->Cells[0][0]="Äåòàëè:";
@@ -45,16 +43,17 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //ÇÀÊÐÛÒÜ
 void __fastcall TForm1::N4Click(TObject *Sender)
 {
-     DeleteList(Optimal);
-     DeleteList(NotOptimal);
+     /*
+     //DeleteList(Optimal);
+     //DeleteList(NotOptimal);
      if (Record != NULL)
 	{
 		delete [] Record;
-	}
+	}                  */
      Close();
      //Form1->Close();
 }
-//---------------------------------------------------------------------------
+
 //ÍÀ×ÀÒÜ ÇÀÍÎÂÎ
 void __fastcall TForm1::N13Click(TObject *Sender)
 {
@@ -62,10 +61,10 @@ void __fastcall TForm1::N13Click(TObject *Sender)
      ListBox2->Clear();
      Memo1->Clear();
      detal =1;
-     Label7->Caption=detal;          
+     Label7->Caption=detal;
                Memo1->Lines->Add(" optimal");
                //print(Optimizer->Optimal);
-               DeleteList(Optimal);
+               //DeleteList(Optimal);
                Memo1->Lines->Add("deleted optimal");
                //print(Optimizer->Optimal);
      //DeleteList(NotOptimal);
@@ -80,8 +79,7 @@ void __fastcall TForm1::N13Click(TObject *Sender)
 
      //Edit5->Text=del;
 
-     for (int i=0;i<6;i++)
-          Form2->StringGrid1->Rows[i]->Clear();
+
 }
 //---------------------------------------------------------------------------
 //ÎÒÊÐÛÒÜ
@@ -145,8 +143,6 @@ void __fastcall TForm1::N14Click(TObject *Sender)
              //Edit1->Text.sprintf("h\n!");
      char *vx = strchr(Edit3->Text.c_str(),',');
      Memo1->Lines->Add(vx-Edit3->Text.c_str());
-     Memo1->Lines->Add("future=");
-     Memo1->Lines->Add(future);
      Label2->Canvas->Pen->Color=(TColor)785634;
 }
 //---------------------------------------------------------------------------
@@ -226,7 +222,8 @@ void __fastcall TForm1::N20Click(TObject *Sender)
 {
      N20->Checked=true;
      N8->Checked=false;
-     view();    
+     view();
+
 }
 //---------------------------------------------------------------------------
 
@@ -246,10 +243,7 @@ void __fastcall TForm1::Edit4KeyDown(TObject *Sender, WORD &Key,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::N10Click(TObject *Sender)
-{
-     Form2->Show();
-}
+
 //---------------------------------------------------------------------------
 //ØÐÈÔÒ ÅÙÅ ÎÄÈÍ
 void __fastcall TForm1::N21Click(TObject *Sender)
@@ -279,29 +273,6 @@ void __fastcall TForm1::N12Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ÃÐÀÔÈÊ
-void __fastcall TForm1::U1Click(TObject *Sender)
-{
-     Form3->Show();
-     graphik=false;
-     Form3->Repaint();
-     Form3->Canvas->Pen->Width=1;
-     Form3->Canvas->Pen->Color=clBlack;
-     /*int Horz = Screen->Width;
-     int Vert = Screen->Height;
-     Form3->Canvas->Rectangle(10,10,Form3->Width-30,Form3->Height-30);
-     Form3->Canvas->Rectangle(20,20,28*18,50);
-     Form3->Canvas->TextOut(5,5,Horz);
-     Form3->Canvas->TextOutA(50,75,Vert);
-     Form3->Canvas->TextOutA(80,175,Form3->Width);
-          Form3->Canvas->TextOutA(120,275,Form3->Height);      */
-     /*TRect TheRect;
-     TheRect = Rect(10,10,100,100);
-     Form3->Canvas->TextRect(TheRect, 10, 10, "Hello World");   */
-     //Form3->Canvas->TextOutA(10,20,"usu");
-     //Form3->Graph->Canvas->Rectangle(10,10,50,50);
-
-}
-//---------------------------------------------------------------------------
 //ÎÍ ÏÝÉÍÒ
 void __fastcall TForm1::FormPaint(TObject *Sender)
 {
@@ -357,14 +328,13 @@ void __fastcall TForm1::N30Click(TObject *Sender)
 //Ðàññ÷åò
 void __fastcall TForm1::RUNClick(TObject *Sender)
 {
-     PetrovSokol run;
-     run.runclick();
      if (RadioGroup1->ItemIndex == 0 )
           DjonsonRun();
+     if (RadioGroup1->ItemIndex == 1 )
+          PetrovSokolRun();
 
 }
 //---------------------------------------------------------------------------
-
 
 void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
 {
@@ -372,7 +342,9 @@ void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-
-
-
+void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
+{
+     delete Optimizer; 
+}
+//---------------------------------------------------------------------------
 
