@@ -11,9 +11,9 @@
 #define PetrovSokol 1
 #define MethodVG 2
 
-TForm1 *Form1;
+TBaseForm *BaseForm;
 //---------------------------------------------------------------------------
-__fastcall TForm1::TForm1(TComponent* Owner)
+__fastcall TBaseForm::TBaseForm(TComponent* Owner)
      : TForm(Owner)
 {    //при созданиии формы
      Output->Clear();
@@ -22,31 +22,35 @@ __fastcall TForm1::TForm1(TComponent* Owner)
      N=0;
      Label2->Caption="";
      NViewOne->Checked=true;
-     Output->SetBounds(464,64,418,306);
+     Output->SetBounds(464,64,418,337);
      graphik=false;
      ultima=false;
      RunBtn->Enabled=false;
      OptimizationBtn->Enabled=false;
      GantBtn->Enabled=false;
      NSave->Enabled=false;
+     NTranspon->Enabled=false;
+     ReportBtn->Enabled=false;
      OpenDialog1->InitialDir=GetCurrentDir();
      SaveDialog1->InitialDir=GetCurrentDir();
      Label2->Canvas->Pen->Color=clHotLight;
-     Form1->Table->RowHeights[0]=26;
-     Form1->Table->ColWidths[0]=88;
-     Form1->Table->Cells[0][0]="    Станок:";
+     BaseForm->Table->RowHeights[0]=26;
+     BaseForm->Table->ColWidths[0]=82;
+     BaseForm->Table->Cells[0][0]="    Станок:";
      view();
      //Строки - детали Столбцы - станки
      for (int i=1;i<Table->RowCount;i++)
-          Form1->Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
+          BaseForm->Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
      for (int j=1;j<Table->ColCount;j++)
-          Form1->Table->Cells[j][0]=j;//"Станок №"+i;
+          BaseForm->Table->Cells[j][0]=j;//"Станок №"+i;
           //Output->Lines->Add("ColCount="+IntToStr(Table->ColCount));
      //Form1->SetFocus();
+      Gant = new Graphics::TBitmap;
+
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
-void __fastcall TForm1::NOpenClick(TObject *Sender)
+void __fastcall TBaseForm::NOpenClick(TObject *Sender)
 {
      if(OpenDialog1->Execute()==IDOK)
      {
@@ -69,12 +73,12 @@ void __fastcall TForm1::NOpenClick(TObject *Sender)
                     {
                          column++;
                          //Table->Cells[row][i+1]="";  //clear
-                         if (Form1->Table->ColCount <= column)   //Добавить столбец в таблицу
+                         if (BaseForm->Table->ColCount <= column)   //Добавить столбец в таблицу
                                 {
                                         for (int k=1;k<Table->RowCount;k++)
                                                 Table->Cells[column][k]="";
-                                        Form1->Table->ColCount++;
-                                        Form1->Table->Cells[column][0]=column;
+                                        BaseForm->Table->ColCount++;
+                                        BaseForm->Table->Cells[column][0]=column;
                                 }
                     }
                     else
@@ -85,41 +89,40 @@ void __fastcall TForm1::NOpenClick(TObject *Sender)
                N=column;
                //Table->Cells[0][i+1]=i+1;
                Table->Cells[0][i+1]="Деталь " + IntToStr(i+1)+":";
-          }  
+          }    
           M = pStrings->Count;
           //Form1->Output->Text=atof(Table->Cells[5][1].c_str());         
           StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
           StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
-          if (Form4->RadioGroupTime->ItemIndex != 2)
+          if (OptionsForm->RadioGroupTime->ItemIndex != 2)
                StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
           delete pStrings;
           NSave->Enabled=true;
+          NTranspon->Enabled=true;
      }
 }
 //---------------------------------------------------------------------------
 //СОХРАНИТЬ
-void __fastcall TForm1::NSaveClick(TObject *Sender)
+void __fastcall TBaseForm::NSaveClick(TObject *Sender)
 {
      if(SaveDialog1->Execute()==IDOK)
      {
           Output->Lines->SaveToFile(SaveDialog1->FileName);
           StatusBar1->Panels->Items[0]->Text=SaveDialog1->FileName;
      }
-
 }
 //---------------------------------------------------------------------------
 //ШРИФТ
-void __fastcall TForm1::NFontClick(TObject *Sender)
+void __fastcall TBaseForm::NFontClick(TObject *Sender)
 {
      if (FontDialog1->Execute())
      {
           Output->Font=FontDialog1->Font;
      }
-
 }
 //---------------------------------------------------------------------------
 //КОПИРОВАТЬ
-void __fastcall TForm1::N15Click(TObject *Sender)
+void __fastcall TBaseForm::N15Click(TObject *Sender)
 {
      Output->CopyToClipboard();
      ShowMessage("Хочешь копировать жми CTRL+C!");
@@ -127,7 +130,7 @@ void __fastcall TForm1::N15Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //О ПРОГРАММЕ
-void __fastcall TForm1::NAboutClick(TObject *Sender)
+void __fastcall TBaseForm::NAboutClick(TObject *Sender)
 {
      Application->CreateForm( __classid(TAboutBox1),&AboutBox1);
      AboutBox1->ShowModal();
@@ -135,7 +138,7 @@ void __fastcall TForm1::NAboutClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //РАССЧЕТ
-void __fastcall TForm1::RunBtnClick(TObject *Sender)
+void __fastcall TBaseForm::RunBtnClick(TObject *Sender)
 {
      if ((M <= 1)||(N <= 1))
      {
@@ -156,7 +159,7 @@ void __fastcall TForm1::RunBtnClick(TObject *Sender)
           Optimizer->add(N,T);
      }
      Output->Lines->Add("Исходная матрица:");
-     PrintMatrix(Optimizer->InitBegin,N,false);
+     PrintMatrix(Optimizer->InitBegin,N,false,false);
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
      Output->Lines->Add("");
      Output->Lines->Add("");
@@ -185,55 +188,55 @@ void __fastcall TForm1::RunBtnClick(TObject *Sender)
      Output->Lines->Add("");
      OptimizationBtn->Enabled=true;
      GantBtn->Enabled=true;
-
+     ReportBtn->Enabled=true;
 }
 //---------------------------------------------------------------------------
 //ОБЫЧНЫЙ ВИД
-void __fastcall TForm1::NViewOneClick(TObject *Sender)
+void __fastcall TBaseForm::NViewOneClick(TObject *Sender)
 {
-     Form1->Height=448;
-     Form1->Width=896;
+     BaseForm->Height=480;
+     BaseForm->Width=896;
      NViewOne->Checked=true;
      NViewTwo->Checked=false;
      view();
-     Table->SetBounds(8,164,450,206);
-     Output->SetBounds(464,64,418,306);
+     Table->SetBounds(8,164,450,237);
+     Output->SetBounds(464,64,418,337);
 }
 //---------------------------------------------------------------------------
 //КОМПАКТНЫЙ
-void __fastcall TForm1::NViewTwoClick(TObject *Sender)
+void __fastcall TBaseForm::NViewTwoClick(TObject *Sender)
 {
-     Form1->Height=448;
-     Form1->Width=896;
+     BaseForm->Height=480;
+     BaseForm->Width=896;
      NViewTwo->Checked=true;
      NViewOne->Checked=false;
-     Table->SetBounds(277,64,188,308);
-     Output->SetBounds(8,176,265,193);
+     Table->SetBounds(277,64,188,339);
+     Output->SetBounds(8,176,265,224);
      view();
 }
 //---------------------------------------------------------------------------
 //ОЧИСТИТЬ(МЕМО)
-void __fastcall TForm1::N12Click(TObject *Sender)
+void __fastcall TBaseForm::N12Click(TObject *Sender)
 {
      Output->Clear();
 }
 //---------------------------------------------------------------------------
 //ОН ПЭЙНТ
-void __fastcall TForm1::FormPaint(TObject *Sender)
+void __fastcall TBaseForm::FormPaint(TObject *Sender)
 {
      if (graphik)
           PaintGant();
 }
 //---------------------------------------------------------------------------
 //ПЕРЕРИСОВАТЬ
-void __fastcall TForm1::NGantRepaintClick(TObject *Sender)
+void __fastcall TBaseForm::NGantRepaintClick(TObject *Sender)
 {
      if (graphik)
           PaintGant();
 }
 //---------------------------------------------------------------------------
 //ШРИФТ ДИАГРАММЫ
-void __fastcall TForm1::NGantFontClick(TObject *Sender)
+void __fastcall TBaseForm::NGantFontClick(TObject *Sender)
 {
      if (FontDialog2->Execute())
      {
@@ -243,7 +246,7 @@ void __fastcall TForm1::NGantFontClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ЦВЕТ ДИАГРАММЫ
-void __fastcall TForm1::NGantColorClick(TObject *Sender)
+void __fastcall TBaseForm::NGantColorClick(TObject *Sender)
 {
      if (ColorDialog1->Execute())
      {
@@ -253,26 +256,26 @@ void __fastcall TForm1::NGantColorClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ИЗМЕНЕНИЕ МАСШТАБА ПОЛЗУНКОМ
-void __fastcall TForm1::TrackBar1Change(TObject *Sender)
+void __fastcall TBaseForm::TrackBar1Change(TObject *Sender)
 {
      scale=(TrackBar1->Position)+14;
      PaintGant();
 }
 //---------------------------------------------------------------------------
 //ОПТИМИЗАЦИЯ - КОЛИЧЕСТВО ВКЛЮЧЕНИЙ
-void __fastcall TForm1::NOptSwitchClick(TObject *Sender)
+void __fastcall TBaseForm::NOptSwitchClick(TObject *Sender)
 {
      ultima=true;
 }
 //---------------------------------------------------------------------------
 //ВЫБОР АЛГОРИТМА
-void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
+void __fastcall TBaseForm::RadioGroup1Click(TObject *Sender)
 {    
      view();
 }
 //---------------------------------------------------------------------------
 //ЗАКРЫТЬ
-void __fastcall TForm1::NExitClick(TObject *Sender)
+void __fastcall TBaseForm::NExitClick(TObject *Sender)
 {
      //ShowMessage("close click");
      //delete Optimizer;
@@ -281,14 +284,14 @@ void __fastcall TForm1::NExitClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ЗАКРЫТЬ ФОРМУ
-void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
+void __fastcall TBaseForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
      //ShowMessage("close form");
      delete Optimizer;
 }
 //---------------------------------------------------------------------------
 //НОВЫЙ
-void __fastcall TForm1::NewBtnClick(TObject *Sender)
+void __fastcall TBaseForm::NewBtnClick(TObject *Sender)
 {
      Output->Clear();
      graphik = false;
@@ -303,21 +306,21 @@ void __fastcall TForm1::NewBtnClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ДИАГРАММА ГАНТА
-void __fastcall TForm1::GantBtnClick(TObject *Sender)
+void __fastcall TBaseForm::ReportBtnClick(TObject *Sender)
 {
      if (GantBtn->Down)
      {
-          Form3->Show();
-          Form1->BringToFront();
+          GraphicForm->Show();
+          BaseForm->BringToFront();
      }
      else
      {
-          Form3->Close();
+          GraphicForm->Close();
      }
 }
 //---------------------------------------------------------------------------
 //ТЕСТ ИЗ ВЫПАДАЮЩЕГО СПИСКА
-void __fastcall TForm1::N1Click(TObject *Sender)
+void __fastcall TBaseForm::N1Click(TObject *Sender)
 {
      Output->Lines->Add("Размеры таблицы L T H W");
      Output->Lines->Add(Table->Left);
@@ -329,7 +332,7 @@ void __fastcall TForm1::N1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ОЧИСТИТЬ ТАБЛИЦУ
-void __fastcall TForm1::N2Click(TObject *Sender)
+void __fastcall TBaseForm::N2Click(TObject *Sender)
 {
      for (int i=1;i<Table->RowCount;i++)
           for (int j=1;j<Table->ColCount;j++)
@@ -337,17 +340,17 @@ void __fastcall TForm1::N2Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ИЗМЕНИТЬ РАЗМЕР ТАБЛИЦЫ
-void __fastcall TForm1::NSizeClick(TObject *Sender)
+void __fastcall TBaseForm::NSizeClick(TObject *Sender)
 {
-     Form2->Caption=("Изменение размера таблицы");
-     Form2->Position=poMainFormCenter;
-     Form2->ShowModal();
+     EnterDataForm->Caption=("Изменение размера таблицы");
+     EnterDataForm->Position=poMainFormCenter;
+     EnterDataForm->ShowModal();
      // strcpy(temp.city,Form2->Edit1->Text.c_str());
      // AddA(temp);
 }
 //---------------------------------------------------------------------------
 //ТРАНСПОНИРОВАТЬ
-void __fastcall TForm1::NTransponClick(TObject *Sender)
+void __fastcall TBaseForm::NTransponClick(TObject *Sender)
 {
      int tempmax = (N > M)? N : M;
      int temp;
@@ -366,18 +369,18 @@ void __fastcall TForm1::NTransponClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ОПЦИИ
-void __fastcall TForm1::NOptionsClick(TObject *Sender)
+void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
 {
-     Form4->Caption=("Настройки");
-     Form4->Position=poMainFormCenter;
+     OptionsForm->Caption=("Настройки");
+     OptionsForm->Position=poMainFormCenter;
      //Form4->ShowModal();
-     if(Form4->ShowModal()==IDOK)
+     if(OptionsForm->ShowModal()==IDOK)
      {
 
      }
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::TableRowMoved(TObject *Sender, int FromIndex,
+void __fastcall TBaseForm::TableRowMoved(TObject *Sender, int FromIndex,
       int ToIndex)
 {
      for (int i=1;i<Table->RowCount;i++)
@@ -387,7 +390,7 @@ void __fastcall TForm1::TableRowMoved(TObject *Sender, int FromIndex,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::TableColumnMoved(TObject *Sender, int FromIndex,
+void __fastcall TBaseForm::TableColumnMoved(TObject *Sender, int FromIndex,
       int ToIndex)
 {
      for (int i=1;i<Table->RowCount;i++)
@@ -396,4 +399,7 @@ void __fastcall TForm1::TableColumnMoved(TObject *Sender, int FromIndex,
           Table->Cells[j][0]=j;     
 }
 //---------------------------------------------------------------------------
+
+
+
 

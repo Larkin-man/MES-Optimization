@@ -13,22 +13,33 @@
 #include <jpeg.hpp>
 #include <Graphics.hpp>
 #include <Buttons.hpp>
+#include <Dialogs.hpp>
+#include <ExtDlgs.hpp>
 
 //---------------------------------------------------------------------------
-class TForm3 : public TForm
+class TGraphicForm : public TForm
 {
 __published:	// IDE-managed Components
      TImage *gant;
      TControlBar *ControlBar1;
      TTrackBar *TrackBar1;
+     TSpeedButton *SpeedButton1;
      TBitBtn *BitBtn1;
+     TSpeedButton *SpeedButton2;
+     TColorDialog *ColorDialog1;
+     TSpeedButton *SpeedButton3;
+     TSavePictureDialog *SavePictureDialog1;
      void __fastcall BitBtn1Click(TObject *Sender);
+     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+     void __fastcall SpeedButton2Click(TObject *Sender);
+     void __fastcall SpeedButton3Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-     __fastcall TForm3(TComponent* Owner);
+     Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
+     __fastcall TGraphicForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm3 *Form3;
+extern PACKAGE TGraphicForm *GraphicForm;
 //---------------------------------------------------------------------------
 
 #endif

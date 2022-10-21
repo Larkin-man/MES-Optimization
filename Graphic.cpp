@@ -8,23 +8,50 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 #include "MainSource.h"
-TForm3 *Form3;
+TGraphicForm *GraphicForm;
 //---------------------------------------------------------------------------
-__fastcall TForm3::TForm3(TComponent* Owner)
+__fastcall TGraphicForm::TGraphicForm(TComponent* Owner)
      : TForm(Owner)
 {
+     BitMap = new Graphics::TBitmap;
 }
 //---------------------------------------------------------------------------
 
-int j=0;
-float doublekill(int a);
-
+void __fastcall TGraphicForm::BitBtn1Click(TObject *Sender)
+{
+     BaseForm->BringToFront();
+     BaseForm->SetFocus();
+}
 //---------------------------------------------------------------------------
 
-void __fastcall TForm3::BitBtn1Click(TObject *Sender)
+void __fastcall TGraphicForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
-     Form1->BringToFront();
-     Form1->SetFocus();     
+     //TODO: BitMap->Canvas-> Канва в битмапе!
+     BaseForm->GantBtn->Down=false;
+     BaseForm->SetFocus();
+     BitMap->Free();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TGraphicForm::SpeedButton2Click(TObject *Sender)
+{
+     if (ColorDialog1->Execute())
+     {
+          gant->Canvas->Pen->Color=ColorDialog1->Color;
+     }
+     BaseForm->PaintGant();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TGraphicForm::SpeedButton3Click(TObject *Sender)
+{
+     if (SavePictureDialog1->Execute())
+     {
+          BitMap->Assign (gant->Picture) ;
+          BitMap->SaveToFile (SavePictureDialog1->FileName) ;
+
+     }
 }
 //---------------------------------------------------------------------------
 

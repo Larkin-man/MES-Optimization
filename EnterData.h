@@ -10,23 +10,23 @@
 #include <Buttons.hpp>
 #include <ExtCtrls.hpp>
 //---------------------------------------------------------------------------
-class TForm2 : public TForm
+class TEnterDataForm : public TForm
 {
 __published:	// IDE-managed Components
-        TSpeedButton *SpeedButton1;
-        TSpeedButton *SpeedButton2;
      TLabeledEdit *Field1;
      TLabeledEdit *Field2;
-        void __fastcall SpeedButton1Click(TObject *Sender);
-        void __fastcall SpeedButton2Click(TObject *Sender);
+     TBitBtn *BitBtn1;
+     TBitBtn *BitBtn2;
         void __fastcall Edit1Change(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
      void __fastcall Field1Change(TObject *Sender);
+     void __fastcall BitBtn1Click(TObject *Sender);
+     void __fastcall BitBtn2Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-        __fastcall TForm2(TComponent* Owner);
+        __fastcall TEnterDataForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm2 *Form2;
+extern PACKAGE TEnterDataForm *EnterDataForm;
 //---------------------------------------------------------------------------
 #endif

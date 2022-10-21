@@ -1,10 +1,10 @@
 object AboutBox1: TAboutBox1
-  Left = 302
-  Top = 122
+  Left = 332
+  Top = 125
   BorderStyle = bsDialog
   Caption = #1054' '#1055#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 307
-  ClientWidth = 298
+  ClientHeight = 306
+  ClientWidth = 292
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -28,8 +28,8 @@ object AboutBox1: TAboutBox1
   object Panel1: TPanel
     Left = 8
     Top = 8
-    Width = 281
-    Height = 249
+    Width = 276
+    Height = 250
     BevelInner = bvRaised
     BevelOuter = bvLowered
     Color = clSkyBlue
@@ -1677,7 +1677,7 @@ object AboutBox1: TAboutBox1
       Top = 32
       Width = 63
       Height = 17
-      Caption = #1042#1077#1088#1089#1080#1103' 2.6'
+      Caption = #1042#1077#1088#1089#1080#1103' 2.7'
       IsControl = True
     end
     object Copyright: TLabel

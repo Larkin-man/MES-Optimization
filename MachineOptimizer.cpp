@@ -3,10 +3,11 @@
 #include <vcl.h>
 #pragma hdrstop
 //---------------------------------------------------------------------------
-USEFORM("MainSource.cpp", Form1);
+USEFORM("MainSource.cpp", BaseForm);
 USEFORM("About.cpp", AboutBox1);
-USEFORM("Graphic.cpp", Form3);
-USEFORM("EnterData.cpp", Form2);
+USEFORM("Graphic.cpp", GraphicForm);
+USEFORM("EnterData.cpp", EnterDataForm);
+USEFORM("Options.cpp", OptionsForm);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -14,9 +15,10 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
      {
            Application->Initialize();
            Application->Title = "(@)^(@)";
-           Application->CreateForm(__classid(TForm1), &Form1);
-           Application->CreateForm(__classid(TForm3), &Form3);
-           Application->CreateForm(__classid(TForm2), &Form2);
+           Application->CreateForm(__classid(TBaseForm), &BaseForm);
+           Application->CreateForm(__classid(TGraphicForm), &GraphicForm);
+           Application->CreateForm(__classid(TEnterDataForm), &EnterDataForm);
+           Application->CreateForm(__classid(TOptionsForm), &OptionsForm);
            Application->Run();
      }
      catch (Exception &exception)

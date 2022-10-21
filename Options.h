@@ -11,7 +11,7 @@
 #include <Buttons.hpp>
 #include <ExtCtrls.hpp>
 //---------------------------------------------------------------------------
-class TForm4 : public TForm
+class TOptionsForm : public TForm
 {
 __published:	// IDE-managed Components
      TPageControl *PageControl;
@@ -25,15 +25,16 @@ __published:	// IDE-managed Components
      TBitBtn *BitBtn1;
      TBitBtn *BitBtn2;
      TLabel *Label1;
-     TRadioGroup *RadioGroup2;
-     TRadioGroup *RadioGroup1;
+     TRadioGroup *RadioGroupGant;
+     TRadioGroup *RadioGroupFi;
      void __fastcall NoOutClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
+     void __fastcall RadioGroupFiClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-     __fastcall TForm4(TComponent* Owner);
+     __fastcall TOptionsForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm4 *Form4;
+extern PACKAGE TOptionsForm *OptionsForm;
 //---------------------------------------------------------------------------
 #endif

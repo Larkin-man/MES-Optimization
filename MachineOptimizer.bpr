@@ -4,12 +4,13 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="MachineOptimizer.exe"/>
-    <OBJFILES value="MainSource.obj About.obj MachineOptimizer.obj Graphic.obj EnterData.obj"/>
+    <OBJFILES value="MainSource.obj About.obj MachineOptimizer.obj Graphic.obj EnterData.obj 
+      Options.obj"/>
     <RESFILES value="MachineOptimizer.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
-    <RESDEPEN value="$(RESFILES) MainSource.dfm About.dfm Graphic.dfm EnterData.dfm"/>
+    <RESDEPEN value="$(RESFILES) MainSource.dfm About.dfm Graphic.dfm EnterData.dfm Options.dfm"/>
     <LIBFILES value=""/>
     <LIBRARIES value="rtl.lib vcl.lib"/>
     <SPARELIBS value="vcl.lib rtl.lib"/>
@@ -53,14 +54,15 @@
     <OTHERFILES value=""/>
   </LINKER>
   <FILELIST>
-      <FILE FILENAME="MainSource.cpp" FORMNAME="Form1" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MainSource.cpp" FORMNAME="BaseForm" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="About.cpp" FORMNAME="AboutBox1" UNITNAME="About" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.res" FORMNAME="" UNITNAME="MachineOptimizer.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.cpp" FORMNAME="" UNITNAME="MachineOptimizer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="OptimizationMtds.h" FORMNAME="" UNITNAME="OptimizationMtds.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer.todo" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Graphic.cpp" FORMNAME="Form3" UNITNAME="Graphic" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="EnterData.cpp" FORMNAME="Form2" UNITNAME="EnterData" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Graphic.cpp" FORMNAME="GraphicForm" UNITNAME="Graphic" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EnterData.cpp" FORMNAME="EnterDataForm" UNITNAME="EnterData" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Options.cpp" FORMNAME="OptionsForm" UNITNAME="Options" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -70,9 +72,9 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=2
-MinorVer=6
+MinorVer=7
 Release=0
-Build=13
+Build=14
 Debug=0
 PreRelease=1
 Special=0
@@ -84,13 +86,13 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Оптимизация запуска деталей в производство
-FileVersion=2.6.0.13
+FileVersion=2.7.0.14
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Дипломная работа
-ProductVersion=2.6
+ProductVersion=2.7
 Comments=mail:  psylonaut@mail.ru
 
 [Debugging]
