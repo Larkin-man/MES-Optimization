@@ -16,7 +16,6 @@
 #include "About.h"
 #include "Table.h"
 #include "Graphic.h"
-#include <Grids.hpp>
 #include "OptimizationMtds.h"
 #include <math.h>
 #include <ToolWin.hpp>
@@ -170,18 +169,17 @@ void view() //Проверка видимости элементов
      Memo1->Visible=N8->Checked;
      Panel1->Visible=N20->Checked;
      RUN->Enabled=(RadioGroup1->ItemIndex!=-1);
-     StringGrid1->Visible=(RadioGroup1->ItemIndex!=0);
      //SpeedButton5->Enabled=StringGrid1->ComponentCount;
 }
-
-void print(MachineOptimizer::Link *Item)
+     /*
+void print(MachineOptimizer::Node *Item)
 {
      while(Item != NULL)
      {
-     Memo1->Text=Memo1->Text+IntToStr(Item->curr->n)+" ";
-     Item = Item->next;
+     Memo1->Text=Memo1->Text+IntToStr(Item->n)+" ";
+     Item = Item->Next;
      }
-}
+}                   */
 
 Node *CreateItem (double A, double B, int i)
 {                //Функция создает новый элемент
@@ -267,34 +265,34 @@ void PaintGant()
 
      Label2->Canvas->TextOut(10,140,"Оптимизированные данные:");
      vt=165;  
-     PaintBlock(Optimizer->Optimal);
+     PaintBlock(Optimizer->DJBegin);
      
      if (ultima)
      {
           vt=290;
           SA=0,XC=0;
-          Node *Item=Optimal;
-          for (;;Item = Item->Next)
+          MachineOptimizer::Link *Item= Optimizer->DJBegin;
+          for (;;Item = Item->next)
           {
-               SA+=Item->A;
-               Label2->Canvas->Rectangle((SA-Item->A)*scale,vt,SA*scale,vt+30);
-               XC = (SA >= XC)? SA+Item->B : XC+Item->B;
+               SA+=Item->curr->A;
+               Label2->Canvas->Rectangle((SA-Item->curr->A)*scale,vt,SA*scale,vt+30);
+               XC = (SA >= XC)? SA+Item->curr->B : XC+Item->curr->B;
                //Label2->Canvas->Rectangle((XC-Item->B)*scale,vt+40,XC*scale,vt+70);
-               Label2->Canvas->TextOut((SA-Item->A)*scale+6,vt+6,Item->n);
+               Label2->Canvas->TextOut((SA-Item->curr->A)*scale+6,vt+6,Item->curr->n);
                //Label2->Canvas->TextOut((XC-Item->B)*scale+6,vt+46,Item->n);
-               if (Item->Next == NULL)      //Условие выхода из бесконечного цикла
+               if (Item->next == NULL)      //Условие выхода из бесконечного цикла
                     break;
           }
           Label2->Canvas->TextOut(10,vt+75,"Время работы:");
           Label2->Canvas->TextOut(130,vt+75,XC);
 
 
-          for (;;Item = Item->Prev)
+          for (;;Item = Item->prev)
           {
-               Label2->Canvas->Rectangle((XC-Item->B)*scale,vt+40,XC*scale,vt+70);
-               Label2->Canvas->TextOut((XC-Item->B)*scale+6,vt+46,Item->n);
-               XC-=Item->B;
-               if (Item->Prev == NULL)      //Условие выхода из бесконечного цикла
+               Label2->Canvas->Rectangle((XC-Item->curr->B)*scale,vt+40,XC*scale,vt+70);
+               Label2->Canvas->TextOut((XC-Item->curr->B)*scale+6,vt+46,Item->curr->n);
+               XC-=Item->curr->B;
+               if (Item->prev == NULL)      //Условие выхода из бесконечного цикла
                     break;
           }
           //Label2->Canvas->TextOut(10,vt+75,"Время работы:");
@@ -358,7 +356,7 @@ void DjonsonRun()
 
           Optimizer->DjonsonRun();
      Memo1->Lines->Add("Optimal");
-          list = Optimizer->Optimal;
+          list = Optimizer->DJBegin;
           while(list->next != NULL)
      {
      Memo1->Lines->Add("n="+FloatToStr(list->curr->n)+" T[0]="+FloatToStr(list->curr->B));
@@ -371,7 +369,7 @@ void DjonsonRun()
 
      
      Memo1->Lines->Add("Оптимальная последовательность запуска деталей:");
-     print(Optimizer->Optimal);
+     //print(Optimizer->Optimal);
      graphik = true;
      PaintGant();
 }
@@ -382,8 +380,6 @@ extern PACKAGE TForm1 *Form1;
 //---------------------------------------------------------------------------
 //Сюда могут помещатся объявления типов, переменных, функций
 //которые не включаются в класс формы
-
-
 
 float future;
 float doublekill(int a)

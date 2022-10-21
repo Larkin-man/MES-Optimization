@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 74
-  Top = 98
+  Left = 89
+  Top = 124
   Width = 859
-  Height = 448
+  Height = 443
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = #1055#1083#1072#1085#1080#1088#1086#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099' '#1089#1090#1072#1085#1082#1086#1074
   Color = clBtnFace
@@ -14,7 +14,7 @@ object Form1: TForm1
   Menu = MainMenu1
   OldCreateOrder = False
   PopupMenu = PopupMenu1
-  PrintScale = poNone
+  Position = poDesktopCenter
   Visible = True
   OnPaint = FormPaint
   PixelsPerInch = 96
@@ -23,7 +23,7 @@ object Form1: TForm1
     Left = 472
     Top = 62
     Width = 375
-    Height = 310
+    Height = 305
     Align = alCustom
     Anchors = [akLeft, akTop, akRight, akBottom]
     Shape = bsFrame
@@ -60,9 +60,9 @@ object Form1: TForm1
   end
   object Label2: TLabel
     Left = 474
-    Top = 64
+    Top = 62
     Width = 370
-    Height = 306
+    Height = 301
     Align = alCustom
     Anchors = [akLeft, akTop, akRight, akBottom]
     AutoSize = False
@@ -1331,9 +1331,9 @@ object Form1: TForm1
   end
   object Memo1: TMemo
     Left = 8
-    Top = 168
+    Top = 160
     Width = 265
-    Height = 201
+    Height = 205
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -1350,7 +1350,7 @@ object Form1: TForm1
     Left = 280
     Top = 96
     Width = 57
-    Height = 273
+    Height = 265
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -1365,7 +1365,7 @@ object Form1: TForm1
     Left = 344
     Top = 96
     Width = 57
-    Height = 273
+    Height = 265
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -1378,7 +1378,7 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 9
-    Top = 169
+    Top = 161
     Width = 177
     Height = 153
     PopupMenu = PopupMenu2
@@ -1471,7 +1471,7 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 375
+    Top = 370
     Width = 851
     Height = 19
     Panels = <
@@ -1482,9 +1482,9 @@ object Form1: TForm1
   end
   object RadioGroup1: TRadioGroup
     Left = 8
-    Top = 53
+    Top = 54
     Width = 265
-    Height = 108
+    Height = 99
     Caption = #1040#1083#1075#1086#1088#1080#1090#1084#1099' '#1086#1087#1090#1080#1084#1080#1079#1072#1094#1080#1080
     Color = clBtnFace
     Items.Strings = (
@@ -1514,7 +1514,7 @@ object Form1: TForm1
     Left = 277
     Top = 62
     Width = 188
-    Height = 309
+    Height = 303
     Align = alCustom
     Anchors = [akLeft, akTop, akBottom]
     DefaultColWidth = 32

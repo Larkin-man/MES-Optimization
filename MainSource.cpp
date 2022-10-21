@@ -226,8 +226,7 @@ void __fastcall TForm1::N20Click(TObject *Sender)
 {
      N20->Checked=true;
      N8->Checked=false;
-     view();
-
+     view();    
 }
 //---------------------------------------------------------------------------
 
@@ -353,7 +352,6 @@ void __fastcall TForm1::TrackBar1Change(TObject *Sender)
 void __fastcall TForm1::N30Click(TObject *Sender)
 {
      ultima=true;
-     MachineOptimizer vd;
 }
 //---------------------------------------------------------------------------
 //Рассчет
@@ -366,6 +364,7 @@ void __fastcall TForm1::RUNClick(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
+
 
 void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
 {

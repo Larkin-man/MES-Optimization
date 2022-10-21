@@ -43,7 +43,7 @@
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -70,9 +70,9 @@
 IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=2
-MinorVer=2
+MinorVer=3
 Release=0
-Build=7
+Build=8
 Debug=0
 PreRelease=1
 Special=0
@@ -84,30 +84,14 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=2.2.0.7
+FileVersion=2.3.0.8
 InternalName=MES Система
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=2.2
+ProductVersion=2.3
 Comments=mail:  psylonaut@mail.ru
-
-[HistoryLists\hlIncludePath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
-
-[HistoryLists\hlLibraryPath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
-
-[HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
-
-[HistoryLists\hlConditionals]
-Count=1
-Item0=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
