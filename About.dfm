@@ -1,5 +1,5 @@
 object AboutBox1: TAboutBox1
-  Left = 332
+  Left = 170
   Top = 125
   BorderStyle = bsDialog
   Caption = #1054' '#1055#1088#1086#1075#1088#1072#1084#1084#1077
@@ -1677,7 +1677,7 @@ object AboutBox1: TAboutBox1
       Top = 32
       Width = 63
       Height = 17
-      Caption = #1042#1077#1088#1089#1080#1103' 2.7'
+      Caption = #1042#1077#1088#1089#1080#1103' 2.8'
       IsControl = True
     end
     object Copyright: TLabel

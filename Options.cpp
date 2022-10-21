@@ -40,3 +40,18 @@ void __fastcall TOptionsForm::RadioGroupFiClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TOptionsForm::WorkTimeOutClick(TObject *Sender)
+{
+     if(WorkTimeOut->Checked)
+     {
+          BaseForm->scale=22;
+     }
+     else
+     {
+          BaseForm->scale=18;
+     }
+     BaseForm->PaintGant();
+
+}
+//---------------------------------------------------------------------------
+

@@ -10,6 +10,9 @@
 #ifndef OptimizationMtdsH
 #define OptimizationMtdsH
 #define max(A,B) (A>B ? A : B)
+#define JohnsonAlgoritm 1
+#define PSMethod 2
+#define BranchesAndHordes 3
 
 class MachineOptimizer
 {
@@ -28,12 +31,14 @@ public:
           Link *down;    //Вниз по дереву
      }
      *InitBegin,    //Начало списка иходных деталей
-     *Optimal,      //Начало списка деталей по Джонсону
+     *OptimalDJ,      //Начало списка деталей по Джонсону
+     *OptimalPS,
      *PSBegin[4],   //Начало списка деталей по Петрову-Соколицину
-     *C,            //Матрица С для метода ветвей и границ
+     *OptimalBH,            //Матрица С для метода ветвей и границ
      **Cdos;        //Arari asimpaspari parire pararu parrapupa ta ta ta ua
      int *OutSequence,   //Оптимальная последовательность обработки деталей для Джонсона и ПС
           **OutMatrix;   //Оптимальная последовательность обработки деталей для МВГ
+     int StackOfCalls[4]; //Стек запусков методов
 
 MachineOptimizer()
 {
@@ -41,10 +46,11 @@ MachineOptimizer()
      N=100; //max
      InitBegin=NULL;
      InitEnd=NULL;
-     Optimal=NULL;
+     OptimalDJ=NULL;
      OptimalEnd=NULL;
+     OptimalPS=NULL;
      Linker=NULL;
-     C=NULL,
+     OptimalBH=NULL,
      Cend=NULL;
      OutMatrix = NULL;
      max=30000;
@@ -68,8 +74,8 @@ MachineOptimizer()
      for (int i = 0;i < 4; i++)
           if (PSBegin[i] != NULL)
                DeleteLinks(PSBegin[i]);
-     if (Optimal != NULL)
-          DeleteLinks(Optimal);
+     if (OptimalDJ != NULL)
+          DeleteLinks(OptimalDJ);
 
      if (InitBegin != NULL)
           DeleteLinks(InitBegin);
@@ -105,12 +111,17 @@ void SetDebugging(bool Debugging)
 }
 
 bool ClearData(int MethodID) //Функция очищает память 
-{                            //0 - Алгоритма Джонсона
+{                            //1 - Алгоритма Джонсона
      switch(MethodID)
      {
           case 0:
                break;
           case 1:
+               if (OptimalDJ != NULL)
+               {
+                    DeleteLinks(OptimalDJ);
+                    OptimalDJ = NULL;
+               }
                break;
           case 2:
                break;
@@ -128,25 +139,24 @@ int DjonsonRun()      //For two machines  Fortune havor!
           pLink->next=NULL;
           pLink->curr=Linker->curr;  //But not to copy of NODE ! only Link
           pLink->down=OptimalEnd;
-          if (Optimal == NULL)
-               Optimal = pLink;  //set the begin of initial list
+          if (OptimalDJ == NULL)
+               OptimalDJ = pLink;  //set the begin of initial list
           else
               OptimalEnd->next=pLink;
           OptimalEnd = pLink;
      }
-
      //CreateLink(InitBegin,Linker->curr,InitEnd);
-     Linker = Optimal;          //
-     Node *Item = CreateItem(2,0,NULL);    //TODO: found them and delete ?
+     Linker = OptimalDJ;          //
+     Node *Item = CreateItem(N,0,NULL);    //TODO: found them and delete ?
      Link *pLink = new Link;
      pLink->next=NULL;
      pLink->down=NULL;
      pLink->curr=Item;
-     Optimal=pLink;
+     OptimalDJ=pLink;
      Link *minimal[2];
      minimal[0]=NULL;
      minimal[1]=NULL;
-     //Link *Linker = InitBegin;
+     //Linker = InitBegin;
      for (int i=0;i<M-1;i++)  //Цикл по всем деталям
      {
           min[0]=Linker->curr->T[0];   // ! minimal = first
@@ -162,7 +172,7 @@ int DjonsonRun()      //For two machines  Fortune havor!
                     min[0]=Item1->curr->T[0];
                     minimal[0]=Item1;
                }
-               if (Item1->curr->T[1]<min[1])
+               if (Item1->curr->T[N-1]<min[1])
                {
                     min[1]=Item1->curr->T[N-1];
                     minimal[1]=Item1;
@@ -175,33 +185,34 @@ int DjonsonRun()      //For two machines  Fortune havor!
                if (minimal[0]==Linker)
                     Linker=Linker->next;
                concatenate(minimal[0]->down,minimal[0]->next);
-               concatenate(Optimal->down,minimal[0]);
-               concatenate(minimal[0],Optimal);
+               concatenate(OptimalDJ->down,minimal[0]);
+               concatenate(minimal[0],OptimalDJ);
           }
           else
           {                   //Paste in end
                if (minimal[1]==Linker)
                     Linker=Linker->next;
                concatenate(minimal[1]->down,minimal[1]->next);
-               concatenate(minimal[1],Optimal->next);
-               concatenate(Optimal,minimal[1]);
+               concatenate(minimal[1],OptimalDJ->next);
+               concatenate(OptimalDJ,minimal[1]);
           }
      }
-     Optimal->curr->T[0]=Linker->curr->T[0];
-     Optimal->curr->T[1]=Linker->curr->T[N-1];
-     Optimal->curr->m=Linker->curr->m;
+     OptimalDJ->curr->m=Linker->curr->m;
+     for (int i=0;i<N;i++)
+          OptimalDJ->curr->T[i]=Linker->curr->T[i];
+
      //delete Linker->curr;
      //delete Linker;
-     while(Optimal->down != NULL)     //todo: можно объеденить со след. циклом для ускорения
-          Optimal=Optimal->down;
+     while(OptimalDJ->down != NULL)     //todo: можно объеденить со след. циклом для ускорения
+          OptimalDJ=OptimalDJ->down;
      OutSequence = new int[M];
      int i=0;
-     for (Linker = Optimal;Linker!=NULL;Linker=Linker->next)
+     for (Linker = OptimalDJ;Linker!=NULL;Linker=Linker->next)
      {
           OutSequence[i]=Linker->curr->m;
           i++;
      }
-     return ProductionCycle(Optimal,false);
+     return ProductionCycle(OptimalDJ,false);
 }
 
 int PetrovSokolRun(TMemo *output = NULL)
@@ -280,9 +291,10 @@ int PetrovSokolRun(TMemo *output = NULL)
           {
                Time=OutSequence[1];
                OutSequence[0]=j;
-          }
+          }    //OutSequence[0]=j - там номер нужной PSBegin
           //output->Lines->Add("Длительность: "+IntToStr(TimeCyclePS[j-1]));
      }//for j
+     OptimalPS=PSBegin[OutSequence[0]];
      int i=0;
      for (Linker = PSBegin[OutSequence[0]];Linker!=NULL;Linker=Linker->next)
      {
@@ -326,8 +338,8 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
           }
           pLink->curr=pItem;
           pLink->down=Linker; //pLink->down=Cend;
-          if (C == NULL)
-               C = pLink;
+          if (OptimalBH == NULL)
+               OptimalBH = pLink;
           else
               Cend->next=pLink;
           Cend = pLink;
@@ -339,7 +351,7 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
           if (output != NULL)
           {
                output->Lines->Add("Матрица С");
-               for (Linker = C;Linker!=NULL;Linker=Linker->next)
+               for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                {    //Вывести матрицу на экран
                     output->Lines->Add(IntToStr(Linker->curr->m)+"  |  ");
                     for (int i = 0;i<N;i++)
@@ -360,7 +372,7 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
 
                //В D изначально лежат детали из В а в Е из С
                //Для того чтоб не бегать по спискам лишний раз
-               for (Linker = C;Linker!=NULL;Linker=Linker->next)
+               for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                {
                     Node *init = Linker->down->curr;  //Указатель на деталь из списка В
                     D[init->m]=init->T[s-1];
@@ -452,7 +464,7 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
 
                     // 6) Календарное расписание
                     int R=0;
-                    for (Linker = C;Linker!=NULL;Linker=Linker->next)
+                    for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                     {
                          if (Linker->curr->m == d)
                          {
@@ -470,7 +482,7 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
                     if (debugging)
                          output->Lines->Add("R="+IntToStr(R));
                     //Формирование Сдос
-                    for (Linker = C;Linker!=NULL;Linker=Linker->next)
+                    for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                     {
                          //output->Lines->Add("Linker "+IntToStr(Linker));
                          Link *pLink = new Link;
@@ -591,15 +603,14 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
                delete Fi;
           } ///Закрылся цикл очередностей
      }
-     //d=ProductionCycle(C,output);
-     d=C->curr->T[N-1];
-     for (Linker = C->next;Linker!=NULL;Linker=Linker->next)
+     //d=ProductionCycle(OptimalBH,output);
+     d=OptimalBH->curr->T[N-1];
+     for (Linker = OptimalBH->next;Linker!=NULL;Linker=Linker->next)
           if (Linker->curr->T[N-1]>d)
                d=Linker->curr->T[N-1];
      if (output != NULL)
           output->Lines->Add("Длительность="+IntToStr(d));
-     return d;
-
+     return d; 
 }
 
 protected:
@@ -612,9 +623,9 @@ protected:
      *InitEnd,      //Конец списка иходных деталей
      *OptimalEnd,   //Конец списка detals по Джонсону
      *PSEnd[4],     //Конец списка detals по Петрову-Соколицину
-     *Cend,         //end of C matrix
+     *Cend,         //end of OptimalBH matrix
      *Linker,       //Temp
-     **CdosEnd;     //End of Matrix C(do,s)
+     **CdosEnd;     //End of Matrix OptimalBH(do,s)
      bool debugging;
      int max;
 

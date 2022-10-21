@@ -1,48 +1,47 @@
 object GraphicForm: TGraphicForm
-  Left = 31
-  Top = 30
-  Width = 900
-  Height = 600
-  Align = alClient
+  Left = 127
+  Top = 169
+  Width = 763
+  Height = 465
+  Anchors = []
   Caption = #1044#1080#1072#1075#1088#1072#1084#1084#1072' '#1043#1072#1085#1090#1072
   Color = clBtnFace
+  UseDockManager = True
+  DockSite = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -16
   Font.Name = 'Courier'
   Font.Style = []
-  OldCreateOrder = False
+  OldCreateOrder = True
+  Position = poDefaultPosOnly
   OnClose = FormClose
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
   object gant: TImage
     Left = 0
-    Top = 57
-    Width = 892
-    Height = 509
+    Top = 54
+    Width = 755
+    Height = 377
     Align = alClient
     IncrementalDisplay = True
-    Stretch = True
-    Transparent = True
+    Proportional = True
   end
   object ControlBar1: TControlBar
     Left = 0
     Top = 0
-    Width = 892
-    Height = 57
+    Width = 755
+    Height = 54
     Align = alTop
+    DockSite = False
+    RowSize = 24
     TabOrder = 0
-    object SpeedButton1: TSpeedButton
-      Left = 72
-      Top = 54
-      Width = 23
-      Height = 22
-    end
     object SpeedButton2: TSpeedButton
-      Left = 72
+      Left = 133
       Top = 2
       Width = 48
-      Height = 48
+      Height = 44
       Hint = #1048#1079#1084#1077#1085#1080#1090#1100' '#1094#1074#1077#1090
       Glyph.Data = {
         F6120000424DF612000000000000360000002800000028000000280000000100
@@ -202,10 +201,10 @@ object GraphicForm: TGraphicForm
       OnClick = SpeedButton2Click
     end
     object SpeedButton3: TSpeedButton
-      Left = 133
+      Left = 70
       Top = 2
       Width = 48
-      Height = 48
+      Height = 44
       Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1076#1080#1072#1075#1088#1072#1084#1084#1091
       Glyph.Data = {
         F6120000424DF612000000000000360000002800000028000000280000000100
@@ -368,7 +367,7 @@ object GraphicForm: TGraphicForm
       Left = 194
       Top = 2
       Width = 150
-      Height = 48
+      Height = 44
       Orientation = trHorizontal
       Frequency = 1
       Position = 0
@@ -378,13 +377,32 @@ object GraphicForm: TGraphicForm
       TickMarks = tmBottomRight
       TickStyle = tsAuto
     end
+    object ColorBox1: TColorBox
+      Left = 357
+      Top = 2
+      Width = 164
+      Height = 22
+      NoneColorColor = clMaroon
+      Selected = clWhite
+      Style = [cbExtendedColors, cbIncludeNone, cbIncludeDefault, cbCustomColor, cbPrettyNames]
+      BiDiMode = bdLeftToRight
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Courier'
+      Font.Style = []
+      ItemHeight = 16
+      ParentBiDiMode = False
+      ParentFont = False
+      TabOrder = 1
+    end
     object BitBtn1: TBitBtn
       Left = 11
       Top = 2
-      Width = 48
-      Height = 48
+      Width = 46
+      Height = 44
       Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1089#1103' '#1085#1072' '#1086#1089#1085#1086#1074#1085#1091#1102' '#1092#1086#1088#1084#1091
-      TabOrder = 1
+      TabOrder = 2
       OnClick = BitBtn1Click
       Glyph.Data = {
         42080000424D4208000000000000420000002800000020000000200000000100
@@ -456,8 +474,26 @@ object GraphicForm: TGraphicForm
         7B6FBD77FF7F}
     end
   end
-  object ColorDialog1: TColorDialog
+  object GantBrushColor: TColorDialog
     Ctl3D = True
+    Color = 16744576
+    CustomColors.Strings = (
+      'ColorA=FFFFFFFF'
+      'ColorB=FFFFFFFF'
+      'ColorC=FFFFFFFF'
+      'ColorD=FFFFFFFF'
+      'ColorE=FFFFFFFF'
+      'ColorF=FFFFFFFF'
+      'ColorG=FFFFFFFF'
+      'ColorH=FFFFFFFF'
+      'ColorI=FFFFFFFF'
+      'ColorJ=FFFFFFFF'
+      'ColorK=FFFFFFFF'
+      'ColorL=FFFFFFFF'
+      'ColorM=FFFFFFFF'
+      'ColorN=FFFFFFFF'
+      'ColorO=FFFFFFFF'
+      'ColorP=FFFFFFFF')
     Left = 8
     Top = 64
   end

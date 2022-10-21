@@ -17,7 +17,6 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
            Application->Title = "(@)^(@)";
            Application->CreateForm(__classid(TBaseForm), &BaseForm);
            Application->CreateForm(__classid(TGraphicForm), &GraphicForm);
-           Application->CreateForm(__classid(TEnterDataForm), &EnterDataForm);
            Application->CreateForm(__classid(TOptionsForm), &OptionsForm);
            Application->Run();
      }

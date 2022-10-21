@@ -12,8 +12,8 @@
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) MainSource.dfm About.dfm Graphic.dfm EnterData.dfm Options.dfm"/>
     <LIBFILES value=""/>
-    <LIBRARIES value="rtl.lib vcl.lib"/>
-    <SPARELIBS value="vcl.lib rtl.lib"/>
+    <LIBRARIES value="vclx.lib bcbsmp.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib bcbsmp.lib vclx.lib"/>
     <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
       vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi 
       visualclx.bpi visualdbclx.bpi dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi 
@@ -72,9 +72,9 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=2
-MinorVer=7
+MinorVer=8
 Release=0
-Build=14
+Build=15
 Debug=0
 PreRelease=1
 Special=0
@@ -86,13 +86,13 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Оптимизация запуска деталей в производство
-FileVersion=2.7.0.14
+FileVersion=2.8.0.15
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Дипломная работа
-ProductVersion=2.7
+ProductVersion=2.8
 Comments=mail:  psylonaut@mail.ru
 
 [Debugging]

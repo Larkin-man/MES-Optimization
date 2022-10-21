@@ -17,27 +17,30 @@ __fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TEnterDataForm::Edit1Change(TObject *Sender)
-{
-//SpeedButton1->Enabled=Edit1->Text.operator!=("");
-}
-//---------------------------------------------------------------------------
-
 void __fastcall TEnterDataForm::FormShow(TObject *Sender)
 {
-Field1->Text="";
-Field2->Text="";
-Field1->SetFocus();
+     if (BitBtnOkResize->Visible)
+     {
+          EnterDataForm->Field1->EditLabel->Caption="Кол-во строк";
+          EnterDataForm->Field2->EditLabel->Caption="Кол-во столбцов";
+          Field1->Text="";
+          Field2->Text="";
+     }
+     if (BitBtnOkRandom->Visible)
+     {
+          EnterDataForm->Field1->EditLabel->Caption="Кол-во деталей";
+          EnterDataForm->Field2->EditLabel->Caption="Кол-во станков";
+          Field1->Text="4";
+          Field2->Text="3";
+     }
+     BitBtnOkResize->Default=BitBtnOkResize->Visible;
+     BitBtnOkRandom->Default=BitBtnOkRandom->Visible;
+     Field1->SetFocus();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TEnterDataForm::Field1Change(TObject *Sender)
-{
-//     SpeedButton1->Enabled=(StrToInt(Form2->Field1->Text) >0);
-}
-//---------------------------------------------------------------------------
 
-void __fastcall TEnterDataForm::BitBtn1Click(TObject *Sender)
+void __fastcall TEnterDataForm::BitBtnOkResizeClick(TObject *Sender)
 {
      if (EnterDataForm->Field1->Text.operator!=(""))
           BaseForm->Table->RowCount=StrToInt(EnterDataForm->Field1->Text)+1;
@@ -54,6 +57,23 @@ void __fastcall TEnterDataForm::BitBtn1Click(TObject *Sender)
 void __fastcall TEnterDataForm::BitBtn2Click(TObject *Sender)
 {
      Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEnterDataForm::BitBtnOkRandomClick(TObject *Sender)
+{
+     for (int i=1;i<BaseForm->Table->RowCount;i++)
+          for (int j=1;j<BaseForm->Table->ColCount;j++)
+               BaseForm->Table->Cells[j][i]="";
+     BaseForm->M=StrToInt(EnterDataForm->Field1->Text);
+     BaseForm->N=StrToInt(EnterDataForm->Field2->Text);
+     srand(time(NULL));
+	for (int i = 1; i < BaseForm->M+1; i++)
+          for (int j = 1; j < BaseForm->N+1; j++)
+	     {
+		     BaseForm->Table->Cells[j][i] = rand() % 10 + 1;  //1-10
+	     }
+     BaseForm->Ready();
 }
 //---------------------------------------------------------------------------
 

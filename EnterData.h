@@ -9,19 +9,21 @@
 #include <Forms.hpp>
 #include <Buttons.hpp>
 #include <ExtCtrls.hpp>
+#include <time.h>
+#include <stdlib.h>
 //---------------------------------------------------------------------------
 class TEnterDataForm : public TForm
 {
 __published:	// IDE-managed Components
      TLabeledEdit *Field1;
      TLabeledEdit *Field2;
-     TBitBtn *BitBtn1;
+     TBitBtn *BitBtnOkResize;
      TBitBtn *BitBtn2;
-        void __fastcall Edit1Change(TObject *Sender);
+     TBitBtn *BitBtnOkRandom;
         void __fastcall FormShow(TObject *Sender);
-     void __fastcall Field1Change(TObject *Sender);
-     void __fastcall BitBtn1Click(TObject *Sender);
+     void __fastcall BitBtnOkResizeClick(TObject *Sender);
      void __fastcall BitBtn2Click(TObject *Sender);
+     void __fastcall BitBtnOkRandomClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TEnterDataForm(TComponent* Owner);

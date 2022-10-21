@@ -23,19 +23,20 @@ __published:	// IDE-managed Components
      TImage *gant;
      TControlBar *ControlBar1;
      TTrackBar *TrackBar1;
-     TSpeedButton *SpeedButton1;
-     TBitBtn *BitBtn1;
      TSpeedButton *SpeedButton2;
-     TColorDialog *ColorDialog1;
+     TColorDialog *GantBrushColor;
      TSpeedButton *SpeedButton3;
      TSavePictureDialog *SavePictureDialog1;
+     TColorBox *ColorBox1;
+     TBitBtn *BitBtn1;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall SpeedButton2Click(TObject *Sender);
      void __fastcall SpeedButton3Click(TObject *Sender);
+     void __fastcall FormShow(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-     Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
+     //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
      __fastcall TGraphicForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

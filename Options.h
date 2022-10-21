@@ -25,11 +25,13 @@ __published:	// IDE-managed Components
      TBitBtn *BitBtn1;
      TBitBtn *BitBtn2;
      TLabel *Label1;
-     TRadioGroup *RadioGroupGant;
      TRadioGroup *RadioGroupFi;
+     TRadioGroup *RadioGroupGant;
+     TCheckBox *WorkTimeOut;
      void __fastcall NoOutClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
      void __fastcall RadioGroupFiClick(TObject *Sender);
+     void __fastcall WorkTimeOutClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
      __fastcall TOptionsForm(TComponent* Owner);
