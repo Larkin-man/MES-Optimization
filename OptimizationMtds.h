@@ -1,11 +1,11 @@
-/****************************************************************/
-/*******Optimization metods h - library version 2.0**************/
-/*******Aleksey Aponasenko ©   **********************************/
-/*******2012 All Rights Reserved ®*******************************/
-/*******The author is not responsible for any mistakes,**********/
-/*******found in this program************************************/
-/*******or for inapropriate use of it or any of its parts.*******/
-/****************************************************************/
+/*************************************************************\
+*      Optimization metods h - library version 2.0            *
+*      Aleksey Aponasenko ©                                   *
+*      2012 All Rights Reserved ®                             *
+*      The author is not responsible for any mistakes,        *
+*      found in this program                                  *
+*      or for inapropriate use of it or any of its parts.     *
+\*************************************************************/
 
 #ifndef OptimizationMtdsH
 #define OptimizationMtdsH
@@ -23,10 +23,11 @@ MachineOptimizer()
      Optimal=NULL;
      OptimalEnd=NULL;
      Linker=NULL;
-     PSBegin=NULL;
-     PSEnd=NULL;
-     SortBegin=NULL;
-     SortEnd=NULL;
+     for (int i=0;i<4;i++)
+          {
+               PSBegin[i]=NULL;
+               PSEnd[i]=NULL;
+          }
 }
 
      struct Node    //Станок
@@ -45,24 +46,27 @@ MachineOptimizer()
      *InitEnd,      //Конец списка иходных деталей
      *Optimal,      //Начало списка деталей по Джонсону
      *OptimalEnd,   //Конец списка detals по Джонсону
-     *PSBegin,      //Начало списка деталей по Петрову-Соколицину
-     *PSEnd,        //Конец списка detals по Петрову-Соколицину
-     *Linker,       //Temp
-     *SortBegin,
-     *SortEnd;
+     *PSBegin[4],      //Начало списка деталей по Петрову-Соколицину
+     *PSEnd[4],        //Конец списка detals по Петрову-Соколицину
+     *Linker;       //Temp
 
 ~MachineOptimizer()
 {
-     if (N==0) return;
-     for (Link *Item = InitBegin;Item!=NULL;Item=Item->next)
-          delete Item->curr;
-
-     if (Optimal != NULL)
-          DeleteList(Optimal);
-     if (PSBegin != NULL)
-          DeleteList(PSBegin);
-     //ShowMessage("Данные удалены!");
+     //ShowMessage("Деструктор запущен");
+     //Удаление всех списков
      DeleteList(InitBegin);
+     for (int i = 0;i < 4; i++)
+          DeleteList(PSBegin[i]);
+
+     for (int i = 0;i < 4; i++)
+          if (PSBegin[i] != NULL)
+               DeleteLinks(PSBegin[i]);
+     if (Optimal != NULL)
+          DeleteLinks(Optimal);
+
+     if (InitBegin != NULL)
+          DeleteLinks(InitBegin);
+     //ShowMessage("Данные удалены!");
 }
 
 
@@ -73,7 +77,6 @@ void add(int m,int *time)  //Добавление станка
      N++;
      Node *Item = CreateItem(m,N,time);
      //InitEnd = CreateLink(InitBegin,Item,InitEnd);
-     //Ii iiaiio ia?aco
      Link *pLink = new Link;       //TODO: to issue as function
      pLink->next=NULL;
      pLink->curr=Item;
@@ -89,7 +92,7 @@ void add(int m,int *time)  //Добавление станка
 void DjonsonRun()      //For two machines
 {
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next) 
-     {                                    //TODO: to issue as function!bleat'
+     {                                    //TODO: to issue as function!
           Link *pLink = new Link;
           pLink->next=NULL;
           pLink->curr=Linker->curr;  //But not to copy of NODE ! only Link
@@ -103,7 +106,7 @@ void DjonsonRun()      //For two machines
 
      //CreateLink(InitBegin,Linker->curr,InitEnd);
      Linker = Optimal;          //
-     Node *Item = CreateItem(2,0,NULL);    //TODO: found them and delete
+     Node *Item = CreateItem(2,0,NULL);    //TODO: found them and delete ?
      Link *pLink = new Link;
      pLink->next=NULL;
      pLink->prev=NULL;                     
@@ -164,13 +167,12 @@ void DjonsonRun()      //For two machines
 
 void PetrovSokolRun()
 {
-     //TODO: To paste here copying of 'link'
      int S[3];
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
-     {
-          S[0]=0;
-          S[1]=0;
-          S[2]=0;
+     {             //Формирование матрицы сумм
+          S[0]=0;  //Первый столбец - Сумма кроме последнего станка
+          S[1]=0;  //Второй столбец - Сумма кроме первого станка
+          S[2]=0;  //Третий столбец - Разность второго и первого
           for (int i=0;i<M;i++)
           {
                if (i!=(M-1))
@@ -179,55 +181,61 @@ void PetrovSokolRun()
                     S[1]+=Linker->curr->T[i];
           }
           S[2]=S[1]-S[0];
-          Node *Item = CreateItem(3,Linker->curr->n,S);
-          Link *pLink = new Link;       //TODO: to issue as function
-          pLink->next=NULL;
-          pLink->curr=Item;
-          pLink->prev=Linker;  //un-dilon us-tilan
-          if (PSBegin == NULL)
-               PSBegin = pLink;  //set the begin of initial list
-          else
-               PSEnd->next=pLink;
-          PSEnd = pLink;         //The end is always equal to a new item (Insert in the end of list)
-          //pLink->prev->next=pLink;       */
+          for (int i=0;i<4;i++)
+          {
+               Node *Item = CreateItem(3,Linker->curr->n,S);     //TODO : To remove from cycle!
+               Link *pLink = new Link;       //TODO: to issue as function
+               pLink->next=NULL;
+               pLink->curr=Item;
+               pLink->prev=Linker;  //
+               if (PSBegin[i] == NULL)
+                    PSBegin[i] = pLink;  //set the begin of initial list
+               else
+                    PSEnd[i]->next=pLink;
+               PSEnd[i] = pLink;         //The end is always equal to a new item (Insert in the end of list)
+          }
      }
 
-     Link *minimal;
-     Link *PetrovSokol = PSBegin;
-     //SortBegin=PSBegin;
      Link *Temp = new Link;
-     for (int i=0;i<N;i++)  //Oeee ii anai noaieai
+     for (int j = 1;j<4;j++)
      {
-          minimal=PetrovSokol;
-          for (Linker = PetrovSokol->next;Linker!=NULL;Linker=Linker->next)
+          Link *minimal;
+          Link *PetrovSokol = PSBegin[j];
+          for (int i=0;i<N;i++)  //Cycle on all machines (stankam)
           {
-               if (Linker->curr->T[0] == minimal->curr->T[0])
+               minimal=PetrovSokol;
+               for (Linker = PetrovSokol->next;Linker!=NULL;Linker=Linker->next)
                {
-                    //ShowMessage("Равны: "+IntToStr(minimal->curr->n)+" и "+IntToStr(Linker->curr->n));
-                    if (Linker->curr->n > minimal->curr->n)
-                         continue;
-               }   //*/
+                    if (Linker->curr->T[j-1] == minimal->curr->T[j-1])
+                    {
+                         //Если минимальных два - предпочтение станку с меньшим номером
+                         if (Linker->curr->n > minimal->curr->n)
+                              continue;
+                    }   //*/
 
-               if (Linker->curr->T[0] <= minimal->curr->T[0])
-               {
-                    //if (Linker->curr->n > minimal->curr->n)
-                         minimal=Linker;
+                    if (YANISH(Linker->curr->T[j-1],minimal->curr->T[j-1],j))
+                    {
+                              minimal=Linker;
+                    }
                }
+
+               if (PetrovSokol != minimal)
+               {
+                    //Меняем местами указатели
+                    //ShowMessage("Меняем: "+IntToStr(minimal->curr->T[0])+" и "+IntToStr(PetrovSokol->curr->T[0]));
+                    Temp->curr=minimal->curr;
+                    Temp->prev=minimal->prev;
+                    minimal->curr=PetrovSokol->curr;
+                    minimal->prev=PetrovSokol->prev;
+                    PetrovSokol->curr=Temp->curr;
+                    PetrovSokol->prev=Temp->prev;
+               }
+
+               PetrovSokol=PetrovSokol->next;
           }
 
-          if (PetrovSokol !=minimal)
-          {
-               //ShowMessage("Меняем: "+IntToStr(minimal->curr->T[0])+" и "+IntToStr(PetrovSokol->curr->T[0]));
-               Temp->curr=minimal->curr;
-               Temp->prev=minimal->prev;
-               minimal->curr=PetrovSokol->curr;
-               minimal->prev=PetrovSokol->prev;
-               PetrovSokol->curr=Temp->curr;
-               PetrovSokol->prev=Temp->prev;
-          }
-
-          PetrovSokol=PetrovSokol->next;
-     } 
+     }//for j
+     delete Temp;
 
 }
 
@@ -262,7 +270,7 @@ Link *CreateLink (Link *Begin, Node *Item, Link *End)
      if (Begin == NULL)
           Begin = pLink;  //set the begin of initial list
      else
-          return End;
+          return End;    //Ниполучается у Меня хоть тресни работать с указателем на указатель
      return NULL;
 }
 
@@ -275,13 +283,28 @@ void concatenate(Link *parent, Link *Item)  //REMARKABLE!
           Item->prev=parent;
 }
 
-void DeleteList (Link *Item)
+bool YANISH(int linker, int min,int J)
+{              //Функция сравнивает два числа - нужна для сортировки по ПС
+     if (J == 1)
+     {
+          return linker <= min;  //Sorting according increase
+     }
+     return linker >= min;       //Sorting according decrease
+}
+
+void DeleteLinks (Link *Item)
 {               //Функция удаляет список
    if (Item->next != NULL)
    {
-      DeleteList (Item->next);
+      DeleteLinks (Item->next);
    }
    delete Item;
+}
+void DeleteList (Link *Item)
+{
+     if (Item == NULL) return;
+     for (;Item!=NULL;Item=Item->next)
+          delete Item->curr;
 }
 
 };

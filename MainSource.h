@@ -13,74 +13,63 @@
 #include <Dialogs.hpp>
 #include <ComCtrls.hpp>
 #include <Buttons.hpp>
-#include "About.h"
+#include "About.h" 
 #include "OptimizationMtds.h"
 #include <math.h>
 #include <ToolWin.hpp>
 #include <ExtDlgs.hpp>
 #include <Grids.hpp>
+#include "Graphic.h"
 //---------------------------------------------------------------------------
 
 #define max(A,B) (A>B ? A : B)
-MachineOptimizer *Optimizer = new MachineOptimizer;
+MachineOptimizer *Optimizer;// = new MachineOptimizer;
 
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components
      TMainMenu *MainMenu1;
-     TPopupMenu *PopupMenu1;
-     TMenuItem *N1;
-     TMenuItem *N2;
-     TMenuItem *N3;
-     TMenuItem *N4;
-     TMenuItem *N5;
-     TMenuItem *N6;
-     TMenuItem *N7;
-     TMenuItem *N8;
-     TMenuItem *N9;
-     TMenuItem *N10;
+     TPopupMenu *PopupMenuMemo;
+     TMenuItem *NMenuFile;
+     TMenuItem *NOpen;
+     TMenuItem *NSave;
+     TMenuItem *NExit;
+     TMenuItem *NMenuEdit;
+     TMenuItem *NMenuView;
+     TMenuItem *NFont;
+     TMenuItem *NViewOne;
      TMenuItem *N11;
      TMenuItem *N12;
-     TListBox *ListBox1;
-     TLabel *Xsl;
-     TListBox *ListBox2;
-     TLabel *Ysl;
      TPanel *Panel1;
      TEdit *Edit3;
      TLabel *Label4;
      TLabel *Label5;
      TLabel *Label6;
      TEdit *Edit4;
-     TMenuItem *N13;
+     TMenuItem *NNew;
      TLabel *Label7;
      TOpenDialog *OpenDialog1;
      TSaveDialog *SaveDialog1;
      TFontDialog *FontDialog1;
      TStatusBar *StatusBar1;
-     TMenuItem *N14;
-     TMemo *Memo1;
+     TMemo *Output;
      TMenuItem *N15;
-     TMenuItem *N16;
-     TMenuItem *N17;
-     TMenuItem *N18;
-     TMenuItem *N19;
+     TMenuItem *NAdd;
+     TMenuItem *NDel;
+     TMenuItem *NMenuHelp;
+     TMenuItem *NAbout;
      TBitBtn *BitBtn1;
-     TMenuItem *N20;
-     TPopupMenu *PopupMenu2;
-     TMenuItem *N21;
-     TMenuItem *N22;
-     TMenuItem *N23;
-     TMenuItem *U1;
+     TMenuItem *NViewTwo;
      TLabel *Label2;
      TLabel *Label3;
      TRadioGroup *RadioGroup1;
-     TSpeedButton *SpeedButton5;
-     TSpeedButton *SpeedButton4;
-     TSpeedButton *SpeedButton6;
-     TSpeedButton *SpeedButton7;
+     TSpeedButton *SaveBtn;
+     TSpeedButton *NewBtn;
+     TSpeedButton *AddBtn;
+     TSpeedButton *DelBtn;
      TBevel *Bevel1;
-     TSpeedButton *SpeedButton3;
-     TPopupMenu *PopupMenu3;
+     TSpeedButton *OpenBtn;
+     TPopupMenu *PopupMenuGant;
      TMenuItem *N25;
      TMenuItem *N26;
      TMenuItem *N27;
@@ -88,57 +77,57 @@ __published:	// IDE-managed Components
      TTrackBar *TrackBar1;
      TColorDialog *ColorDialog1;
      TBevel *Bevel2;
-     TMenuItem *N29;
-     TMenuItem *N30;
-     TMenuItem *N31;
+     TMenuItem *NMenuOptimiize;
+     TMenuItem *NOptSwitch;
+     TMenuItem *NOptSimulate;
      TFontDialog *FontDialog2;
-     TSpeedButton *RUN;
+     TSpeedButton *RunBtn;
      TBevel *Bevel3;
      TStringGrid *StringGrid1;
-     TSpeedButton *SpeedButton1;
-     void __fastcall N4Click(TObject *Sender);
-     void __fastcall N13Click(TObject *Sender);
-     void __fastcall N2Click(TObject *Sender);
-     void __fastcall N3Click(TObject *Sender);
-     void __fastcall N7Click(TObject *Sender);
-     void __fastcall N14Click(TObject *Sender);
+     TSpeedButton *OptimizationBtn;
+     TMenuItem *N21;
+     TSpeedButton *GantBtn;
+     TMenuItem *N9;
+     TPopupMenu *PopupMenuGrid;
+     TMenuItem *N1;
+
+     void __fastcall NExitClick(TObject *Sender);
+     void __fastcall NOpenClick(TObject *Sender);
+     void __fastcall NSaveClick(TObject *Sender);
+     void __fastcall NFontClick(TObject *Sender);
      void __fastcall N15Click(TObject *Sender);
-     void __fastcall N8Click(TObject *Sender);
-     void __fastcall N17Click(TObject *Sender);
-     void __fastcall N19Click(TObject *Sender);
+     void __fastcall NViewOneClick(TObject *Sender);
+     void __fastcall NAboutClick(TObject *Sender);
      void __fastcall BitBtn1Click(TObject *Sender);
-     void __fastcall N20Click(TObject *Sender);
+     void __fastcall NViewTwoClick(TObject *Sender);
      void __fastcall Edit3KeyDown(TObject *Sender, WORD &Key,
           TShiftState Shift);
      void __fastcall Edit4KeyDown(TObject *Sender, WORD &Key,
           TShiftState Shift);
-     void __fastcall N21Click(TObject *Sender);
-     void __fastcall N23Click(TObject *Sender);
-     void __fastcall N22Click(TObject *Sender);
      void __fastcall N12Click(TObject *Sender);
      void __fastcall FormPaint(TObject *Sender);
      void __fastcall N25Click(TObject *Sender);
      void __fastcall N27Click(TObject *Sender);
      void __fastcall N28Click(TObject *Sender);
      void __fastcall TrackBar1Change(TObject *Sender);
-     void __fastcall N30Click(TObject *Sender);
-     void __fastcall RUNClick(TObject *Sender);
+     void __fastcall NOptSwitchClick(TObject *Sender);
+     void __fastcall RunBtnClick(TObject *Sender);
      void __fastcall RadioGroup1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+     void __fastcall NewBtnClick(TObject *Sender);
+     void __fastcall GantBtnClick(TObject *Sender);
+     void __fastcall N1Click(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
-     void __fastcall F1(char c);
-     int ij;
-
 
 public:		// User declarations
 
-     int n,m,detal,vt,scale,nDet,del;
-	double a,b;
+     int detal,vt,scale;
      double min[2];
      double SA,XC;
      bool graphik,ultima;
      int *top;
+     int N,M;
 
      __fastcall TForm1(TComponent* Owner);  //Объявление конструктора
 
@@ -146,14 +135,10 @@ public:		// User declarations
 
 void view() //Проверка видимости элементов
 {
-     Memo1->Visible=N8->Checked;
-     Panel1->Visible=N20->Checked;
-     RUN->Enabled=(RadioGroup1->ItemIndex!=-1);
-     StringGrid1->Visible=(RadioGroup1->ItemIndex!=0);
-     Xsl->Visible=(RadioGroup1->ItemIndex==0);
-     Ysl->Visible=(RadioGroup1->ItemIndex==0);
-     ListBox1->Visible=(RadioGroup1->ItemIndex==0);
-     ListBox2->Visible=(RadioGroup1->ItemIndex==0);
+     //Output->Visible=N8->Checked;
+     Panel1->Visible=NViewTwo->Checked;
+     RunBtn->Enabled=(RadioGroup1->ItemIndex!=-1);
+
 }
 
 
@@ -161,8 +146,8 @@ void paint(MachineOptimizer::Link *list)
 {
      for(;list != NULL;list = list->next)
      {
-     //Memo1->Lines->Add(list->curr->n);
-     Memo1->Text=Memo1->Text+" "+FloatToStr(list->curr->T[0]);
+     //Output->Lines->Add(list->curr->n);
+     Output->Text=Output->Text+" "+FloatToStr(list->curr->n);
      }
 }
 
@@ -171,21 +156,19 @@ void PrintMatrix(MachineOptimizer::Link *list,int m,bool prev)
      if (list != NULL)
      {
           if (!prev)
-          {
-               Memo1->Lines->Add(IntToStr(list->curr->n)+"  |  ");
+          {      
+               Output->Lines->Add(IntToStr(list->curr->n)+"  |  ");
                for (int i = 0;i<m;i++)
-                    Memo1->Text=Memo1->Text+IntToStr(list->curr->T[i])+"  ";
-               list = list->next;
-               PrintMatrix(list,m,prev);
+                    Output->Text=Output->Text+IntToStr(list->curr->T[i])+"  ";   
           }
           else
           {
-               Memo1->Lines->Add(IntToStr(list->prev->curr->n)+"  |  ");
+               Output->Lines->Add(IntToStr(list->prev->curr->n)+"  |  ");
                for (int i = 0;i<m;i++)
-                    Memo1->Text=Memo1->Text+IntToStr(list->prev->curr->T[i])+"  ";
-               list = list->next;
-               PrintMatrix(list,m,prev);
+                    Output->Text=Output->Text+IntToStr(list->prev->curr->T[i])+"  ";
           }
+          list = list->next;
+          PrintMatrix(list,m,prev);
      }
 }
 
@@ -193,10 +176,10 @@ void PrintMatrixPS(MachineOptimizer::Link *list,int m,int one,int left)
 {
      if (list != NULL)
      {
-          Memo1->Lines->Add(IntToStr(list->curr->n)+"  |  ");
+          Output->Lines->Add(IntToStr(list->curr->n)+"  |  ");
           one+=list->prev->curr->T[0];
           //ShowMessage("one = "+IntToStr(list->prev->curr->T[1]));
-          Memo1->Text=Memo1->Text+IntToStr(one)+"  ";
+          Output->Text=Output->Text+IntToStr(one)+"  ";
           left = one;
           int S=0;
           for (int i = 1;i<m;i++)
@@ -218,7 +201,7 @@ void PrintMatrixPS(MachineOptimizer::Link *list,int m,int one,int left)
 
                }
                //ShowMessage("S = "+IntToStr(S));
-               Memo1->Text=Memo1->Text+IntToStr(S)+"  ";
+               Output->Text=Output->Text+IntToStr(S)+"  ";
           }
           list = list->next;
           PrintMatrixPS(list,m,one,left);
@@ -229,8 +212,8 @@ void paintn(MachineOptimizer::Link *list)
 {
      for(;list != NULL;list = list->next)
      {
-     //Memo1->Lines->Add(list->curr->n);
-     Memo1->Text=Memo1->Text+" "+FloatToStr(list->curr->n);
+     //Output->Lines->Add(list->curr->n);
+     Output->Text=Output->Text+" "+FloatToStr(list->curr->n);
      }
 }
 
@@ -238,8 +221,8 @@ void paintUUU(MachineOptimizer::Link *list)
 {
      for(;list != NULL;list = list->next)
      {
-     //Memo1->Lines->Add(list->curr->n);
-     Memo1->Text=Memo1->Text+" "+FloatToStr(list->prev->curr->T[0]);
+     //Output->Lines->Add(list->curr->n);
+     Output->Text=Output->Text+" "+FloatToStr(list->prev->curr->T[0]);
      }
 }
 
@@ -250,6 +233,7 @@ void PaintBlock(MachineOptimizer::Link *Item)
      {
           SA+=Item->curr->T[0];
           Label2->Canvas->Rectangle((SA-Item->curr->T[0])*scale,vt,SA*scale,vt+30);
+          Form3->gant->Canvas->Rectangle((SA-Item->curr->T[0])*scale,vt,SA*scale,vt+30);
           XC = (SA >= XC)? SA+Item->curr->T[1] : XC+Item->curr->T[1];
           Label2->Canvas->Rectangle((XC-Item->curr->T[1])*scale,vt+40,XC*scale,vt+70);
           Label2->Canvas->TextOut((SA-Item->curr->T[0])*scale+6,vt+6,Item->curr->n);
@@ -261,10 +245,16 @@ void PaintBlock(MachineOptimizer::Link *Item)
 
 void PaintGant()
 {
-     if (Optimizer->Optimal == NULL) return;
-     Label2->Repaint();
+     if (!graphik) return;
+     //if (Optimizer == NULL) return;
+     Label2->Repaint();    //TODO: repaint ?
      Label2->Canvas->Pen->Width=1;
      Label2->Canvas->TextOut(5,5,"Исходные данные:");
+
+     Form3->gant->Repaint();
+     Form3->gant->Canvas->Pen->Width=1;
+     Form3->gant->Canvas->TextOut(5,5,"Исходные данные:");
+
      vt=30;
      PaintBlock(Optimizer->InitBegin);
 
@@ -304,43 +294,27 @@ void PaintGant()
           ///Label2->Canvas->TextOut(130,vt+75,XC);
      } */
 }
-     /*
-void DeleteList (Node *Item)
-{               //Функция удаляет список
-     del++;
-   if (Item->Next != NULL)
-   {
-      DeleteList (Item->Next);
-   }
-   ListBox2->Items->Add(Item->B);
-   delete Item;
-   Item = NULL;
-   ListBox1->Items->Add(Item->B);
-}           */
 
 void DjonsonRun()
 {
-     (ListBox1->Items->Count)>(ListBox2->Items->Count) ? m = ListBox2->Items->Count : m = ListBox1->Items->Count;
-
-     //m = point-1;
-     StatusBar1->SimpleText=("DjonsonRun");
-
+     StatusBar1->Panels->Items[0]->Text=("Алгоритм Джонсона для двух станков");
+     graphik = false;
+     delete Optimizer;
+     Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
      int T[2];
 
-     for (int i=0;i<m;i++)
+     for (int i=1;i<N+1;i++)
      {
-          T[0]=atoi(ListBox1->Items->Strings[i].c_str());
-          T[1]=atoi(ListBox2->Items->Strings[i].c_str());
+          T[0]=atoi(StringGrid1->Cells[1][i].c_str());
+          T[1]=atoi(StringGrid1->Cells[M][i].c_str());
           Optimizer->add(2,T);
      }
-
-
-          Optimizer->DjonsonRun();
-          Memo1->Lines->Add("Исходная последовательность:");
+          Optimizer->DjonsonRun();  //Запуск алгоритма джонсона
+          Output->Lines->Add("Исходная последовательность:");
 
           //MachineOptimizer::Link *list = Optimizer->InitBegin;
           paint(Optimizer->InitBegin);
-          Memo1->Lines->Add("Оптимальная последовательность запуска деталей:");
+          Output->Lines->Add("Оптимальная последовательность запуска деталей:");
           paint(Optimizer->Optimal);
 
      graphik = true;
@@ -349,34 +323,63 @@ void DjonsonRun()
 
 void PetrovSokolRun()
 {
-     //Memo1->Lines->Add(StringGrid1->Rows[2]);
-     //Memo1->Lines->Add(StringGrid1->Cells[4][1]);
-     m=StringGrid1->ColCount-1;
-     int *T = new int[m];
-     for (int i = 1;i<StringGrid1->RowCount;i++)
+     StatusBar1->Panels->Items[0]->Text=("Метод Петрова-Соколицина");
+     graphik = false;
+     delete Optimizer;
+     Optimizer = new MachineOptimizer;
+     int *T = new int[M];
+     for (int i = 1;i<N+1;i++)      //i<StringGrid1->RowCount
      {
-          for (int j = 1;j<StringGrid1->ColCount;j++)
+          for (int j = 1;j<M+1;j++)     //j<StringGrid1->ColCount
           {
                T[j-1]=atof(StringGrid1->Cells[j][i].c_str());
           }
           //for (int k=0;k<StringGrid1->ColCount-1;k++)
           Optimizer->add(4,T);
      }
-     Memo1->Lines->Add("INPUT:");
-     PrintMatrix(Optimizer->InitBegin,4,false);
+     Output->Lines->Add("Исходная матрица:");
+     PrintMatrix(Optimizer->InitBegin,M,false);
+     Output->Lines->Add(" ");
+     
+     Optimizer->PetrovSokolRun();   //Запуск алгоритма Петрова-Соколицина
+     top = new int[M];
 
-     Optimizer->PetrovSokolRun();
+     Output->Lines->Add("Матрица сумм:");
+     PrintMatrix(Optimizer->PSBegin[0],3,false);
+     Output->Lines->Add(" ");
 
-     Memo1->Lines->Add("PSBEGIN:");
-     PrintMatrix(Optimizer->PSBegin,3,false);
-     Memo1->Lines->Add("PSBEGIN PREV:");
-     PrintMatrix(Optimizer->PSBegin,4,true);
-     Memo1->Lines->Add("MATRIX PS:");
-     top = new int[4];
-     for (int i=0;i<4;i++)
+     Output->Lines->Add("Матрица 1:");
+     PrintMatrix(Optimizer->PSBegin[1],M,true);
+     Output->Lines->Add(" ");
+
+     for (int i=0;i<M;i++)
           top[i]=0;
-     PrintMatrixPS(Optimizer->PSBegin,4,0,0);
 
+     Output->Lines->Add("Матрица 1 Сроки окончания:");
+     PrintMatrixPS(Optimizer->PSBegin[1],M,0,0);
+     Output->Lines->Add(" ");
+
+     Output->Lines->Add("Матрица 2:");
+     PrintMatrix(Optimizer->PSBegin[2],M,true);
+     Output->Lines->Add(" ");
+
+     for (int i=0;i<M;i++)
+          top[i]=0;
+
+     Output->Lines->Add("Матрица 2 Сроки окончания:");
+     PrintMatrixPS(Optimizer->PSBegin[2],M,0,0);
+     Output->Lines->Add(" ");
+
+     Output->Lines->Add("Матрица 3:");
+     PrintMatrix(Optimizer->PSBegin[3],M,true);
+     Output->Lines->Add(" ");
+
+     for (int i=0;i<M;i++)
+          top[i]=0;
+
+     Output->Lines->Add("Матрица 3 Сроки окончания:");
+     PrintMatrixPS(Optimizer->PSBegin[3],M,0,0);
+     Output->Lines->Add("");
      //StatusBar1->SimpleText=("rowconub"+IntToStr(StringGrid1->RowCount)+" COLconub"+IntToStr(StringGrid1->ColCount));
 }
 

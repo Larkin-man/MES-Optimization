@@ -4,12 +4,12 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="MachineOptimizer.exe"/>
-    <OBJFILES value="MachineOptimizer.obj About.obj MainSource.obj"/>
+    <OBJFILES value="MachineOptimizer.obj About.obj MainSource.obj Graphic.obj"/>
     <RESFILES value="MachineOptimizer.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
-    <RESDEPEN value="$(RESFILES) About.dfm MainSource.dfm"/>
+    <RESDEPEN value="$(RESFILES) About.dfm MainSource.dfm Graphic.dfm"/>
     <LIBFILES value=""/>
     <LIBRARIES value="rtl.lib vcl.lib"/>
     <SPARELIBS value="vcl.lib rtl.lib"/>
@@ -58,7 +58,8 @@
       <FILE FILENAME="About.cpp" FORMNAME="AboutBox1" UNITNAME="About" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MainSource.cpp" FORMNAME="Form1" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="OptimizationMtds.h" FORMNAME="" UNITNAME="OptimizationMtds.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer.todo" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Graphic.cpp" FORMNAME="Form3" UNITNAME="Graphic" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -68,9 +69,9 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=2
-MinorVer=4
+MinorVer=5
 Release=0
-Build=9
+Build=11
 Debug=0
 PreRelease=1
 Special=0
@@ -82,13 +83,13 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Оптимизация запуска деталей в производство
-FileVersion=2.4.0.9
-InternalName=Mes Система
+FileVersion=2.5.0.11
+InternalName=MES Система
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=2.4
+ProductVersion=2.5
 Comments=mail:  psylonaut@mail.ru
 
 [HistoryLists\hlIncludePath]

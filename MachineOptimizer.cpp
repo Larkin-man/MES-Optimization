@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 USEFORM("About.cpp", AboutBox1);
 USEFORM("MainSource.cpp", Form1);
+USEFORM("Graphic.cpp", Form3);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -13,6 +14,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
            Application->Initialize();
            Application->Title = "(@)^(@)";
            Application->CreateForm(__classid(TForm1), &Form1);
+           Application->CreateForm(__classid(TForm3), &Form3);
            Application->Run();
      }
      catch (Exception &exception)

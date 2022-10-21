@@ -7,14 +7,16 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
+#include <ComCtrls.hpp>
+#include <ExtCtrls.hpp>
+#include <ToolWin.hpp>
 
 //---------------------------------------------------------------------------
 class TForm3 : public TForm
 {
 __published:	// IDE-managed Components
-     TLabel *Graph;
-     TButton *Button1;
-     void __fastcall Button1Click(TObject *Sender);
+     TCoolBar *CoolBar1;
+     TImage *gant;
 private:	// User declarations
 public:		// User declarations
      __fastcall TForm3(TComponent* Owner);
