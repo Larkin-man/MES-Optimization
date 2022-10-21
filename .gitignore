@@ -68,3 +68,8 @@ __recovery/
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
 input *.txt
+about *.txt
+*.ilc
+*.ild
+*.ilf
+*.ils

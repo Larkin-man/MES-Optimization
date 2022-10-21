@@ -1,4 +1,4 @@
-//------------файл реализации 2.1 ---------------------------------------------------------------
+//------------файл реализации---------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -33,6 +33,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
           {
           Form1->StringGrid1->Cells[0][i]=i;
           Form1->StringGrid1->Cells[i][0]=i;//"Станок №"+i;
+
           }
           //Memo1->Lines->Add("ColCount="+IntToStr(StringGrid1->ColCount));
 }
@@ -41,10 +42,6 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //Тут должны быть реализации всех функций,
 //объявленных в заголовочном файле
 //и других функций не объявленных ранее
-
-
-
-
 //ЗАКРЫТЬ
 void __fastcall TForm1::N4Click(TObject *Sender)
 {
@@ -57,7 +54,7 @@ void __fastcall TForm1::N4Click(TObject *Sender)
      Close();
      //Form1->Close();
 }
-
+//---------------------------------------------------------------------------
 //НАЧАТЬ ЗАНОВО
 void __fastcall TForm1::N13Click(TObject *Sender)
 {
@@ -65,12 +62,12 @@ void __fastcall TForm1::N13Click(TObject *Sender)
      ListBox2->Clear();
      Memo1->Clear();
      detal =1;
-     Label7->Caption=detal;
+     Label7->Caption=detal;          
                Memo1->Lines->Add(" optimal");
-               print(Optimal);
+               //print(Optimizer->Optimal);
                DeleteList(Optimal);
                Memo1->Lines->Add("deleted optimal");
-               print(Optimal);
+               //print(Optimizer->Optimal);
      //DeleteList(NotOptimal);
      /*if (Record != NULL)
 	{
@@ -369,7 +366,6 @@ void __fastcall TForm1::RUNClick(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
-
 
 void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
 {
