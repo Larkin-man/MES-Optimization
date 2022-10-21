@@ -4,12 +4,12 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="MachineOptimizer.exe"/>
-    <OBJFILES value="MachineOptimizer.obj About.obj MainSource.obj Graphic.obj"/>
+    <OBJFILES value="MainSource.obj About.obj MachineOptimizer.obj Graphic.obj EnterData.obj"/>
     <RESFILES value="MachineOptimizer.res"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
-    <RESDEPEN value="$(RESFILES) About.dfm MainSource.dfm Graphic.dfm"/>
+    <RESDEPEN value="$(RESFILES) MainSource.dfm About.dfm Graphic.dfm EnterData.dfm"/>
     <LIBFILES value=""/>
     <LIBRARIES value="rtl.lib vcl.lib"/>
     <SPARELIBS value="vcl.lib rtl.lib"/>
@@ -53,13 +53,14 @@
     <OTHERFILES value=""/>
   </LINKER>
   <FILELIST>
+      <FILE FILENAME="MainSource.cpp" FORMNAME="Form1" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="About.cpp" FORMNAME="AboutBox1" UNITNAME="About" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.res" FORMNAME="" UNITNAME="MachineOptimizer.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.cpp" FORMNAME="" UNITNAME="MachineOptimizer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="About.cpp" FORMNAME="AboutBox1" UNITNAME="About" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="MainSource.cpp" FORMNAME="Form1" UNITNAME="MainSource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="OptimizationMtds.h" FORMNAME="" UNITNAME="OptimizationMtds.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="MachineOptimizer.todo" FORMNAME="" UNITNAME="MachineOptimizer.todo" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="Graphic.cpp" FORMNAME="Form3" UNITNAME="Graphic" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EnterData.cpp" FORMNAME="Form2" UNITNAME="EnterData" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -69,9 +70,9 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=2
-MinorVer=5
+MinorVer=6
 Release=0
-Build=11
+Build=13
 Debug=0
 PreRelease=1
 Special=0
@@ -83,26 +84,14 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Оптимизация запуска деталей в производство
-FileVersion=2.5.0.11
-InternalName=MES Система
+FileVersion=2.6.0.13
+InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
-ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=2.5
+ProductName=Дипломная работа
+ProductVersion=2.6
 Comments=mail:  psylonaut@mail.ru
-
-[HistoryLists\hlIncludePath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
-
-[HistoryLists\hlLibraryPath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
-
-[HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

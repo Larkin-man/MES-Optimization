@@ -1,34 +1,33 @@
 //---------------------------------------------------------------------------
 
-#ifndef GraphicH
-#define GraphicH
+#ifndef EnterDataH
+#define EnterDataH
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
-#include <ComCtrls.hpp>
-#include <ExtCtrls.hpp>
-#include <ToolWin.hpp>
-#include <jpeg.hpp>
-#include <Graphics.hpp>
 #include <Buttons.hpp>
-
+#include <ExtCtrls.hpp>
 //---------------------------------------------------------------------------
-class TForm3 : public TForm
+class TForm2 : public TForm
 {
 __published:	// IDE-managed Components
-     TImage *gant;
-     TControlBar *ControlBar1;
-     TTrackBar *TrackBar1;
-     TBitBtn *BitBtn1;
-     void __fastcall BitBtn1Click(TObject *Sender);
+        TLabel *Label1;
+        TEdit *Edit1;
+        TSpeedButton *SpeedButton1;
+        TSpeedButton *SpeedButton2;
+     TLabeledEdit *Field1;
+     TLabeledEdit *Field2;
+        void __fastcall SpeedButton1Click(TObject *Sender);
+        void __fastcall SpeedButton2Click(TObject *Sender);
+        void __fastcall Edit1Change(TObject *Sender);
+        void __fastcall FormShow(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-     __fastcall TForm3(TComponent* Owner);
+        __fastcall TForm2(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm3 *Form3;
+extern PACKAGE TForm2 *Form2;
 //---------------------------------------------------------------------------
-
 #endif

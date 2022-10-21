@@ -18,4 +18,3 @@ MachineOptimizer.exe: MachineOptimizer.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
-

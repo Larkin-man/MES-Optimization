@@ -1,5 +1,5 @@
 /*************************************************************\
-*      Optimization metods h - library version 2.0            *
+*      Optimization metods h - library version 3.0            *
 *      Aleksey Aponasenko ©                                   *
 *      2012 All Rights Reserved ®                             *
 *      The author is not responsible for any mistakes,        *
@@ -16,13 +16,15 @@ public:
 
 MachineOptimizer()
 {
-     N=0;
-     M=100; //max
+     M=0;
+     N=100; //max
      InitBegin=NULL;
      InitEnd=NULL;
      Optimal=NULL;
      OptimalEnd=NULL;
      Linker=NULL;
+     C=NULL,
+     Cend=NULL;
      for (int i=0;i<4;i++)
           {
                PSBegin[i]=NULL;
@@ -30,25 +32,27 @@ MachineOptimizer()
           }
 }
 
-     struct Node    //Станок
+     struct Node    //Деталь
      {
-     int n;         //Номер детали
+     int m;         //Номер детали
      int *T;        //Массив длительностей обработки деталей
      };
 
      struct Link    //Cписок деталей
      {
-     Link *next;
-     Node *curr;
-     Link *prev;
+     Link *next;    //Следующий элемент
+     Node *curr;    //Текущая деталь
+     Link *prev;    //Предыдущий элемент
      }
      *InitBegin,    //Начало списка иходных деталей
      *InitEnd,      //Конец списка иходных деталей
      *Optimal,      //Начало списка деталей по Джонсону
      *OptimalEnd,   //Конец списка detals по Джонсону
-     *PSBegin[4],      //Начало списка деталей по Петрову-Соколицину
-     *PSEnd[4],        //Конец списка detals по Петрову-Соколицину
-     *Linker;       //Temp
+     *PSBegin[4],   //Начало списка деталей по Петрову-Соколицину
+     *PSEnd[4],     //Конец списка detals по Петрову-Соколицину
+     *Linker,       //Temp
+     *C,            //Матрица С для метода ветвей и границ
+     *Cend;         //end of C matrix
 
 ~MachineOptimizer()
 {
@@ -70,12 +74,12 @@ MachineOptimizer()
 }
 
 
-void add(int m,int *time)  //Добавление станка
+void add(int n,int *time)  //Добавление ДЕТАЛИ
 {
-     if (m<M)
-          M=m;
-     N++;
-     Node *Item = CreateItem(m,N,time);
+     if (n<N)
+          N=n;
+     M++;
+     Node *Item = CreateItem(n,M,time);
      //InitEnd = CreateLink(InitBegin,Item,InitEnd);
      Link *pLink = new Link;       //TODO: to issue as function
      pLink->next=NULL;
@@ -89,7 +93,7 @@ void add(int m,int *time)  //Добавление станка
           //pLink->prev->next=pLink;       */
 }
 
-void DjonsonRun()      //For two machines
+void DjonsonRun()      //For two machines  Fortune havor!
 {
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next) 
      {                                    //TODO: to issue as function!
@@ -116,7 +120,7 @@ void DjonsonRun()      //For two machines
      minimal[0]=NULL;
      minimal[1]=NULL;
      //Link *Linker = InitBegin;
-     for (int i=0;i<N-1;i++)  //Цикл по всем станкам
+     for (int i=0;i<M-1;i++)  //Цикл по всем станкам
      {
           min[0]=Linker->curr->T[0];   // ! minimal = first
           min[1]=Linker->curr->T[1];
@@ -158,7 +162,7 @@ void DjonsonRun()      //For two machines
      }
      Optimal->curr->T[0]=Linker->curr->T[0];
      Optimal->curr->T[1]=Linker->curr->T[1];
-     Optimal->curr->n=Linker->curr->n;
+     Optimal->curr->m=Linker->curr->m;
      //delete Linker->curr;
      //delete Linker;
      while(Optimal->prev != NULL)
@@ -173,9 +177,9 @@ void PetrovSokolRun()
           S[0]=0;  //Первый столбец - Сумма кроме последнего станка
           S[1]=0;  //Второй столбец - Сумма кроме первого станка
           S[2]=0;  //Третий столбец - Разность второго и первого
-          for (int i=0;i<M;i++)
+          for (int i=0;i<N;i++)
           {
-               if (i!=(M-1))
+               if (i!=(N-1))
                     S[0]+=Linker->curr->T[i];
                if (i!=0)
                     S[1]+=Linker->curr->T[i];
@@ -183,7 +187,7 @@ void PetrovSokolRun()
           S[2]=S[1]-S[0];
           for (int i=0;i<4;i++)
           {
-               Node *Item = CreateItem(3,Linker->curr->n,S);     //TODO : To remove from cycle!
+               Node *Item = CreateItem(3,Linker->curr->m,S);     //TODO : To remove from cycle!
                Link *pLink = new Link;       //TODO: to issue as function
                pLink->next=NULL;
                pLink->curr=Item;
@@ -201,7 +205,7 @@ void PetrovSokolRun()
      {
           Link *minimal;
           Link *PetrovSokol = PSBegin[j];
-          for (int i=0;i<N;i++)  //Cycle on all machines (stankam)
+          for (int i=0;i<M;i++)  //Cycle on all detals
           {
                minimal=PetrovSokol;
                for (Linker = PetrovSokol->next;Linker!=NULL;Linker=Linker->next)
@@ -209,7 +213,7 @@ void PetrovSokolRun()
                     if (Linker->curr->T[j-1] == minimal->curr->T[j-1])
                     {
                          //Если минимальных два - предпочтение станку с меньшим номером
-                         if (Linker->curr->n > minimal->curr->n)
+                         if (Linker->curr->m > minimal->curr->m)
                               continue;
                     }   //*/
 
@@ -233,9 +237,43 @@ void PetrovSokolRun()
 
                PetrovSokol=PetrovSokol->next;
           }
-
      }//for j
      delete Temp;
+}
+
+void MethodBHRun () //Method  of branches and hordes
+{
+     int
+          s,   //Текущий станок
+          d,   //Текущая деталь
+          o;   //Текущая очередность
+     for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
+     {
+          Link *pLink = new Link;
+          pLink->next=NULL;
+          // 1) Формирование матрицы С
+          Node *pItem = new Node;
+          pItem->T = new int[N];
+          pItem->m=Linker->curr->m;
+          int summ=0;
+          for (int i = 0 ;i<N;i++)
+          {
+               summ+=Linker->curr->T[i];
+               pItem->T[i]=summ;
+          }
+          pLink->curr=pItem;
+          pLink->prev=Cend;
+          if (C == NULL)
+               C = pLink;
+          else
+              Cend->next=pLink;
+          Cend = pLink;        
+     }
+     s=1; // 2.
+     o=1; // 3.
+     
+
+
 
 }
 
@@ -248,13 +286,13 @@ protected:
  
 //Node *CreateItem (int,int,int *time =NULL);
 
-Node *CreateItem (int m,int N,int *time)
+Node *CreateItem (int n,int M,int *time)
 {                //Функция создает новый элемент
      Node *pItem = new Node;
-     pItem->T = new int[m];
-     pItem->n=N;
-     if (time ==NULL) return pItem;
-     for (int i=0;i<m;i++)
+     pItem->T = new int[n];
+     pItem->m=M;
+     if (time == NULL) return pItem;
+     for (int i=0;i<n;i++)
      {
           pItem->T[i]=time[i];
      }
