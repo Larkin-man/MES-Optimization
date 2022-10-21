@@ -1,32 +1,39 @@
 //---------------------------------------------------------------------------
 
-#ifndef EnterDataH
-#define EnterDataH
+#ifndef OptionsH
+#define OptionsH
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
+#include <ComCtrls.hpp>
 #include <Buttons.hpp>
 #include <ExtCtrls.hpp>
 //---------------------------------------------------------------------------
-class TForm2 : public TForm
+class TForm4 : public TForm
 {
 __published:	// IDE-managed Components
-        TSpeedButton *SpeedButton1;
-        TSpeedButton *SpeedButton2;
-     TLabeledEdit *Field1;
-     TLabeledEdit *Field2;
-        void __fastcall SpeedButton1Click(TObject *Sender);
-        void __fastcall SpeedButton2Click(TObject *Sender);
-        void __fastcall Edit1Change(TObject *Sender);
-        void __fastcall FormShow(TObject *Sender);
-     void __fastcall Field1Change(TObject *Sender);
+     TPageControl *PageControl;
+     TTabSheet *TabSheet1;
+     TTabSheet *TabSheet2;
+     TCheckBox *Debug;
+     TRadioGroup *RadioGroupTime;
+     TTabSheet *TabSheet3;
+     TGroupBox *GroupBox1;
+     TCheckBox *NoOut;
+     TBitBtn *BitBtn1;
+     TBitBtn *BitBtn2;
+     TLabel *Label1;
+     TRadioGroup *RadioGroup2;
+     TRadioGroup *RadioGroup1;
+     void __fastcall NoOutClick(TObject *Sender);
+     void __fastcall FormShow(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-        __fastcall TForm2(TComponent* Owner);
+     __fastcall TForm4(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm2 *Form2;
+extern PACKAGE TForm4 *Form4;
 //---------------------------------------------------------------------------
 #endif

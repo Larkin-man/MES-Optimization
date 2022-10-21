@@ -7,20 +7,21 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 #include "EnterData.h"
+#define Djohnson 0
+#define PetrovSokol 1
+#define MethodVG 2
 
 TForm1 *Form1;
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner)
      : TForm(Owner)
 {    //при созданиии формы
-     Output->Text="";
+     Output->Clear();
      scale = 18;
-
      M=0;
      N=0;
      Label2->Caption="";
      NViewOne->Checked=true;
-     view();
      Output->SetBounds(464,64,418,306);
      graphik=false;
      ultima=false;
@@ -34,20 +35,14 @@ __fastcall TForm1::TForm1(TComponent* Owner)
      Form1->Table->RowHeights[0]=26;
      Form1->Table->ColWidths[0]=88;
      Form1->Table->Cells[0][0]="    Станок:";
+     view();
      //Строки - детали Столбцы - станки
      for (int i=1;i<Table->RowCount;i++)
           Form1->Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
      for (int j=1;j<Table->ColCount;j++)
           Form1->Table->Cells[j][0]=j;//"Станок №"+i;
           //Output->Lines->Add("ColCount="+IntToStr(Table->ColCount));
-}
-//---------------------------------------------------------------------------
-//ЗАКРЫТЬ
-void __fastcall TForm1::NExitClick(TObject *Sender)
-{
-     delete Optimizer;
-     Close();
-     //Form1->Close();
+     //Form1->SetFocus();
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
@@ -90,11 +85,13 @@ void __fastcall TForm1::NOpenClick(TObject *Sender)
                N=column;
                //Table->Cells[0][i+1]=i+1;
                Table->Cells[0][i+1]="Деталь " + IntToStr(i+1)+":";
-          }
+          }  
           M = pStrings->Count;
           //Form1->Output->Text=atof(Table->Cells[5][1].c_str());         
           StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
           StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
+          if (Form4->RadioGroupTime->ItemIndex != 2)
+               StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
           delete pStrings;
           NSave->Enabled=true;
      }
@@ -137,18 +134,6 @@ void __fastcall TForm1::NAboutClick(TObject *Sender)
      AboutBox1->Free();
 }
 //---------------------------------------------------------------------------
-//ДОБАВИТЬ
-void __fastcall TForm1::BitBtn1Click(TObject *Sender)
-{
-     char str[50], *vx;
-     //strcpy(str, Edit3->Text.c_str());
-     vx = strchr(str,',');              //замена запятой на точку
-     if (vx)
-          str[vx-str]='.';
-     //ListBox1->Items->Add(str);
-     StatusBar1->SimpleText=("");
-}
-//---------------------------------------------------------------------------
 //РАССЧЕТ
 void __fastcall TForm1::RunBtnClick(TObject *Sender)
 {
@@ -158,26 +143,49 @@ void __fastcall TForm1::RunBtnClick(TObject *Sender)
           Application->MessageBox ("Данные не введены", "Ошибка" , MB_ICONSTOP) ;
           return;
      }
+
+     delete Optimizer;   //TODO: Зачем Я удаляю ?
+     Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
+     int *T = new int[N];
+     for (int i = 1;i<M+1;i++)
+     {
+          for (int j = 1;j<N+1;j++)
+          {
+               T[j-1]=atof(Table->Cells[j][i].c_str());
+          }
+          Optimizer->add(N,T);
+     }
+     Output->Lines->Add("Исходная матрица:");
+     PrintMatrix(Optimizer->InitBegin,N,false);
+     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
+     Output->Lines->Add("");
+     Output->Lines->Add("");
      switch (RadioGroup1->ItemIndex)
      {
-          case 0:
+          case Djohnson:
                Output->Lines->Add("Алгоритм Джонсона");
+               Output->Lines->Add("");
                DjonsonAlgorithm();
                break;
-          case 1:
+          case PetrovSokol:
                Output->Lines->Add("Метод петрова-Соколицина");
+               Output->Lines->Add("");
                PetrovSokolMethod();
                break;
-          case 2:
+          case MethodVG:
                Output->Lines->Add("Метод ветвей и границ");
+               Output->Lines->Add("");
                MethodBH ();
                break;
           default:
                return;
      }
      Output->Lines->Add("");
+     Output->Lines->Add("----------------------------------------");
+     Output->Lines->Add("");
      OptimizationBtn->Enabled=true;
      GantBtn->Enabled=true;
+
 }
 //---------------------------------------------------------------------------
 //ОБЫЧНЫЙ ВИД
@@ -200,7 +208,6 @@ void __fastcall TForm1::NViewTwoClick(TObject *Sender)
      NViewTwo->Checked=true;
      NViewOne->Checked=false;
      Table->SetBounds(277,64,188,308);
-     //Table->ColWidths=2;
      Output->SetBounds(8,176,265,193);
      view();
 }
@@ -260,13 +267,23 @@ void __fastcall TForm1::NOptSwitchClick(TObject *Sender)
 //---------------------------------------------------------------------------
 //ВЫБОР АЛГОРИТМА
 void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
-{
+{    
      view();
+}
+//---------------------------------------------------------------------------
+//ЗАКРЫТЬ
+void __fastcall TForm1::NExitClick(TObject *Sender)
+{
+     //ShowMessage("close click");
+     //delete Optimizer;
+     Close();
+     //Form1->Close();
 }
 //---------------------------------------------------------------------------
 //ЗАКРЫТЬ ФОРМУ
 void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
 {
+     //ShowMessage("close form");
      delete Optimizer;
 }
 //---------------------------------------------------------------------------
@@ -307,6 +324,7 @@ void __fastcall TForm1::N1Click(TObject *Sender)
      Output->Lines->Add(Table->Top);
      Output->Lines->Add(Table->Height);
      Output->Lines->Add(Table->Width);
+     //Optimizer->MethodBHt(Form1->Output);
      //Table->Cols[2]->Delete(4);   //I dont understand
 }
 //---------------------------------------------------------------------------
@@ -319,18 +337,63 @@ void __fastcall TForm1::N2Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ИЗМЕНИТЬ РАЗМЕР ТАБЛИЦЫ
-void __fastcall TForm1::N3Click(TObject *Sender)
+void __fastcall TForm1::NSizeClick(TObject *Sender)
 {
-//port temp;
-Form2->Caption=("Изменение размера таблицы");
-Form2->Position=poMainFormCenter;
-Form2->ShowModal();       
-//if (CheckBox1->Checked)
-// {
-// strcpy(temp.city,Form2->Edit1->Text.c_str());
-// AddA(temp);
-// PrintListA();
-// }
+     Form2->Caption=("Изменение размера таблицы");
+     Form2->Position=poMainFormCenter;
+     Form2->ShowModal();
+     // strcpy(temp.city,Form2->Edit1->Text.c_str());
+     // AddA(temp);
 }
 //---------------------------------------------------------------------------
-                  
+//ТРАНСПОНИРОВАТЬ
+void __fastcall TForm1::NTransponClick(TObject *Sender)
+{
+     int tempmax = (N > M)? N : M;
+     int temp;
+     for (int i = 1;i<tempmax+1;i++)
+          for (int j=i+1;j<tempmax+1;j++)
+          {
+               temp=atoi(Table->Cells[i][j].c_str());
+               Table->Cells[i][j]=Table->Cells[j][i];
+               Table->Cells[j][i]=temp;
+          }
+     temp=N;
+     N=M;
+     M=temp;
+     StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
+     StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
+}
+//---------------------------------------------------------------------------
+//ОПЦИИ
+void __fastcall TForm1::NOptionsClick(TObject *Sender)
+{
+     Form4->Caption=("Настройки");
+     Form4->Position=poMainFormCenter;
+     //Form4->ShowModal();
+     if(Form4->ShowModal()==IDOK)
+     {
+
+     }
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::TableRowMoved(TObject *Sender, int FromIndex,
+      int ToIndex)
+{
+     for (int i=1;i<Table->RowCount;i++)
+          Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
+     for (int j=1;j<Table->ColCount;j++)
+          Table->Cells[j][0]=j;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::TableColumnMoved(TObject *Sender, int FromIndex,
+      int ToIndex)
+{
+     for (int i=1;i<Table->RowCount;i++)
+          Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
+     for (int j=1;j<Table->ColCount;j++)
+          Table->Cells[j][0]=j;     
+}
+//---------------------------------------------------------------------------
+
