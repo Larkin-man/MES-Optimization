@@ -39,6 +39,8 @@ public:
      int *OutSequence,   //Оптимальная последовательность обработки деталей для Джонсона и ПС
           **OutMatrix;   //Оптимальная последовательность обработки деталей для МВГ
      int StackOfCalls[4]; //Стек запусков методов
+     TStrings *Report;
+     bool debugging;
 
 MachineOptimizer()
 {
@@ -54,13 +56,14 @@ MachineOptimizer()
      Cend=NULL;
      OutMatrix = NULL;
      max=30000;
-     //debugging = true;
+     debugging = false;
 
      for (int i=0;i<4;i++)
           {
                PSBegin[i]=NULL;
                PSEnd[i]=NULL;
           }
+     Report = new TStringList;
 }
 
 ~MachineOptimizer()
@@ -103,11 +106,6 @@ void add(int n, int *time)  //Добавление ДЕТАЛИ
           InitEnd->next=pLink;
      InitEnd = pLink;         //The end is always equal to a new item (Insert in the end of list)
           //pLink->down->next=pLink;       */
-}
-
-void SetDebugging(bool Debugging)
-{
-     debugging = Debugging;
 }
 
 bool ClearData(int MethodID) //Функция очищает память 
@@ -218,8 +216,8 @@ int DjonsonRun()
 int PetrovSokolRun(TMemo *output = NULL)
 {
      int S[3];
-     int Time=max;
-     OutSequence = new int[M];
+     int TimeCycle=max;
+     OutSequence = new int[M];   
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
      {             //Формирование матрицы сумм
           S[0]=0;  //Первый столбец - Сумма кроме последнего станка
@@ -287,9 +285,9 @@ int PetrovSokolRun(TMemo *output = NULL)
           }
           //TimeCyclePS[j-1]=PSEnd[j]->down->curr->T[N-1];
           OutSequence[1]=ProductionCycle(PSBegin[j],true);
-          if (OutSequence[1]<Time)
+          if (OutSequence[1] < TimeCycle)
           {
-               Time=OutSequence[1];
+               TimeCycle=OutSequence[1];
                OutSequence[0]=j;
           }    //OutSequence[0]=j - там номер нужной PSBegin
           //output->Lines->Add("Длительность: "+IntToStr(TimeCyclePS[j-1]));
@@ -301,16 +299,20 @@ int PetrovSokolRun(TMemo *output = NULL)
           OutSequence[i]=Linker->curr->m;
           i++;
      }
-     return Time;
+     return TimeCycle;
 }
 
-int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches and hordes
+int MethodBHRun (char version = 0, bool output = true) //Method  of branches and hordes
 {
      int
           s,   //Текущий станок
           d,   //Текущая деталь
           o;   //Текущая очередность
      //Создание выходной матрицы
+     Report->Clear();
+     Report->Add("Отчет");
+     AnsiString Added;
+     //Report->Strings[0].SetLength(80);
      OutMatrix = new int *[M];
      for (int i=0;i<M;i++)
           OutMatrix[i] = new int[N];
@@ -318,7 +320,7 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
           for(int j = 0; j<N; j++)
                OutMatrix[i][j]=0;
 
-     if (output == NULL)
+     if (output == false)
           debugging = false;  //NO OUTPUT
 
      //Создание матрицы С
@@ -348,24 +350,29 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
      for (s = 1;s<N+1;s++)   // 2.
      {
           int k = 0;
-          if (output != NULL)
+          if (output)
           {
-               output->Lines->Add("Матрица С");
+               Report->Add("Матрица С");
                for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                {    //Вывести матрицу на экран
-                    output->Lines->Add(IntToStr(Linker->curr->m)+"  |  ");
+                    Added+=IntToStr(Linker->curr->m)+"  |  ";
                     for (int i = 0;i<N;i++)
-                    output->Text=output->Text+IntToStr(Linker->curr->T[i])+"  ";
+                         Added+=IntToStr(Linker->curr->T[i])+"  ";
+                    Report->Add(Added);
+                    Added="";
                }
-               output->Lines->Add("");
-               output->Lines->Add("");
-               output->Lines->Add("Станок № "+IntToStr(s));
+               Report->Add("");
+               Report->Add("Станок № "+IntToStr(s));
           }
 
-          for(o = 1;o<M+1;o++)   //для ккаждой очередности       // 3.
+          for(o = 1;o<M+1;o++)   //для каждой очередности       // 3.
           {
-               if (output != NULL)
-                    output->Lines->Add("Очередность: "+IntToStr(o));
+               if (output)
+               {
+                    Report->Add("");
+                    Report->Add("Очередность: "+IntToStr(o));
+               }
+
                // 4) Проверка конфликта на станке s
                int *D = new int [M+1];
                int *E = new int [M+1];
@@ -411,22 +418,24 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                          D[0]++;
                     }
                }
-               if (output != NULL)
+               if (output)
                {
-                    output->Lines->Add("Конфликтных: "+IntToStr(E[0]));
-                    output->Lines->Add("Hеконфликтных: "+IntToStr(D[0]));
+                    Report->Add("Конфликтных: "+IntToStr(E[0]));
+                    Report->Add("Hеконфликтных: "+IntToStr(D[0]));
                }
                if (debugging)
                {
-                    output->Lines->Add("Конфликтуют:");
+                    Added+=("Конфликтуют:");
                     for (int i = 1;i<E[0]+1;i++)
-                         output->Lines->Add(E[i]);
+                         Added+=(" "+IntToStr(E[i]));
+                    Report->Add(Added);
+                    Added="";
                }
 
                if (E[0] == 0)
                {
                if (debugging)
-                    output->Lines->Add("BREAK");
+                    Report->Add("Конфликт разрешился преждевременно!");
                break;
 
                }
@@ -456,9 +465,8 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                for (int det = 1;det < E[0]+1;det++)
                {
                     d=E[det];
-                    if (output != NULL)
-                         output->Lines->Append("Деталь № "+IntToStr(d));
-
+                    if (output)
+                         Report->Add("Деталь № "+IntToStr(d));
 
                     D[D[0]+1]=d;      // 5) Добавить d в D
 
@@ -480,7 +488,8 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                     // minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
                     //output->Lines->Add("minimal="+IntToStr(minimal.next->curr->m));
                     if (debugging)
-                         output->Lines->Add("R="+IntToStr(R));
+                         Report->Add("R="+IntToStr(R));
+                    //Report->Add("R="+IntToStr(R));
                     //Формирование Сдос
                     for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                     {
@@ -515,14 +524,15 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                               CdosEnd[det]->next=pLink;
                          CdosEnd[det] = pLink;     //*/
                     }
-                    if (output != NULL)
+                    if (output)
                     {
                          for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
                          {    //Вывести матрицу на экран
-                              output->Lines->Append("");
                               //output->Lines->Add(IntToStr(Linker->curr->m)+"  |  ");
                               for (int i = 0;i<N;i++)
-                              output->Text=output->Text+IntToStr(Linker->curr->T[i])+"  ";
+                                   Added+=IntToStr(Linker->curr->T[i])+"  ";
+                              Report->Add(Added);
+                              Added="";
                          }
                     }
 
@@ -531,27 +541,28 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                     // 7) Начнем поиск минимальных и сортировку по предпоследнему станку для нахождения фи
                     int T = 0;   // 8) T
                     Link *minimal=Cdos[det];          //минимальный = первый
-                    int min=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
-                    for (int i=0;i<M;i++)
+                    int min;//=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
+                    for (int i=0;i<M;i++)  //Этот цикл для накопления Т
                     {
                          min=max;
-                         for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
+                         for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next) //Для поиска минимального
                          {
-                              if ((Linker->curr->T[s-1] < min) && (Linker->curr->m >=0))    //(Linker->curr->T[N-2] < min)
+                              if ((Linker->curr->T[N-2] < min) && (Linker->curr->m >=0))    //(Linker->curr->T[N-2] < min)    (Linker->curr->T[s-1] < min)
                               {
                                    minimal=Linker;
-                                   min=Linker->curr->T[s-1];             //min=Linker->curr->T[N-2];
+                                   min=Linker->curr->T[N-2];             //min=Linker->curr->T[N-2];     min=Linker->curr->T[s-1];
                               }
                          }
 
                          //минимальный найден
                          minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-                         if (T <= minimal->curr->T[s-1])   // 9) Сравниваем Т и С(fq,n-1)   // (T <= minimal->curr->T[N-2])
-                              T = minimal->curr->T[s];                                    //T = minimal->curr->T[N-1];
+                         //Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
+                         if (T <= minimal->curr->T[N-2])   // 9) Сравниваем Т и С(fq,n-1)   // (T <= minimal->curr->T[N-2])
+                              T = minimal->curr->T[N-1];                                    //T = minimal->curr->T[N-1];
                          else
-                              T+=minimal->down->down->curr->T[s];                    //T+=minimal->down->down->curr->T[N-1];
+                              T+=minimal->down->down->curr->T[N-1];                    //T+=minimal->down->down->curr->T[N-1];
+                         //Report->Add("i = "+IntToStr(i)+" T= "+IntToStr(T)+" min m= "+IntToStr(minimal->curr->m));
                     }
-
                     Fi[det]=T;   //11
                   } //version 0
                   else //version > 0 
@@ -567,11 +578,12 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                          if (d == OutMatrix[i][s-1])
                          {
                               if (debugging)
-                                   output->Lines->Add("Заблокировать деталь "+IntToStr(d)+" в списке она "+IntToStr(det));
+                                   Report->Add("Заблокировать деталь "+IntToStr(d)+" в списке она "+IntToStr(det));
                               Fi[det]+=1000;
                          }
-                    if (output != NULL)
-                         output->Lines->Add("Fи="+IntToStr(Fi[det]));
+                    if (output)
+                         Report->Add("Fi["+IntToStr(det)+"] = "+IntToStr(Fi[det]));
+
                     for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)  //Уберем минусы
                          if (Linker->curr->m < 0)
                               Linker->curr->m=-Linker->curr->m;
@@ -590,8 +602,9 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
                k=E[k];
                // С = С(ko,s)
                //ShowMessage("Деталь: "+IntToStr(k)+" на станке: "+IntToStr(s)+" будет обрабатыватся: "+IntToStr(o)+" по счету.");
-               if (output != NULL)
-                    output->Lines->Add("Деталь: "+IntToStr(k)+" на станке: "+IntToStr(s)+" будет обрабатыватся: "+IntToStr(o)+" по счету.");
+               if (output)
+                    Report->Add("Деталь: "+IntToStr(k)+" на станке: "+IntToStr(s)+" будет обрабатыватся: "+IntToStr(o)+" по счету.");
+
                OutMatrix[o-1][s-1]=k;
                for (int i = 1;i<E[0]+1;i++)
                {
@@ -620,9 +633,9 @@ int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches a
      for (Linker = OptimalBH->next;Linker!=NULL;Linker=Linker->next)
           if (Linker->curr->T[N-1]>d)
                d=Linker->curr->T[N-1];
-     if (output != NULL)
-          output->Lines->Add("Длительность="+IntToStr(d));
-     return d; 
+     if (output)
+          Report->Add("Длительность="+IntToStr(d));
+     return d;
 }
 
 protected:
@@ -638,7 +651,6 @@ protected:
      *Cend,         //end of OptimalBH matrix
      *Linker,       //Temp
      **CdosEnd;     //End of Matrix OptimalBH(do,s)
-     bool debugging;
      int max;
 
  

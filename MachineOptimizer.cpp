@@ -7,7 +7,7 @@ USEFORM("MainSource.cpp", BaseForm);
 USEFORM("About.cpp", AboutBox1);
 USEFORM("Graphic.cpp", GraphicForm);
 USEFORM("EnterData.cpp", EnterDataForm);
-USEFORM("Options.cpp", OptionsForm);
+USEFORM("Options.cpp", OptionsForm);            
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {

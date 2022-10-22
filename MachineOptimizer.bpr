@@ -28,7 +28,7 @@
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="ilink32"/>
-    <USERDEFINES value=""/>
+    <USERDEFINES value="_DEBUG"/>
     <SYSDEFINES value="NO_STRICT"/>
     <MAINSOURCE value="MachineOptimizer.cpp"/>
     <INCLUDEPATH value="&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot;;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl"/>
@@ -39,12 +39,13 @@
   <OPTIONS>
     <IDLCFLAGS value="-I&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot; 
       -I&quot;C:\Program Files\Borland\CBuilder6\Projects&quot; -I..\Графика -I..\Окошки 
-      -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
-    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
-    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+      -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
+      -tW -tWM"/>
+    <PFLAGS value="-$YD -$W -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
-    <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -71,10 +72,10 @@
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=1
-MajorVer=2
-MinorVer=9
+MajorVer=3
+MinorVer=0
 Release=0
-Build=16
+Build=17
 Debug=0
 PreRelease=1
 Special=0
@@ -85,14 +86,14 @@ CodePage=1251
 
 [Version Info Keys]
 CompanyName=СФУ
-FileDescription=Оптимизация запуска деталей в производство
-FileVersion=2.9.0.16
+FileDescription=Модуль оптимизации информационной системы оперативного управления производством
+FileVersion=3.0.0.17
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
-OriginalFilename=MachineOptimizer.exe
+OriginalFilename=Machine Optimizer.exe
 ProductName=Дипломная работа
-ProductVersion=2.9
+ProductVersion=3.0
 Comments=mail:  psylonaut@mail.ru
 
 [Debugging]

@@ -19,7 +19,6 @@ __fastcall TOptionsForm::TOptionsForm(TComponent* Owner)
           //TabSheet4->Hide();
      ShowOptimization(false);
      Cvetpit=ColorOptions->ItemIndex;
-
 }
 //---------------------------------------------------------------------------
 
@@ -34,6 +33,7 @@ void __fastcall TOptionsForm::NoOutClick(TObject *Sender)
 void __fastcall TOptionsForm::FormShow(TObject *Sender)
 {
      Label1->Caption="";
+     TabSheet3->Enabled=(BaseForm->Gant!=NULL);
 }
 //---------------------------------------------------------------------------
 
@@ -62,6 +62,8 @@ void __fastcall TOptionsForm::WorkTimeOutClick(TObject *Sender)
      BaseForm->Gant = new Graphics::TBitmap;
      BaseForm->PaintGant();
 
+
+
 }
 //---------------------------------------------------------------------------
 
@@ -72,6 +74,5 @@ void __fastcall TOptionsForm::FormClose(TObject *Sender,
      //ShowMessage("On Close");
 }
 //---------------------------------------------------------------------------
-
 
 

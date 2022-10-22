@@ -1,5 +1,5 @@
 object OptionsForm: TOptionsForm
-  Left = 235
+  Left = 493
   Top = 123
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -38,7 +38,7 @@ object OptionsForm: TOptionsForm
     Top = 8
     Width = 329
     Height = 281
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alCustom
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -46,7 +46,7 @@ object OptionsForm: TOptionsForm
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #1054#1073#1097#1080#1077
@@ -55,13 +55,15 @@ object OptionsForm: TOptionsForm
         Top = 8
         Width = 289
         Height = 25
-        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1082#1091#1095#1091' '#1086#1090#1083#1072#1076#1086#1095#1085#1086#1081' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1080
+        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1086#1090#1083#1072#1076#1086#1095#1085#1091#1102' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1102
+        Checked = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         ParentFont = False
+        State = cbChecked
         TabOrder = 0
       end
       object RadioGroupTime: TRadioGroup
@@ -142,9 +144,9 @@ object OptionsForm: TOptionsForm
       object WorkTimeOut: TCheckBox
         Left = 8
         Top = 96
-        Width = 193
+        Width = 265
         Height = 17
-        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1074#1088#1077#1084#1103' '#1088#1072#1073#1086#1090#1099
+        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1076#1083#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1086#1073#1088#1072#1073#1086#1090#1082#1080
         TabOrder = 1
         OnClick = WorkTimeOutClick
       end

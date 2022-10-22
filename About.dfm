@@ -1,9 +1,9 @@
 object AboutBox1: TAboutBox1
-  Left = 247
-  Top = 87
+  Left = 257
+  Top = 124
   BorderStyle = bsDialog
   Caption = #1054' '#1055#1088#1086#1075#1088#1072#1084#1084#1077
-  ClientHeight = 306
+  ClientHeight = 286
   ClientWidth = 292
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object AboutBox1: TAboutBox1
   TextHeight = 13
   object OKButton: TButton
     Left = 111
-    Top = 268
+    Top = 249
     Width = 75
     Height = 25
     Caption = 'OK'
@@ -29,7 +29,7 @@ object AboutBox1: TAboutBox1
     Left = 8
     Top = 8
     Width = 276
-    Height = 250
+    Height = 233
     BevelInner = bvRaised
     BevelOuter = bvLowered
     Color = clSkyBlue
@@ -1667,22 +1667,22 @@ object AboutBox1: TAboutBox1
     object ProductName: TLabel
       Left = 16
       Top = 8
-      Width = 189
+      Width = 231
       Height = 17
-      Caption = #1055#1083#1072#1085#1080#1088#1086#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099' '#1089#1090#1072#1085#1082#1086#1074
+      Caption = #1055#1083#1072#1085#1080#1088#1086#1074#1072#1085#1080#1077' '#1086#1087#1090#1080#1084#1072#1083#1100#1085#1086#1081' '#1079#1072#1075#1088#1091#1079#1082#1080
       IsControl = True
     end
     object Version: TLabel
       Left = 16
-      Top = 32
+      Top = 50
       Width = 63
       Height = 17
-      Caption = #1042#1077#1088#1089#1080#1103' 2.9'
+      Caption = #1042#1077#1088#1089#1080#1103' 3.0'
       IsControl = True
     end
     object Copyright: TLabel
       Left = 16
-      Top = 56
+      Top = 72
       Width = 120
       Height = 51
       Caption = #1040#1074#1090#1086#1088': '#1040#1087#1086#1085#1072#1089#1077#1085#1082#1086' '#1040#1083#1077#1082#1089#1077#1081' '#1042#1083#1072#1076#1080#1084#1080#1088#1086#1074#1080#1095' '
@@ -1691,21 +1691,28 @@ object AboutBox1: TAboutBox1
     end
     object Comments: TLabel
       Left = 16
-      Top = 176
-      Width = 52
-      Height = 51
+      Top = 191
+      Width = 113
+      Height = 34
       Caption = #1059#1095#1077#1073#1085#1072#1103' '#1043#1088#1091#1087#1087#1072' '#1050#1048'08-04'
       WordWrap = True
       IsControl = True
     end
     object Label1: TLabel
       Left = 16
-      Top = 115
+      Top = 131
       Width = 84
       Height = 51
       Caption = #1057#1080#1073#1080#1088#1089#1082#1080#1081' '#1060#1077#1076#1077#1088#1072#1083#1100#1085#1099#1081' '#1059#1085#1080#1074#1077#1088#1089#1080#1090#1077#1090
       WordWrap = True
       IsControl = True
+    end
+    object Label2: TLabel
+      Left = 16
+      Top = 27
+      Width = 86
+      Height = 17
+      Caption = #1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
     end
   end
 end

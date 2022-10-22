@@ -1,6 +1,6 @@
 object EnterDataForm: TEnterDataForm
-  Left = 496
-  Top = 211
+  Left = 204
+  Top = 206
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1079#1072#1087#1080#1089#1080
@@ -39,6 +39,7 @@ object EnterDataForm: TEnterDataForm
     LabelSpacing = 3
     ParentFont = False
     TabOrder = 0
+    OnExit = Field1Exit
   end
   object Field2: TLabeledEdit
     Left = 16
@@ -63,6 +64,7 @@ object EnterDataForm: TEnterDataForm
     LabelSpacing = 3
     ParentFont = False
     TabOrder = 1
+    OnExit = Field2Exit
   end
   object BitBtnOkResize: TBitBtn
     Left = 152

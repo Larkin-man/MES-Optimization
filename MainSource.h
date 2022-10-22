@@ -41,7 +41,6 @@ __published:	// IDE-managed Components
      TMenuItem *NMenuFile;
      TMenuItem *NMenuEdit;
      TMenuItem *NMenuView;
-     TMenuItem *NFont;
      TMenuItem *NViewOne;
      TMenuItem *N11;
      TMenuItem *N12;
@@ -53,17 +52,9 @@ __published:	// IDE-managed Components
      TMenuItem *NAbout;
      TMenuItem *NViewTwo;
      TRadioGroup *RadioGroup1;
-     TPopupMenu *PopupMenuGant;
-     TMenuItem *NGantRepaint;
-     TMenuItem *NGantResize;
-     TMenuItem *NGantFont;
-     TMenuItem *NGantColor;
-     TColorDialog *GantPenColor;
      TMenuItem *NMenuRun;
      TMenuItem *NOptSwitch;
      TMenuItem *NRun;
-     TStringGrid *Table;
-     TMenuItem *NGantTime;
      TMenuItem *N9;
      TPopupMenu *PopupMenuGrid;
      TMenuItem *N1;
@@ -84,8 +75,6 @@ __published:	// IDE-managed Components
      TToolButton *ToolButton5;
      TToolButton *ToolButton6;
      TToolButton *ToolButton7;
-     TTrackBar *TrackBar1;
-     TStaticText *StaticText1;
      TToolButton *ToolButton3;
      TSpeedButton *GantBtn;
      TSpeedButton *ReportBtn;
@@ -110,18 +99,19 @@ __published:	// IDE-managed Components
      TMenuItem *Pf1;
      TMenuItem *N5;
      TAction *Repaint;
-     TPanel *Panel1;
-     TImage *Image1;
      TToolButton *ToolButton8;
      TSpeedButton *SpeedButton1;
+     TMenuItem *N7;
+     TAction *Random;
+     TMenuItem *N8;
+     TStringGrid *Table;
+     TStringGrid *StringGrid1;
+     TMenuItem *N10;
      void __fastcall N15Click(TObject *Sender);
      void __fastcall NViewOneClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
      void __fastcall NViewTwoClick(TObject *Sender);
      void __fastcall N12Click(TObject *Sender);
-     void __fastcall NGantFontClick(TObject *Sender);
-     void __fastcall NGantColorClick(TObject *Sender);
-     void __fastcall TrackBar1Change(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall N1Click(TObject *Sender);
      void __fastcall N2Click(TObject *Sender);
@@ -135,14 +125,15 @@ __published:	// IDE-managed Components
      void __fastcall GantDiagramExecute(TObject *Sender);
      void __fastcall ReportExecute(TObject *Sender);
      void __fastcall ResizeTableExecute(TObject *Sender);
-     void __fastcall Pf1Click(TObject *Sender);
-     void __fastcall NGantTimeClick(TObject *Sender);
      void __fastcall FontEditAccept(TObject *Sender);
      void __fastcall TableColumnMoved(TObject *Sender, int FromIndex,
           int ToIndex);
      void __fastcall TableRowMoved(TObject *Sender, int FromIndex,
           int ToIndex);
      void __fastcall SpeedButton1Click(TObject *Sender);
+     void __fastcall RandomExecute(TObject *Sender);
+     void __fastcall StatusBar1DblClick(TObject *Sender);
+     void __fastcall FontEditBeforeExecute(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
 
@@ -156,14 +147,11 @@ public:		// User declarations
           TY,  //Text Out Y = 8
           GantH,    //Gant Height
           GantW;    //Gant Weight
-     bool ultima,debugging;
-     int *top;
      int M,N; //M - Станки, N - Детали
      int TimeCycle[4];
      bool gantshow;
-     TColor *ColorBox;
+     TColor *ColorBox;   //Колорпит для разноцветных красивых блоков
      int Brightness;     //Яркость
-     int delet;
      bool multicoloured;
 
 
@@ -175,29 +163,21 @@ public:		// User declarations
 //Проверка видимости элементов
 void view()
 {
-     Image1->Visible=NViewTwo->Checked;
-     Panel1->Visible=NViewTwo->Checked;
-     StaticText1->Visible=NViewTwo->Checked;
-     TrackBar1->Visible=NViewTwo->Checked;  
+     StringGrid1->Visible=NViewTwo->Checked;
 }
-
-void Print(MachineOptimizer::Link *list)
-{
-     for(;list != NULL;list = list->next)
-          Output->Text=Output->Text+FloatToStr(list->curr->m)+" ";
-}
-
+//Готовность к запуску расчета
 void Ready()
 {
+     StatusBar1->Panels->Items[0]->Width=400;
      StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
      StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
      if (OptionsForm->RadioGroupTime->ItemIndex != 2)
           StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
      FileSave->Enabled=true;
-     Run->Enabled=true;
+     //Run->Enabled=true;
      NTranspon->Enabled=true;
 }
-
+//Обновить таблицу
 void TableRefresh()
 {
      Table->Cells[0][0]="    Станок:";
@@ -206,7 +186,15 @@ void TableRefresh()
           Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
      for (int j=1;j<Table->ColCount;j++)
           Table->Cells[j][0]=j;//"Станок №"+i;
+     if (Table->RowCount <= 10)
+          Table->ColWidths[0]=82;
+     else if (Table->RowCount <= 100)
+          Table->ColWidths[0]=88;
+     else
+          Table->ColWidths[0]=96;
+
 }
+//Генератор случайных цветов
 void ColorPit()
 {
      Brightness = 25;
@@ -223,7 +211,7 @@ void ColorPit()
      //RadioGroup1->Color=254*256*256+254*256+256;
      //Table->Color=ColorBox[0];
 }
-
+//Удаление графики
 void ClearGant()
 {
      delete Gant;
@@ -265,7 +253,7 @@ void PrintMatrix(MachineOptimizer::Link *list, int n, bool down, bool subtractb)
      }
 }
 
-
+     int *top;
 void PrintMatrixPS(MachineOptimizer::Link *list,int n,int one,int left)
 {
      if (list != NULL)   //TODO: Убрать эту функцию
@@ -300,8 +288,8 @@ void PrintMatrixPS(MachineOptimizer::Link *list,int n,int one,int left)
 //Функция ищет длительность производственного цикла
 int ProductionCycle()
 {
-     int *top = new int[N];
-     int left;
+     float *top = new float[N];
+     float left;
      for (int i=0;i<N;i++)
           top[i]=0;
      for (int j=1;j<M+1;j++)
@@ -310,7 +298,7 @@ int ProductionCycle()
           for (int i=1;i<N+1;i++)
           {
                top[i-1]=max(top[i-1],left);
-               top[i-1]+=atoi(Table->Cells[i][j].c_str());
+               top[i-1]+=atof(Table->Cells[i][j].c_str());
                left = top[i-1];
           }
      }
@@ -376,12 +364,10 @@ void DrawDiagramFromEndingMatrix(MachineOptimizer::Link *Item)
      Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Время работы: "+FloatToStr(TimeCycle[3]));
      vertix=vertix+(BH+BI)*N-BI+BH;
 }
-
+//Создание диаграммы Ганта и подготовка к рисованию
 void PaintGant()
 {
      vertix=0;
-     BH=30;
-     BI=10;
      TX=(scale-8)/2;
      TY=(BH-14)/2;
      //if (Optimizer == NULL) return;
@@ -396,7 +382,7 @@ void PaintGant()
      GantH=(BH+BI)*(N-1)*2+BH*6;
      Gant->Width=GantW;
      Gant->Height=GantH;
-     Gant->Canvas->Pen->Color=GantPenColor->Color;
+     Gant->Canvas->Pen->Color=clBlack;
      Gant->Canvas->Pen->Width=1;
      Gant->Canvas->Brush->Color=GraphicForm->ColorBox1->Selected;
      Gant->Canvas->FillRect(Rect(0,0,GantW,GantH));
@@ -425,8 +411,6 @@ void PaintGant()
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по модифицированому методу ветвей и границ:");
           DrawDiagramFromEndingMatrix(Optimizer->OptimalBH);
      }
-     Image1->Canvas->CopyMode = cmSrcCopy;
-     Image1->Canvas->CopyRect(Rect(0,0,Image1->Width+50,Image1->Height+50),Gant->Canvas,Rect(0,0,Image1->Width+50,Image1->Height+50));
      //GraphicForm->FormShow(NULL); //Очистить
      if (gantshow)
           GraphicForm->gant->Canvas->CopyRect(Rect(0,0,GantW,GantH),Gant->Canvas,Rect(0,0,GantW,GantH));
@@ -491,18 +475,19 @@ void PetrovSokolMethod()
      PrintMatrix(Optimizer->PSBegin[0],3,false,false);
      Output->Lines->Add(" ");
 
-     Output->Lines->Add("Матрица 1:");
+     Output->Lines->Add("Сортировка по возрастанию первого столбца:");
      PrintMatrix(Optimizer->PSBegin[1],N,true,false);
      Output->Lines->Add(" ");
 
      for (int i=0;i<N;i++)
           top[i]=0;
 
+
      Output->Lines->Add("Матрица 1 Сроки окончания:");
      PrintMatrixPS(Optimizer->PSBegin[1],N,0,0);
      Output->Lines->Add(" ");
 
-     Output->Lines->Add("Матрица 2:");
+     Output->Lines->Add("Сортировка по убыванию второго столбца:");
      PrintMatrix(Optimizer->PSBegin[2],N,true,false);
      Output->Lines->Add(" ");
 
@@ -513,7 +498,7 @@ void PetrovSokolMethod()
      PrintMatrixPS(Optimizer->PSBegin[2],N,0,0);
      Output->Lines->Add(" ");
 
-     Output->Lines->Add("Матрица 3:");
+     Output->Lines->Add("Сортировка по убыванию третьего столбца:");
      PrintMatrix(Optimizer->PSBegin[3],N,true,false);
      Output->Lines->Add(" ");
 
@@ -551,9 +536,22 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
      else
           StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
      if (OptionsForm->NoOut->Checked)
-          TimeCycle[3]=Optimizer->MethodBHRun(version, NULL);
+          TimeCycle[3]=Optimizer->MethodBHRun(version, false);
      else
-          TimeCycle[3]=Optimizer->MethodBHRun(version, Output);
+          TimeCycle[3]=Optimizer->MethodBHRun(version, true);
+     //Вывод отчета - может повесить прогу
+     for (int i= 1;i<Optimizer->Report->Count;i++)
+     {
+          Output->Lines->Add(Optimizer->Report->Strings[i]);
+          if ((i % 250) == 0)
+               //Application->MessageBox ("Остановить?", "watchdog" , MB_YESNO);
+
+               if (Application->MessageBox ("Остановить?", "Вывод отчета" , MB_YESNO + MB_ICONQUESTION) == IDNO)
+                    continue;
+               else
+                    break;
+
+     }
      Output->Lines->Add("Матрица С:");
      PrintMatrix(Optimizer->OptimalBH,N,false,false);
      Output->Lines->Add(" ");

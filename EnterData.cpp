@@ -9,14 +9,14 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 TEnterDataForm *EnterDataForm;
-int res1;
+
 //---------------------------------------------------------------------------
 __fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner)
         : TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
-
+//œŒ ¿«¿“‹ ‘Œ–Ã”
 void __fastcall TEnterDataForm::FormShow(TObject *Sender)
 {
      if (BitBtnOkResize->Visible)
@@ -46,42 +46,70 @@ void __fastcall TEnterDataForm::FormShow(TObject *Sender)
      Field1->SetFocus();
 }
 //---------------------------------------------------------------------------
-
-
+//»«Ã≈Õ≈Õ»≈ –¿«Ã≈–¿ “¿¡À»÷€
 void __fastcall TEnterDataForm::BitBtnOkResizeClick(TObject *Sender)
 {
      if (EnterDataForm->Field1->Text.operator!=(""))
           BaseForm->Table->RowCount=StrToInt(EnterDataForm->Field1->Text)+1;
      if (EnterDataForm->Field2->Text != "")
           BaseForm->Table->ColCount=StrToInt(EnterDataForm->Field2->Text)+1;
-     for (int i=1;i<BaseForm->Table->RowCount;i++)
-          BaseForm->Table->Cells[0][i]="ƒÂÚ‡Î¸ " + IntToStr(i)+":";
-     for (int j=1;j<BaseForm->Table->ColCount;j++)
-          BaseForm->Table->Cells[j][0]=j;//"—Ú‡ÌÓÍ π"+i;
+     BaseForm->TableRefresh();
+     if ((BaseForm->Table->RowCount-1) < (BaseForm->M))
+     {
+          BaseForm->M = BaseForm->Table->RowCount-1;
+          BaseForm->StatusBar1->Panels->Items[2]->Text=("ƒÂÚ‡ÎÂÈ: "+IntToStr(BaseForm->M));
+     }
+     if ((BaseForm->Table->ColCount-1) < (BaseForm->N))
+     {
+          BaseForm->N = BaseForm->Table->ColCount-1;
+          BaseForm->StatusBar1->Panels->Items[1]->Text=("—Ú‡ÌÍÓ‚: "+IntToStr(BaseForm->N));
+     }
      Close();
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TEnterDataForm::BitBtn2Click(TObject *Sender)
-{
-     Close();
-}
-//---------------------------------------------------------------------------
-
+//«¿œŒÀÕ≈Õ»≈ —À”◊¿…Õ€Ã» ◊»—À¿Ã»
 void __fastcall TEnterDataForm::BitBtnOkRandomClick(TObject *Sender)
 {
      for (int i=1;i<BaseForm->Table->RowCount;i++)
           for (int j=1;j<BaseForm->Table->ColCount;j++)
                BaseForm->Table->Cells[j][i]="";
-     BaseForm->M=StrToInt(EnterDataForm->Field1->Text);
-     BaseForm->N=StrToInt(EnterDataForm->Field2->Text);
+
+     if (EnterDataForm->Field1->Text.operator!=(""))
+          BaseForm->M=StrToInt(EnterDataForm->Field1->Text);
+     if (EnterDataForm->Field2->Text != "")
+          BaseForm->N=StrToInt(EnterDataForm->Field2->Text);
+
+     if (BaseForm->Table->RowCount < BaseForm->M+1)
+          BaseForm->Table->RowCount = BaseForm->M+1;
+     if (BaseForm->Table->ColCount < BaseForm->N+1)
+          BaseForm->Table->ColCount = BaseForm->N+1;
+     BaseForm->TableRefresh();
      srand(time(NULL));
 	for (int i = 1; i < BaseForm->M+1; i++)
           for (int j = 1; j < BaseForm->N+1; j++)
 	     {
 		     BaseForm->Table->Cells[j][i] = rand() % 10 + 1;  //1-10
 	     }
+     BaseForm->StatusBar1->Panels->Items[0]->Text=("«‡ÔÓÎÌÂÌÓ ÒÎÛ˜‡ÈÌ˚ÏË ˜ËÒÎ‡ÏË");
      BaseForm->Ready();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEnterDataForm::Field1Exit(TObject *Sender)
+{
+     CheckConvert((TLabeledEdit*)Sender);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEnterDataForm::Field2Exit(TObject *Sender)
+{
+     CheckConvert((TLabeledEdit*)Sender);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TEnterDataForm::BitBtn2Click(TObject *Sender)
+{
+     Close();
 }
 //---------------------------------------------------------------------------
 

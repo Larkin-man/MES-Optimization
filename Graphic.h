@@ -15,6 +15,7 @@
 #include <Buttons.hpp>
 #include <Dialogs.hpp>
 #include <ExtDlgs.hpp>
+#include <Menus.hpp>
 
 //---------------------------------------------------------------------------
 class TGraphicForm : public TForm
@@ -38,6 +39,11 @@ __published:	// IDE-managed Components
      TLabel *Label1;
      TColorBox *ColorBox1;
      TToolButton *ToolButton3;
+     TPopupMenu *PopupMenu1;
+     TMenuItem *N1;
+     TMenuItem *N2;
+     TMenuItem *N3;
+     TMenuItem *N4;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall SpeedButton2Click(TObject *Sender);
@@ -45,6 +51,8 @@ __published:	// IDE-managed Components
      void __fastcall FormShow(TObject *Sender);
      void __fastcall TrackBar1Change(TObject *Sender);
      void __fastcall ColorBox1Change(TObject *Sender);
+     void __fastcall N2Click(TObject *Sender);
+     void __fastcall N1Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;

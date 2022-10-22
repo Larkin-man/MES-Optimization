@@ -61,12 +61,11 @@ void __fastcall TGraphicForm::SpeedButton3Click(TObject *Sender)
      {
           //BitMap->Assign (gant->Picture) ;
           BaseForm->Gant->SaveToFile(SavePictureDialog1->FileName);
-          //BitMap->SaveToFile (SavePictureDialog1->FileName) ;
-
+          //BitMap->SaveToFile (SavePictureDialog1->FileName) ;        
      }
 }
 //---------------------------------------------------------------------------
-//Показать фформу
+//Показать форму
 void __fastcall TGraphicForm::FormShow(TObject *Sender)
 {
      //gant->Picture->Free();
@@ -75,17 +74,20 @@ void __fastcall TGraphicForm::FormShow(TObject *Sender)
      //ShowMessage(" gant form show");
      gant->Canvas->Brush->Color=ColorBox1->Selected;
      gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
+     TrackBar1->Height=35;
+     Label1->Height=35;
      //gant->Assign()
 }
 //---------------------------------------------------------------------------
-
-
+//МАСШТАБ 
 void __fastcall TGraphicForm::TrackBar1Change(TObject *Sender)
 {
      FormShow(NULL);
      delete BaseForm->Gant;
      BaseForm->Gant = new Graphics::TBitmap;
      BaseForm->scale=(TrackBar1->Position)+12+(TrackBar1->Position)/3;
+     //BaseForm->BH=26+(TrackBar1->Position)/2;
+     //BaseForm->BI=(BaseForm->BH)/3;
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
@@ -93,6 +95,18 @@ void __fastcall TGraphicForm::TrackBar1Change(TObject *Sender)
 void __fastcall TGraphicForm::ColorBox1Change(TObject *Sender)
 {
      TrackBar1Change(Sender);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TGraphicForm::N2Click(TObject *Sender)
+{
+     if (OptionsForm->WorkTimeOut->Checked == false)
+          OptionsForm->WorkTimeOutClick(NULL);
+}
+//---------------------------------------------------------------------------
+void __fastcall TGraphicForm::N1Click(TObject *Sender)
+{
+     gant->Refresh();
 }
 //---------------------------------------------------------------------------
 

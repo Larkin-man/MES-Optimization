@@ -1,12 +1,12 @@
 object BaseForm: TBaseForm
-  Left = 17
-  Top = 118
-  Width = 896
-  Height = 449
+  Left = 61
+  Top = 54
+  Width = 832
+  Height = 500
   Caption = #1054#1087#1090#1080#1084#1080#1079#1072#1094#1080#1103' '#1079#1072#1087#1091#1089#1082#1072' '#1076#1077#1090#1072#1083#1077#1081' '#1074' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1086
   Color = clBtnFace
-  Constraints.MinHeight = 250
-  Constraints.MinWidth = 300
+  Constraints.MinHeight = 300
+  Constraints.MinWidth = 500
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -16
@@ -16,35 +16,33 @@ object BaseForm: TBaseForm
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
-  DesignSize = (
-    888
-    395)
   PixelsPerInch = 96
   TextHeight = 20
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 373
-    Width = 888
+    Top = 424
+    Width = 824
     Height = 22
     Panels = <
       item
         Width = 400
       end
       item
-        Width = 70
+        Width = 75
       end
       item
-        Width = 70
+        Width = 75
       end
       item
         Width = 200
       end>
     SimplePanel = False
+    OnDblClick = StatusBar1DblClick
   end
   object RadioGroup1: TRadioGroup
     Left = 8
     Top = 56
-    Width = 256
+    Width = 272
     Height = 160
     Caption = #1040#1083#1075#1086#1088#1080#1090#1084#1099' '#1086#1087#1090#1080#1084#1080#1079#1072#1094#1080#1080
     Color = clBtnFace
@@ -63,32 +61,16 @@ object BaseForm: TBaseForm
     ParentFont = False
     TabOrder = 2
   end
-  object Table: TStringGrid
-    Left = 8
-    Top = 220
-    Width = 256
-    Height = 149
-    Align = alCustom
-    Anchors = [akLeft, akTop, akBottom]
-    ColCount = 7
-    DefaultColWidth = 32
-    RowCount = 10
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowMoving, goColMoving, goEditing]
-    PopupMenu = PopupMenuGrid
-    TabOrder = 3
-    OnColumnMoved = TableColumnMoved
-    OnRowMoved = TableRowMoved
-  end
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 888
+    Width = 824
     Height = 56
     ButtonHeight = 48
     ButtonWidth = 48
     Caption = 'ToolBar1'
     EdgeBorders = [ebTop, ebBottom]
-    TabOrder = 4
+    TabOrder = 3
     object ToolButton2: TToolButton
       Left = 0
       Top = 2
@@ -2200,75 +2182,61 @@ object BaseForm: TBaseForm
       OnClick = SpeedButton1Click
     end
   end
-  object TrackBar1: TTrackBar
-    Left = 564
-    Top = 18
-    Width = 150
-    Height = 31
-    Max = 12
-    Orientation = trHorizontal
-    Frequency = 1
-    Position = 4
-    SelEnd = 0
-    SelStart = 0
-    TabOrder = 5
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
-    OnChange = TrackBar1Change
-  end
-  object StaticText1: TStaticText
-    Left = 486
-    Top = 22
-    Width = 78
-    Height = 24
-    Caption = #1052#1072#1089#1096#1090#1072#1073':'
-    Color = clBtnFace
-    ParentColor = False
-    TabOrder = 6
-  end
   object Output: TMemo
-    Left = 268
+    Left = 284
     Top = 64
-    Width = 189
-    Height = 306
+    Width = 256
+    Height = 357
     Align = alCustom
     Anchors = [akLeft, akTop, akRight, akBottom]
+    Constraints.MinHeight = 152
+    Constraints.MinWidth = 192
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Lines.Strings = (
-      '0')
     ParentFont = False
     PopupMenu = PopupMenuMemo
     ScrollBars = ssVertical
     TabOrder = 1
   end
-  object Panel1: TPanel
-    Left = 464
+  object Table: TStringGrid
+    Left = 8
+    Top = 220
+    Width = 272
+    Height = 200
+    Align = alCustom
+    Anchors = [akLeft, akTop, akBottom]
+    ColCount = 9
+    DefaultColWidth = 32
+    RowCount = 10
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowMoving, goColMoving, goEditing]
+    PopupMenu = PopupMenuGrid
+    TabOrder = 4
+    OnColumnMoved = TableColumnMoved
+    OnRowMoved = TableRowMoved
+  end
+  object StringGrid1: TStringGrid
+    Left = 544
     Top = 64
-    Width = 417
-    Height = 306
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    BevelOuter = bvLowered
-    TabOrder = 7
-    object Image1: TImage
-      Left = 1
-      Top = 1
-      Width = 376
-      Height = 265
-      Align = alCustom
-      Anchors = [akLeft, akTop, akRight, akBottom]
-      IncrementalDisplay = True
-      PopupMenu = PopupMenuGant
-      Stretch = True
-    end
+    Width = 273
+    Height = 356
+    Align = alCustom
+    Anchors = [akLeft, akTop, akBottom]
+    ColCount = 9
+    DefaultColWidth = 32
+    RowCount = 10
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowMoving, goColMoving, goEditing]
+    PopupMenu = PopupMenuGrid
+    TabOrder = 5
+    OnColumnMoved = TableColumnMoved
+    OnRowMoved = TableRowMoved
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    Left = 280
-    Top = 89
+    Left = 576
+    Top = 17
     object NMenuFile: TMenuItem
       Caption = '&'#1060#1072#1081#1083
       object N6: TMenuItem
@@ -2292,17 +2260,22 @@ object BaseForm: TBaseForm
       object NSize: TMenuItem
         Action = ResizeTable
       end
-      object NFont: TMenuItem
-        Action = FontEdit
+      object N7: TMenuItem
+        Action = Random
       end
       object NTranspon: TMenuItem
         Caption = '&'#1058#1088#1072#1085#1089#1087#1086#1085#1080#1088#1086#1074#1072#1090#1100
         ShortCut = 16468
         OnClick = NTransponClick
       end
+      object N10: TMenuItem
+        Caption = #1047#1072#1076#1072#1090#1100' '#1087#1086#1088#1103#1076#1086#1082' '#1079#1072#1087#1091#1089#1082#1072' '#1074#1088#1091#1095#1085#1091#1102
+        Enabled = False
+      end
     end
     object NMenuView: TMenuItem
       Caption = '&'#1042#1080#1076
+      Enabled = False
       object NViewOne: TMenuItem
         Caption = #1054'&'#1073#1099#1095#1085#1099#1081
         ShortCut = 113
@@ -2346,14 +2319,14 @@ object BaseForm: TBaseForm
     end
   end
   object PopupMenuMemo: TPopupMenu
-    Left = 344
-    Top = 201
-    object N11: TMenuItem
-      Action = FontEdit
-    end
+    Left = 432
+    Top = 121
     object N12: TMenuItem
       Caption = #1054#1095#1080#1089#1090#1080#1090#1100
       OnClick = N12Click
+    end
+    object N11: TMenuItem
+      Action = FontEdit
     end
     object N15: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
@@ -2363,33 +2336,6 @@ object BaseForm: TBaseForm
       Caption = #1058#1077#1089#1090
       OnClick = N1Click
     end
-  end
-  object PopupMenuGant: TPopupMenu
-    Left = 504
-    Top = 200
-    object NGantRepaint: TMenuItem
-      Action = Repaint
-    end
-    object NGantResize: TMenuItem
-      Caption = #1055#1086#1076#1086#1075#1085#1072#1090#1100
-    end
-    object NGantFont: TMenuItem
-      Caption = #1064#1088#1080#1092#1090
-      OnClick = NGantFontClick
-    end
-    object NGantColor: TMenuItem
-      Caption = #1062#1074#1077#1090
-      OnClick = NGantColorClick
-    end
-    object NGantTime: TMenuItem
-      Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1074#1088#1077#1084#1103' '#1088#1072#1073#1086#1090#1099
-      OnClick = NGantTimeClick
-    end
-  end
-  object GantPenColor: TColorDialog
-    Ctl3D = True
-    Left = 536
-    Top = 200
   end
   object PopupMenuGrid: TPopupMenu
     Left = 206
@@ -2402,8 +2348,10 @@ object BaseForm: TBaseForm
       Action = ResizeTable
     end
     object Pf1: TMenuItem
-      Caption = #1047#1072#1087#1086#1083#1085#1080#1090#1100' '#1089#1083#1091#1095#1072#1081#1085#1086
-      OnClick = Pf1Click
+      Action = Random
+    end
+    object N8: TMenuItem
+      Action = FontEdit
     end
     object N5: TMenuItem
       Action = Run
@@ -2411,8 +2359,8 @@ object BaseForm: TBaseForm
   end
   object ActionList1: TActionList
     Images = ImageList1
-    Left = 312
-    Top = 89
+    Left = 608
+    Top = 17
     object FileNew: TAction
       Category = 'File'
       Caption = #1053#1086#1074#1099#1081
@@ -2457,9 +2405,10 @@ object BaseForm: TBaseForm
       Dialog.Font.Name = 'MS Sans Serif'
       Dialog.Font.Style = []
       Dialog.MinFontSize = 0
-      Dialog.MaxFontSize = 0
-      Dialog.Options = [fdEffects, fdForceFontExist]
+      Dialog.MaxFontSize = 14
+      Dialog.Options = [fdAnsiOnly, fdEffects, fdForceFontExist, fdNoOEMFonts, fdNoVectorFonts, fdLimitSize]
       Hint = 'Font Select'
+      BeforeExecute = FontEditBeforeExecute
       OnAccept = FontEditAccept
     end
     object Run: TAction
@@ -2502,12 +2451,18 @@ object BaseForm: TBaseForm
       Category = #1043#1072#1085#1090
       Caption = #1055#1077#1088#1077#1088#1080#1089#1086#1074#1072#1090#1100
     end
+    object Random: TAction
+      Category = 'Dialog'
+      Caption = #1047#1072#1087#1086#1083#1085#1080#1090#1100' '#1089#1083#1091#1095#1072#1081#1085#1086
+      ShortCut = 16466
+      OnExecute = RandomExecute
+    end
   end
   object ImageList1: TImageList
-    Left = 344
-    Top = 89
+    Left = 640
+    Top = 17
     Bitmap = {
-      494C01010C000E00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3023,11 +2978,11 @@ object BaseForm: TBaseForm
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000424D3E000000000000003E000000
       2800000040000000400000000100010000000000000200000000000000000000
-      000000000000000000000000FFFFFF0000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000FFFF80018001F87FC00000000000E03F
+      000000000000000000000000FFFFFF00FFFF000000000000FFFF000000000000
+      EFFD000000000000C7FF000000000000C3FB000000000000E3F7000000000000
+      F1E7000000000000F8CF000000000000FC1F000000000000FE3F000000000000
+      FC1F000000000000F8CF000000000000E1E7000000000000C3F3000000000000
+      C7FD000000000000FFFF000000000000FFFF80018001F87FC00000000000E03F
       C000000000000000C000000000000000C00000000000C001FFFF00000000C001
       800100000000C001800100000000C001800100000000C001800100000000C001
       FFFF00000000C003000300000000C003000300000000C003000300000000C003
