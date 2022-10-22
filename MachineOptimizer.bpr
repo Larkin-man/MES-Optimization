@@ -73,11 +73,11 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=3
-MinorVer=1
-Release=0
-Build=19
+MinorVer=2
+Release=1
+Build=22
 Debug=0
-PreRelease=1
+PreRelease=0
 Special=0
 Private=0
 DLL=0
@@ -87,14 +87,17 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=3.1.0.19
+FileVersion=3.2.1.22
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
-OriginalFilename=Machine Optimizer.exe
+OriginalFilename=MachineOptimizer.exe
 ProductName=Дипломная работа
-ProductVersion=3.1
+ProductVersion=3.2
 Comments=mail:  psylonaut@mail.ru
+
+[Excluded Packages]
+c:\program files\borland\cbuilder6\Bin\idefilters60.bpl=IDE Filter for CPP32
 
 [HistoryLists\hlIncludePath]
 Count=1

@@ -18,16 +18,16 @@ class MachineOptimizer
 {
 public:
 
-     struct Node    //Деталь
+     struct Detal    //Деталька!
      {
           int m;         //Номер детали
-          int *T;        //Массив длительностей обработки деталей
+          int *T;        //Массив длительностей обработки на каждом станке
      };
 
      struct Link    //Cписок деталей
      {
           Link *next;    //Следующий элемент
-          Node *curr;    //Текущая деталь
+          Detal *curr;    //Текущая деталь
           Link *down;    //Вниз по дереву
      }
      *InitBegin,    //Список исходных деталей
@@ -35,17 +35,150 @@ public:
      *OptimalPS,    //Список деталей по Петрову-Соколицину (->down)
      *OptimalBH,    //Матрица С для метода ветвей и границ
      *PSBegin[4],   //Начало списка деталей по Петрову-Соколицину
-     **Cdos;        //Arari asimpaspari parire pararu parrapupa ta ta ta ua (fusrodah song)
+     *OptimalNew;
      int *OutSequence,   //Оптимальная последовательность обработки деталей для Джонсона и ПС
           **OutMatrix;   //Оптимальная последовательность обработки деталей для МВГ
      int StackOfCalls[4]; //Стек запусков методов
-     TStrings *Report;
+     TStrings *Report;    //Отчет содержащий вычисления
+     bool output;
      bool debugging;
 
-MachineOptimizer()
+MachineOptimizer();
+~MachineOptimizer();
+
+
+void add(int time[], int n);  //Добавление ДЕТАЛИ
+bool ClearData(char MethodID); //Функция очищает память
+int DjonsonRun(); //Запуск алгоритма Джонсона
+int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
+int MethodBHRun (char version, bool idleclean, bool idleall); //Method  of branches and hordes
+int GetN() {return N;}
+int NewMethodRun();
+     /* TODO : параметры по умолчанию должны быть сдесь */
+
+protected:
+
+     int
+     N,   //Количество станков
+     M;   //Количество деталей
+     int min[2];
+     Link           //TODO: надо чета делать с этими концами
+     *InitEnd,      //Конец списка иходных деталей
+     *OptimalEnd,   //Конец списка detals по Джонсону
+     *PSEnd[4],     //Конец списка detals по Петрову-Соколицину
+     *Cend,         //end of OptimalBH matrix
+     *Linker,       //Temp
+     **Cdos,        //Arari asimpaspari parire pararu parrapupa
+     **CdosEnd,     //End of Matrix OptimalBH(do,s)
+     *OptimalNewEnd;
+     int max;
+
+
+Detal *CreateItem (int n,int M,int *time)
+{                //Функция создает новую деталь
+     Detal *pItem = new Detal;
+     pItem->T = new int[n];
+     pItem->m=M;
+     if (time == NULL) return pItem;
+     for (int i=0;i<n;i++)
+     {
+          pItem->T[i]=time[i];
+     }
+     return pItem;
+}
+
+void CreateLink (Link **Begin, Detal **Item, Link **End, Link **Down = NULL)
+{    //Добавляет элемент в конец (End) списка Begin
+     Link *pLink = new Link;
+     pLink->next=NULL; 
+     pLink->curr=*Item;
+     if (Down == NULL)
+          pLink->down=*End;  //Обычный двусвязный список
+     else
+          pLink->down=*Down; //Дерево
+     if (*Begin == NULL)
+          *Begin = pLink;  //set the begin of initial list
+     else
+          (*End)->next=pLink;
+     *End=pLink;   //The end is always equal to a new item (Insert in the end of list)
+}
+
+void concatenate(Link *parent, Link *Item)  //REMARKABLE!
+{              //Функция соединяет два элемента
+     if (parent != NULL)
+          parent->next=Item;
+     if (Item!=NULL)
+          Item->down=parent;
+}
+
+bool Sort(int linker, int min,int J)
+{              //Функция сравнивает два числа - нужна для сортировки по ПС
+     if (J == 1)
+     {
+          return linker <= min;  //Sorting according increase
+     }
+     return linker >= min;       //Sorting according decrease
+}
+
+void DeleteLinks (Link *Item)
+{               //Функция удаляет список
+   if (Item->next != NULL)
+   {
+      DeleteLinks (Item->next);
+   }
+   delete Item;
+   Item=NULL;
+}
+void DeleteList (Link *Item)
+{
+     if (Item == NULL) return;
+     for (;Item!=NULL;Item=Item->next)
+     {
+          delete [] Item->curr->T;
+          delete Item->curr;
+     }
+}
+                                          
+bool rowind(int *D, int d) //проверка отсутствия детали d в списке D
+{
+     for (int i = 1;i<D[0]+2;i++)
+          if (d == D[i])
+               return false; //Деталь есть
+          return true;       //Детали нет
+}
+
+int ProductionCycle(Link *Matrix,bool down = false) //Находит длительность производственного цикла для матрицы В
+{
+     int *top = new int[N];
+     int left;
+     for (int i=0;i<N;i++)
+          top[i]=0;
+     for (;Matrix!=NULL;Matrix=Matrix->next)
+     {
+          left=0;
+          for (int i=0;i<N;i++)
+          {
+               top[i]=top[i]>left? top[i] : left;
+               if (down)
+                    top[i]+=Matrix->down->curr->T[i];  //спустившись вниз по дереву
+               else
+                    top[i]+=Matrix->curr->T[i]; 
+               left = top[i];
+          }
+     }
+
+     delete []top;
+     return left;
+}
+
+
+
+};
+
+MachineOptimizer::MachineOptimizer()
 {
      M=0;
-     N=100; //max
+     N=0;
      InitBegin=NULL;
      InitEnd=NULL;
      OptimalDJ=NULL;
@@ -54,8 +187,8 @@ MachineOptimizer()
      Linker=NULL;
      OptimalBH=NULL,
      Cend=NULL;
-     OutMatrix = NULL;
-     max=30000;
+     max=30000;     /* TODO : максимальный должен вычислятся с sizeof */
+     output = true;
      debugging = false;
 
      for (int i=0;i<4;i++)
@@ -64,9 +197,13 @@ MachineOptimizer()
                PSEnd[i]=NULL;
           }
      Report = new TStringList;
+     OutSequence = NULL;
+     OutMatrix=NULL;
+     OptimalNew=NULL;
+     OptimalNewEnd=NULL;
 }
 
-~MachineOptimizer()
+MachineOptimizer::~MachineOptimizer()
 {
      //ShowMessage("Деструктор запущен");
      //Удаление всех списков
@@ -82,33 +219,30 @@ MachineOptimizer()
 
      if (InitBegin != NULL)
           DeleteLinks(InitBegin);
-     //for (int i = 0;i < M+1; i++)
-     //     if (Cdos[i] != NULL)
-     //          DeleteLinks(Cdos[i]);
+
+     if (Report != NULL)
+          delete Report;
+     Report = NULL;
+     if (OutSequence != NULL)
+          delete [] OutSequence;
+     OutSequence = NULL;
+     if (OutMatrix != NULL)
+          for (int i=0;i<M;i++)
+               delete [] OutMatrix[i];
+     OutMatrix = NULL;
 
      //ShowMessage("Данные удалены!");
 }
 
-void add(int n, int *time)  //Добавление ДЕТАЛИ
+void MachineOptimizer::add(int time[], int n)  //Добавление ДЕТАЛИ
 {
-     if (n<N)
-          N=n;
+     N=n;
      M++;
-     Node *Item = CreateItem(n,M,time);
-     //InitEnd = CreateLink(InitBegin,Item,InitEnd);
-     Link *pLink = new Link;       //TODO: to issue as function
-     pLink->next=NULL;
-     pLink->curr=Item;
-     pLink->down=InitEnd;
-     if (InitBegin == NULL)
-          InitBegin = pLink;  //set the begin of initial list
-     else
-          InitEnd->next=pLink;
-     InitEnd = pLink;         //The end is always equal to a new item (Insert in the end of list)
-          //pLink->down->next=pLink;       */
+     Detal *Item = CreateItem(n,M,time);
+     CreateLink(&InitBegin,&Item,&InitEnd);      //DONE: to issue as function
 }
 
-bool ClearData(int MethodID) //Функция очищает память 
+bool MachineOptimizer::ClearData(char MethodID) //Функция очищает память
 {                            //1 - Алгоритма Джонсона
      switch(MethodID)
      {
@@ -129,28 +263,19 @@ bool ClearData(int MethodID) //Функция очищает память
      return false;
 }
 
-int DjonsonRun()
+int MachineOptimizer::DjonsonRun() //Запуск алгоритма Джонсона
 {
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
-     {                                    //TODO: to issue as function!
-          Link *pLink = new Link;
-          pLink->next=NULL;
-          pLink->curr=Linker->curr;  //But not to copy of NODE ! only Link
-          pLink->down=OptimalEnd;
-          if (OptimalDJ == NULL)
-               OptimalDJ = pLink;  //set the begin of initial list
-          else
-              OptimalEnd->next=pLink;
-          OptimalEnd = pLink;
-     }
-     //CreateLink(InitBegin,Linker->curr,InitEnd);
+          CreateLink(&OptimalDJ,&Linker->curr,&OptimalEnd);
+               //DONE: to issue as function!
+
      Linker = OptimalDJ;          //
-     Node *Item = CreateItem(N,0,NULL);    //TODO: found them and delete ?
+     Detal *Item = CreateItem(N,0,NULL);    //TODO: found them and delete ?
      Link *pLink = new Link;
      pLink->next=NULL;
      pLink->down=NULL;
      pLink->curr=Item;
-     OptimalDJ=pLink;
+     OptimalDJ=pLink;    //нельзя с пом createlink из-за этой команды чтобеё
      Link *minimal[2];
      minimal[0]=NULL;
      minimal[1]=NULL;
@@ -201,7 +326,7 @@ int DjonsonRun()
 
      //delete Linker->curr;
      //delete Linker;
-     while(OptimalDJ->down != NULL)     //todo: можно объеденить со след. циклом для ускорения
+     while(OptimalDJ->down != NULL)
           OptimalDJ=OptimalDJ->down;
      OutSequence = new int[M];
      int i=0;
@@ -213,7 +338,7 @@ int DjonsonRun()
      return ProductionCycle(OptimalDJ,false);
 }
 
-int PetrovSokolRun(TMemo *output = NULL)
+int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
 {
      int S[3];
      int TimeCycle=max;
@@ -234,16 +359,8 @@ int PetrovSokolRun(TMemo *output = NULL)
           //Создаем четыре одинаковых PSBegin
           for (int i=0;i<4;i++)
           {
-               Node *Item = CreateItem(3,Linker->curr->m,S);     //TODO : To remove from cycle!
-               Link *pLink = new Link;       //TODO: to issue as function
-               pLink->next=NULL;
-               pLink->curr=Item;
-               pLink->down=Linker;  //
-               if (PSBegin[i] == NULL)
-                    PSBegin[i] = pLink;  //set the begin of initial list
-               else
-                    PSEnd[i]->next=pLink;
-               PSEnd[i] = pLink;         //The end is always equal to a new item (Insert in the end of list)
+               Detal *Item = CreateItem(3,Linker->curr->m,S);     //TODO : To remove from cycle!
+               CreateLink(&PSBegin[i],&Item,&PSEnd[i],&Linker);
           }
      }
 
@@ -294,16 +411,15 @@ int PetrovSokolRun(TMemo *output = NULL)
      }//for j
      OptimalPS=PSBegin[OutSequence[0]];
      int i=0;
-     for (Linker = PSBegin[OutSequence[0]];Linker!=NULL;Linker=Linker->next)
-     {
+     for (Linker = PSBegin[OutSequence[0]];Linker!=NULL;Linker=Linker->next, i++)
           OutSequence[i]=Linker->curr->m;
-          i++;
-     }
+     delete Temp;
      return TimeCycle;
 }
 
-int MethodBHRun (char version = 0, bool output = true) //Method  of branches and hordes
+int MachineOptimizer::MethodBHRun (char version = 0, bool idleclean = false, bool idleall = false) //Method  of branches and hordes
 {
+     //ShowMessage("version="+IntToStr(version)+" bool1="+IntToStr(idleclean)+" bool1="+IntToStr(idleall));
      int
           s,   //Текущий станок
           d,   //Текущая деталь
@@ -312,24 +428,26 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
      Report->Clear();
      Report->Add("Отчет");
      AnsiString Added;
-     //Report->Strings[0].SetLength(80);
      OutMatrix = new int *[M];
      for (int i=0;i<M;i++)
           OutMatrix[i] = new int[N];
      for(int i = 0; i<M; i++)
           for(int j = 0; j<N; j++)
-               OutMatrix[i][j]=0;
+               OutMatrix[i][j]=0;    //выходная матрица заполнена нулями
 
      if (output == false)
           debugging = false;  //NO OUTPUT
+     int *D = new int [M+1];  //DONE: Один раз создать
+     int *E = new int [M+1];
+     int *Fi = new int[M+1];
+     CdosEnd = new Link* [M+1];
+
 
      //Создание матрицы С
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
      {
-          Link *pLink = new Link;
-          pLink->next=NULL;
           // 1) Формирование матрицы С
-          Node *pItem = new Node;
+          Detal *pItem = new Detal;
           pItem->T = new int[N];
           pItem->m=Linker->curr->m;
           int summ=0;
@@ -338,16 +456,11 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                summ+=Linker->curr->T[i];  //Сумма по строкам
                pItem->T[i]=summ;
           }
-          pLink->curr=pItem;
-          pLink->down=Linker; //pLink->down=Cend;
-          if (OptimalBH == NULL)
-               OptimalBH = pLink;
-          else
-              Cend->next=pLink;
-          Cend = pLink;
+          CreateLink(&OptimalBH,&pItem,&Cend,&Linker);
+          //Создает дерево OptimalBH, с down, указывающим на InitBegin
      }
-
-     for (s = 1;s<N+1;s++)   // 2.
+     
+/*S*/for (s = 1;s<N+1;s++)   // 2. Цикл по станкам!
      {
           int k = 0;
           if (output)
@@ -363,9 +476,12 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                }
                Report->Add("");
                Report->Add("Станок № "+IntToStr(s));
-          }
+           }
 
-          for(o = 1;o<M+1;o++)   //для каждой очередности       // 3.
+///////////////////{THYZ
+
+
+/***O***/ for(o = 1;o<M+1;o++)   //для каждой очередности       // 3.
           {
                if (output)
                {
@@ -374,14 +490,11 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                }
 
                // 4) Проверка конфликта на станке s
-               int *D = new int [M+1];
-               int *E = new int [M+1];
-
                //В D изначально лежат детали из В а в Е из С
                //Для того чтоб не бегать по спискам лишний раз
                for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                {
-                    Node *init = Linker->down->curr;  //Указатель на деталь из списка В
+                    Detal *init = Linker->down->curr;  //Указатель на деталь из списка В
                     D[init->m]=init->T[s-1];
                     E[init->m]=Linker->curr->T[s-1];
                }
@@ -434,9 +547,9 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
 
                if (E[0] == 0)
                {
-               if (debugging)
-                    Report->Add("Конфликт разрешился преждевременно!");
-               break;
+                    if (debugging)
+                         Report->Add("Конфликт разрешился преждевременно!");
+                    break;   //Это к следующей очередности
 
                }
 
@@ -452,9 +565,7 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
 
                //Создание Сдос
                Cdos = new Link* [E[0]+1];
-               CdosEnd = new Link* [E[0]+1];
-               int *Fi = new int[E[0]+1];
-               //*Cdos = new Link [E[0]];
+
                for (int i = 0;i<E[0]+1;i++)
                {
                     Cdos[i] = NULL;
@@ -462,7 +573,7 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                }
 
                //Центральный цикл по конфликтным деталям
-               for (int det = 1;det < E[0]+1;det++)
+/*****D*****/  for (int det = 1;det < E[0]+1;det++)
                {
                     d=E[det];
                     if (output)
@@ -487,23 +598,20 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                     }
                     // minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
                     //output->Lines->Add("minimal="+IntToStr(minimal.next->curr->m));
-                    if (debugging)
-                         Report->Add("R="+IntToStr(R));
                     //Report->Add("R="+IntToStr(R));
                     //Формирование Сдос
                     for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
                     {
                          //output->Lines->Add("Linker "+IntToStr(Linker));
-                         Link *pLink = new Link;
-                         pLink->next=NULL;
-                         pLink->down=Linker;
-                         pLink->curr=Linker->curr;
+                         CreateLink(&Cdos[det],&Linker->curr,&CdosEnd[det],&Linker);
+                         //Создает дерево Cdos, у которого down -> OptimalBH
+
                          if (rowind(D,Linker->curr->m))
                          {   //Если одинаковые данные то не создавать копию
-                              Node *pItem = new Node;
+                              Detal *pItem = new Detal;
                               pItem->T = new int[N];
                               pItem->m=Linker->curr->m;
-                              pLink->curr=pItem;
+                              CdosEnd[det]->curr=pItem;
                               for (int i=0;i<N;i++)
                               {
                                    if (i < s-1)
@@ -517,15 +625,12 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                                              pItem->T[i]= Linker->curr->T[i];
                                    }
                               }
-                         }
-                         if (Cdos[det] == NULL)
-                              Cdos[det] = pLink;
-                         else
-                              CdosEnd[det]->next=pLink;
-                         CdosEnd[det] = pLink;     //*/
+                         }       
                     }
+                    
                     if (output)
                     {
+                         //Report->Add("CDOS");
                          for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
                          {    //Вывести матрицу на экран
                               //output->Lines->Add(IntToStr(Linker->curr->m)+"  |  ");
@@ -535,51 +640,182 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                               Added="";
                          }
                     }
+                    if (debugging)
+                         Report->Add("R="+IntToStr(R));
 
-                  if (version == 0)
-                  {
-                    // 7) Начнем поиск минимальных и сортировку по предпоследнему станку для нахождения фи
-                    int T = 0;   // 8) T
-                    Link *minimal=Cdos[det];          //минимальный = первый
-                    int min;//=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
-                    for (int i=0;i<M;i++)  //Этот цикл для накопления Т
+                    if (debugging)
                     {
-                         min=max;
-                         for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next) //Для поиска минимального
-                         {
-                              if ((Linker->curr->T[N-2] < min) && (Linker->curr->m >=0))    //(Linker->curr->T[N-2] < min)    (Linker->curr->T[s-1] < min)
+                         Added="D: ";
+                         for (int i = 0;i<M+1;i++)
+                              Added+=IntToStr(D[i])+"  ";
+                         Report->Add(Added);
+                              Added="";
+                         Added="E: ";
+                         for (int i = 0;i<M+1;i++)
+                              Added+=IntToStr(E[i])+"  ";
+                         Report->Add(Added);
+                              Added="";
+                         Report->Add("det="+IntToStr(det));
+                         Report->Add("k="+IntToStr(k));
+                         if (rowind(D,det))
+                              Report->Add("rowind(D,det) is TRUE");
+                         //else
+                         //     Report->Add("rowind(D,det) is FALSE");
+                    }
+
+
+
+                    int vers=int(version);
+                     switch (vers)
+                     {
+                        case 1:
+                        //{
+                           Fi[det]=0;
+                           for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
+                           {
+                              if (Linker->curr->T[N-1] > Fi[det])
+                                 Fi[det] = Linker->curr->T[N-1];
+                           }
+                           break;
+                        //}
+                        case 2:
+                        //{
+                           Fi[det]=ProductionCycle(Cdos[det]);
+                           break;
+                        //}
+                        case 3:
+                        {
+                           Fi[det]=0;
+                           int *Duration = new int [N];
+                           for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
+                           {
+                                 if (Linker->curr->m == E[det])
+                                 {
+                                    for (int j=0;j<N;j++)
+                                    {
+                                        Duration[j]=Linker->curr->T[j];
+                                    }
+                                    break;
+                                 }
+                           }
+
+                           for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
+                           {
+                              if(rowind(D,Linker->curr->m))
                               {
+                                   //Детали м нет в Д
+                                   //Report->Add("for "+IntToStr(Linker->curr->m));
+                                   int ts=Duration[s-1];
+                                   int st=Duration[s-1];
+                                   for (int j=1;j<N;j++)
+                                   {
+                                        if (st < ts)
+                                             st = ts;
+                                        ts+=Duration[j];
+                                        st+=Linker->curr->T[j-1];
+
+                                        if (st>ts)
+                                        {
+                                             Fi[det]+=(st-ts);
+                                        }
+                                        //if (debugging)
+                                          //   Report->Add("ts="+IntToStr(ts)+"st="+IntToStr(st)+"fi="+IntToStr(Fi[det]));
+                                   }
+                              }
+                           }
+                           //if ((s == 1)&&(o == 1))
+                           //{
+                           //   for (int i=0;i<(N-1);i++)
+                           //        Fi[det]=Fi[det]+(Duration[i]*(N-i-1));
+                           //}
+
+                           delete []Duration;
+                           break;
+                        }
+                        case 4:
+                        {
+                           ///////////////////////////////
+
+                           Fi[det]=0;
+                           int *top;
+                           top = new int [N];
+                           int left=0;
+                           for (int i=0;i<N;i++)
+                              top[i]=Cdos[det]->curr->T[i];
+                           for (Linker = Cdos[det]->next;Linker!=NULL;Linker=Linker->next)
+                           {
+                              left=0;
+                              bool netu;
+                              if (rowind(D,Linker->curr->m))
+                                   {
+                                        if (debugging)
+                                             Report->Add("Detali netu "+IntToStr(Linker->curr->m));
+                                        netu=true;
+
+                                   }
+                                   else
+                                   {
+                                        if (debugging)
+                                             Report->Add("Detal est "+IntToStr(Linker->curr->m));
+                                        netu=false;
+
+                                   }
+                               for (int i=s-1;i<N;i++)
+                               {
+                                 top[i]=(top[i]>left)? top[i] : left;
+                                 if (netu)
+                                    netu = false;
+                                 else
+                                    top[i]+=Linker->down->down->curr->T[i];
+                                 left=top[i];
+                               }
+                               if (debugging)
+                                 Report->Add("topN="+IntToStr(top[N-1]));
+                           }
+                           Fi[det]=top[N-1];
+                           delete top;
+
+                           break;
+                        }
+                        default:
+                        //{
+                           // 7) Начнем поиск минимальных и сортировку по предпоследнему станку для нахождения фи
+                           int T = 0;   // 8) T
+                           Link *minimal=Cdos[det];          //минимальный = первый
+                           int min;//=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
+                           for (int i=0;i<M;i++)  //Этот цикл для накопления Т
+                           {
+                              min=max;
+                              for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next) //Для поиска минимального
+                              {
+                                 if ((Linker->curr->T[N-2] < min) && (Linker->curr->m >=0))    //(Linker->curr->T[N-2] < min)    (Linker->curr->T[s-1] < min)
+                                 {
                                    minimal=Linker;
                                    min=Linker->curr->T[N-2];             //min=Linker->curr->T[N-2];     min=Linker->curr->T[s-1];
+                                 }
                               }
-                         }
 
-                         //минимальный найден
-                         minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-                         //Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
-                         if (T <= minimal->curr->T[N-2])   // 9) Сравниваем Т и С(fq,n-1)   // (T <= minimal->curr->T[N-2])
-                              T = minimal->curr->T[N-1];                                    //T = minimal->curr->T[N-1];
-                         else
-                              T+=minimal->down->down->curr->T[N-1];                    //T+=minimal->down->down->curr->T[N-1];
-                         //Report->Add("i = "+IntToStr(i)+" T= "+IntToStr(T)+" min m= "+IntToStr(minimal->curr->m));
-                    }
-                    Fi[det]=T;   //11
-                  } //version 0
-                  else //version > 0 
-                  {
-                    Fi[det]=0;
-                    for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
-                         {
-                              if (Linker->curr->T[N-1] > Fi[det])
-                                   Fi[det] = Linker->curr->T[N-1];
-                         }
-                  }
+                              //минимальный найден
+                              minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
+                              //Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
+                              if (T <= minimal->curr->T[N-2])   // 9) Сравниваем Т и С(fq,n-1)   // (T <= minimal->curr->T[N-2])
+                                 T = minimal->curr->T[N-1];                                    //T = minimal->curr->T[N-1];
+                              else
+                                 T+=minimal->down->down->curr->T[N-1];                    //T+=minimal->down->down->curr->T[N-1];
+                              //Report->Add("i = "+IntToStr(i)+" T= "+IntToStr(T)+" min m= "+IntToStr(minimal->curr->m));
+                           }
+                           Fi[det]=T;   //11
+                        //}
+                     } //switch version
+                     //Fi найден
+
                     for (int i=0;i<M;i++)   //по выходной матрице
                          if (d == OutMatrix[i][s-1])
                          {
                               if (debugging)
                                    Report->Add("Заблокировать деталь "+IntToStr(d)+" в списке она "+IntToStr(det));
-                              Fi[det]+=1000;
+                              //Fi[det]+=1000;
+                              Fi[det]=max;
                          }
                     if (output)
                          Report->Add("Fi["+IntToStr(det)+"] = "+IntToStr(Fi[det]));
@@ -606,7 +842,8 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                     Report->Add("Деталь: "+IntToStr(k)+" на станке: "+IntToStr(s)+" будет обрабатыватся: "+IntToStr(o)+" по счету.");
 
                OutMatrix[o-1][s-1]=k;
-               for (int i = 1;i<E[0]+1;i++)
+
+               for (int i = 1;i<E[0]+1;i++) //Цикл для удаления Cdos
                {
                     for (Linker = Cdos[i];Linker!=NULL;Linker=Linker->next)
                     {
@@ -617,135 +854,206 @@ int MethodBHRun (char version = 0, bool output = true) //Method  of branches and
                                    for (int i =0;i<N;i++)
                                         Linker->down->curr->T[i]=Linker->curr->T[i];
                                    //Linker->curr->m -=100;
-                              delete Linker->curr;
+                              delete Linker->curr;  //Удаление элемента
                               Linker->curr = NULL;
                          }
                     }
-                    DeleteLinks(Cdos[i]);
-               }
-               delete D;
-               delete E;
-               delete Fi;
+                    //delyal there
+                    DeleteLinks(Cdos[i]);  //Стираниие списка
+               }  //Все Cdosы удалены
+
           } ///Закрылся цикл очередностей
-     }
-     //d=ProductionCycle(OptimalBH,output);
-     d=OptimalBH->curr->T[N-1];
-     for (Linker = OptimalBH->next;Linker!=NULL;Linker=Linker->next)
-          if (Linker->curr->T[N-1]>d)
-               d=Linker->curr->T[N-1];
-     if (output)
-          Report->Add("Длительность="+IntToStr(d));
-     return d;
-}
-
-protected:
-
-     int
-     N,   //Количество станков
-     M;   //Количество деталей
-     int min[2];
-     Link           //TODO: надо чета делать с этими концами
-     *InitEnd,      //Конец списка иходных деталей
-     *OptimalEnd,   //Конец списка detals по Джонсону
-     *PSEnd[4],     //Конец списка detals по Петрову-Соколицину
-     *Cend,         //end of OptimalBH matrix
-     *Linker,       //Temp
-     **CdosEnd;     //End of Matrix OptimalBH(do,s)
-     int max;
-
- 
-//Node *CreateItem (int,int,int *time =NULL);
-
-Node *CreateItem (int n,int M,int *time)
-{                //Функция создает новый элемент
-     Node *pItem = new Node;
-     pItem->T = new int[n];
-     pItem->m=M;
-     if (time == NULL) return pItem;
-     for (int i=0;i<n;i++)
-     {
-          pItem->T[i]=time[i];
-     }
-     return pItem;
-}
-
-Link *CreateLink (Link *Begin, Node *Item, Link *End)
-{
-     Link *pLink = new Link;
-     pLink->next=NULL; //ok
-     pLink->curr=Item;
-     pLink->down=End;
-     if (Begin == NULL)
-          Begin = pLink;  //set the begin of initial list
-     else
-          return End;    //Ниполучается у Меня хоть тресни работать с указателем на указатель
-     return NULL;
-}
-
-void concatenate(Link *parent, Link *Item)  //REMARKABLE!
-{              //Функция соединяет два элемента
-     if (parent != NULL)
-          parent->next=Item;
-     if (Item!=NULL)
-          Item->down=parent;
-}
-
-bool Sort(int linker, int min,int J)
-{              //Функция сравнивает два числа - нужна для сортировки по ПС
-     if (J == 1)
-     {
-          return linker <= min;  //Sorting according increase
-     }
-     return linker >= min;       //Sorting according decrease
-}
-
-void DeleteLinks (Link *Item)
-{               //Функция удаляет список
-   if (Item->next != NULL)
-   {
-      DeleteLinks (Item->next);
-   }
-   delete Item;
-}
-void DeleteList (Link *Item)
-{
-     if (Item == NULL) return;
-     for (;Item!=NULL;Item=Item->next)
-          delete Item->curr;
-}
-                                          
-bool rowind(int *D, int d) //проверка наличия детали d в списке D
-{
-     for (int i = 1;i<D[0]+2;i++)
-          if (d == D[i])
-               return false;
-          //ShowMessage("detal in D");
-          return true;
-}
-
-int ProductionCycle(Link *Matrix,bool down = false) //Находит длительность производственного цикла для матрицы В
-{
-     int *top = new int[N];
-     int left;
-     for (int i=0;i<N;i++)
-          top[i]=0;
-     for (;Matrix!=NULL;Matrix=Matrix->next)
-     {
-          left=0;
-          for (int i=0;i<N;i++)
+          if (idleall)
           {
-               top[i]=top[i]>left? top[i] : left;
-               if (down)
-                    top[i]+=Matrix->down->curr->T[i];  //Только спустившись вниз по дереву
-               else
-                    top[i]+=Matrix->curr->T[i];  //Только спустившись вниз по дереву
-               left = top[i];
+               if (s>1)
+               {
+                    //Алгоритм ищет ненужный простой между каждыми двумя деталями в очереди
+                    //И убирает его
+                    int z;
+                    Link *minimal=OptimalBH;          //минимальный = первый
+                    int min;//=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
+
+                    for (int i=0;i<M;i++)  
+                    {    //
+                         min=max;
+                         for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next) //Для поиска минимального
+                         {
+                              if ((Linker->curr->T[s-1] < min) && (Linker->curr->m >=0))    
+                              {
+                                   minimal=Linker;
+                                   min=Linker->curr->T[s-1];
+                              }    //Цикл находит минимальнуую длит. обработки среди всех деталей на станке s-1
+
+                         }
+
+                         //минимальный найден
+                         Added+=IntToStr(minimal->curr->m)+"  ";
+                         minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
+                         //Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
+                         if (i==0)
+                              z=minimal->curr->T[s-1];
+                         //z - Время окончания обработки предыдущей детали
+                         else
+                         {
+                              int A = (minimal->curr->T[s-1])-(minimal->down->curr->T[s-1]);
+                              //А - время начала обработки следующей детали
+                              if (A != z)
+                              {
+                                   if(A != (minimal->curr->T[s-2]))
+                                   {
+                                        minimal->curr->T[s-1] = (z > (minimal->curr->T[s-2]))? z : (minimal->curr->T[s-2]);
+                                        (minimal->curr->T[s-1])+=(minimal->down->curr->T[s-1]);
+                                        if (debugging)
+                                             Report->Add("Убран простой детали "+IntToStr(-minimal->curr->m));
+                                   }
+                         }
+                         z = minimal->curr->T[s-1];
+                         }
+                         //Грубо говоря, между z и А если есть простой, он будет уничтожен
+
+                    } //Закончился цикл по всем деталям
+
+                    for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)  //Уберем минусы
+                         if (Linker->curr->m < 0)
+                              Linker->curr->m=-Linker->curr->m;
+                    
+                    if (debugging)
+                    {
+                         Report->Add("Отсортированные детали в OptimalBH");
+                         Report->Add(Added);
+                    }
+                    Added="";
+               }
+          }//Закончилась обработка простоев на текущем станке
+
+          //Для создания Выходной матрицы
+          int max=0;
+          for (Linker = OptimalBH;Linker!=NULL;Linker=Linker->next)
+          {
+               D[Linker->curr->m]=Linker->curr->T[s-1];
+               if (D[Linker->curr->m]>max)
+                    max=D[Linker->curr->m];
+          }                                                    
+          for (int i=0;i<M;i++)
+               OutMatrix[i][s-1]=i+1;
+          for (int i=0;i<M;i++)
+          {
+               D[0] = max+1;
+               int min;
+               for (int j=1;j<M+1;j++)
+               {
+                    if ((D[j]<D[0]) && (D[j]>=0))
+                    {
+                         D[0] = D[j];
+                         min=j;
+                    }
+               }
+               //Минимальный найден D[0]
+               D[min]=-D[min];
+               OutMatrix[i][s-1]=min;
+          }
+          //Выходная матрица заполнена
+
+          if (debugging)
+          {
+          Report->Add("Выходная последовательность обработки деталей");
+          for (int i=0;i<M;i++)
+          {
+               for (int j=0;j<N;j++)
+               {
+                    Added+=IntToStr(OutMatrix[i][j])+"  ";
+               }
+               Report->Add(Added);
+               Added="";
+          }
+          }
+
+     } //Закрылся цикл по станкам
+     
+     //d=ProductionCycle(OptimalBH,output);
+     //Расчет длительности производственного цикла
+     int TimeCycle=OptimalBH->curr->T[N-1];
+     for (Linker = OptimalBH->next;Linker!=NULL;Linker=Linker->next)
+          if (Linker->curr->T[N-1]>TimeCycle)
+               TimeCycle=Linker->curr->T[N-1];
+     if (output)
+          Report->Add("Длительность="+IntToStr(TimeCycle));
+     //Удаление переменных
+     delete [] D;
+     delete [] E;
+     delete [] Fi;
+     for (int i = 0;i<M+1;i++)
+     {
+          //DeleteLinks(Cdos[i]);   
+     }
+     delete [] CdosEnd;
+     return TimeCycle;
+}
+
+int MachineOptimizer::NewMethodRun()
+{
+     //Создание выходной матрицы
+     Report->Clear();
+     Report->Add("Отчет");
+     AnsiString Added;
+     //Report->Strings[0].SetLength(80);
+     OutMatrix = new int *[M];
+     for (int i=0;i<M;i++)
+          OutMatrix[i] = new int[N];
+     for(int i = 0; i<M; i++)
+          for(int j = 0; j<N; j++)
+               OutMatrix[i][j]=0;
+     int *Operative = new int[M+1];
+     for (int i=0;i<M+1;i++)
+          Operative[i]=0;
+
+     for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
+          CreateLink(&OptimalNew,&Linker->curr,&OptimalNewEnd);
+
+
+     int max=0;
+     for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next) //Для поиска минимального
+     {
+          for (int i=0;i<N-1;i++)
+               Operative[Linker->curr->m]+=(Linker->curr->T[i]*(N-i-1));
+          if (max<Operative[Linker->curr->m])
+               max=Operative[Linker->curr->m];
+     }
+     int min=1;
+     int max2=max;
+
+
+     Link* Linker2=NULL;
+     for (Linker = OptimalNew;Linker!=NULL;Linker=Linker->next)
+     //Цикл для упорядочивания по возрастанию
+     {
+          max2=max+1;
+          for (int i=1;i<M+1;i++) //Цикл найдет минимальный элемент
+          {
+               if ((Operative[i]<max2)&&(Operative[i]>=0))
+               {
+                    max2=Operative[i];
+                    min=i;     /* TODO 1 : Нужно обязательно предусмотреть одинаковые */
+               }
+          }
+
+          Operative[min]*=(-1);
+          for (Linker2 = InitBegin;Linker2!=NULL;Linker2=Linker2->next)
+          {
+               max2=100;
+               if (Linker2->curr->m == min)
+               {
+                    max2=100;
+                    Linker->curr=Linker2->curr;
+               }
           }
      }
+     
+     
 
-     delete top;
-     return left;
-}                  
 
-};
+     return ProductionCycle(OptimalNew);
+}
+
+
 #endif

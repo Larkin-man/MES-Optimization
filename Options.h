@@ -10,6 +10,7 @@
 #include <ComCtrls.hpp>
 #include <Buttons.hpp>
 #include <ExtCtrls.hpp>
+#include "CSPIN.h"
 //---------------------------------------------------------------------------
 class TOptionsForm : public TForm
 {
@@ -18,25 +19,42 @@ __published:	// IDE-managed Components
      TTabSheet *TabSheet1;
      TTabSheet *TabSheet2;
      TCheckBox *Debug;
-     TRadioGroup *RadioGroupTime;
      TTabSheet *TabSheet3;
-     TGroupBox *GroupBox1;
-     TCheckBox *NoOut;
      TBitBtn *BitBtn1;
      TBitBtn *BitBtn2;
      TLabel *Label1;
-     TRadioGroup *RadioGroupFi;
      TRadioGroup *ColorOptions;
      TCheckBox *WorkTimeOut;
      TTabSheet *TabSheet4;
-     TCheckBox *CheckBox1;
-     TCheckBox *CheckBox2;
+     TCheckBox *Criterion1;
+     TCheckBox *Criterion2;
      TRadioGroup *MVGModify;
      TCheckBox *HeightScaling;
+     TCSpinEdit *SpinBrightness;
+     TLabel *Label2;
+     TCheckBox *Contrast;
+     TCSpinEdit *OpenCheck;
+     TLabel *Label3;
+     TCSpinEdit *SpinBI;
+     TLabel *Label4;
+     TGroupBox *GroupBox2;
+     TLabel *Label5;
+     TCSpinEdit *RandomFrom;
+     TLabel *Label6;
+     TCSpinEdit *RandomTo;
+     TGroupBox *GroupBox1;
+     TCheckBox *NoOut;
+     TCheckBox *MvgIdle;
+     TCheckBox *MvgIdleAll;
      void __fastcall NoOutClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
-     void __fastcall RadioGroupFiClick(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+     void __fastcall SpinBrightnessChange(TObject *Sender);
+     void __fastcall ColorOptionsClick(TObject *Sender);
+     void __fastcall OpenCheckChange(TObject *Sender);
+     void __fastcall HeightScalingClick(TObject *Sender);
+     void __fastcall RandomFromChange(TObject *Sender);
+     void __fastcall RandomToChange(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations

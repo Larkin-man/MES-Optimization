@@ -12,6 +12,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "CSPIN.h"
+#include <AppEvnts.hpp>
 //---------------------------------------------------------------------------
 class TEnterDataForm : public TForm
 {
@@ -21,12 +22,14 @@ __published:	// IDE-managed Components
      TBitBtn *BitBtnOkResize;
      TBitBtn *BitBtn2;
      TBitBtn *BitBtnOkRandom;
-        void __fastcall FormShow(TObject *Sender);
+     void __fastcall FormShow(TObject *Sender);
      void __fastcall BitBtnOkResizeClick(TObject *Sender);
      void __fastcall BitBtn2Click(TObject *Sender);
      void __fastcall BitBtnOkRandomClick(TObject *Sender);
      void __fastcall Field1Exit(TObject *Sender);
-     void __fastcall Field2Exit(TObject *Sender);     
+     void __fastcall Field2Exit(TObject *Sender);
+     void __fastcall Field1Change(TObject *Sender);
+     void __fastcall Field2Change(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TEnterDataForm(TComponent* Owner);
@@ -37,8 +40,8 @@ public:		// User declarations
           try
           {
                c = StrToInt(Sender->Text);
-                    if (c<0)
-                         Sender->Text = abs(c);
+               c = (c<0)? -c : c;
+               Sender->Text = c;
           }
           catch (EConvertError&)
           {
@@ -46,8 +49,7 @@ public:		// User declarations
                Sender->Text="";  
           }
           if (c == 0)
-               Sender->Text = "";
-
+               Sender->Text = "";         
      }
 };
 //---------------------------------------------------------------------------

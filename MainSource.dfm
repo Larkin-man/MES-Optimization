@@ -1,6 +1,6 @@
 object BaseForm: TBaseForm
-  Left = 57
-  Top = 83
+  Left = 62
+  Top = 79
   Width = 832
   Height = 500
   Caption = #1054#1087#1090#1080#1084#1080#1079#1072#1094#1080#1103' '#1079#1072#1087#1091#1089#1082#1072' '#1076#1077#1090#1072#1083#1077#1081' '#1074' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1086
@@ -56,7 +56,8 @@ object BaseForm: TBaseForm
       #1040#1083#1075#1086#1088#1080#1090#1084' '#1044#1078#1086#1085#1089#1086#1085#1072
       #1052#1077#1090#1086#1076' '#1055#1077#1090#1088#1086#1074#1072'-'#1057#1086#1082#1086#1083#1080#1094#1080#1085#1072
       #1052#1077#1090#1086#1076' '#1074#1077#1090#1074#1077#1081' '#1080' '#1075#1088#1072#1085#1080#1094
-      #1052#1077#1090#1086#1076' '#1074#1077#1090#1074#1077#1081' '#1080' '#1075#1088#1072#1085#1080#1094' ('#1052')')
+      #1052#1077#1090#1086#1076' '#1074#1077#1090#1074#1077#1081' '#1080' '#1075#1088#1072#1085#1080#1094' ('#1052#1086#1076'.)'
+      #1053#1086#1074#1099#1081' '#1084#1077#1090#1086#1076)
     ParentColor = False
     ParentFont = False
     TabOrder = 2
@@ -2178,6 +2179,8 @@ object BaseForm: TBaseForm
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
+      ParentShowHint = False
+      ShowHint = True
       Visible = False
       OnClick = SpeedButton1Click
     end
@@ -2215,7 +2218,11 @@ object BaseForm: TBaseForm
     PopupMenu = PopupMenuGrid
     TabOrder = 4
     OnColumnMoved = TableColumnMoved
+    OnGetEditText = TableGetEditText
     OnRowMoved = TableRowMoved
+    OnSelectCell = TableSelectCell
+    OnSetEditText = TableSetEditText
+    OnTopLeftChanged = TableTopLeftChanged
   end
   object StringGrid1: TStringGrid
     Left = 544
@@ -2236,23 +2243,23 @@ object BaseForm: TBaseForm
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    Left = 576
+    Left = 520
     Top = 17
     object NMenuFile: TMenuItem
       Caption = '&'#1060#1072#1081#1083
-      object N6: TMenuItem
+      object NNew: TMenuItem
         Action = FileNew
       end
-      object N4: TMenuItem
+      object NOpen: TMenuItem
         Action = FileOpen
       end
-      object SaveAs1: TMenuItem
+      object NSaveAs: TMenuItem
         Action = FileSave
       end
       object N9: TMenuItem
         Caption = '-'
       end
-      object Exit1: TMenuItem
+      object NExit: TMenuItem
         Action = FileExit
       end
     end
@@ -2261,7 +2268,7 @@ object BaseForm: TBaseForm
       object NSize: TMenuItem
         Action = ResizeTable
       end
-      object N7: TMenuItem
+      object NRandom: TMenuItem
         Action = Random
       end
       object NTranspon: TMenuItem
@@ -2269,9 +2276,9 @@ object BaseForm: TBaseForm
         ShortCut = 16468
         OnClick = NTransponClick
       end
-      object N10: TMenuItem
+      object NManualMode: TMenuItem
         Caption = #1047#1072#1076#1072#1090#1100' '#1087#1086#1088#1103#1076#1086#1082' '#1079#1072#1087#1091#1089#1082#1072' '#1074#1088#1091#1095#1085#1091#1102
-        Enabled = False
+        OnClick = NManualModeClick
       end
     end
     object NMenuRun: TMenuItem
@@ -2346,7 +2353,7 @@ object BaseForm: TBaseForm
   end
   object ActionList1: TActionList
     Images = ImageList1
-    Left = 608
+    Left = 552
     Top = 17
     object FileNew: TAction
       Category = 'File'
@@ -2446,7 +2453,7 @@ object BaseForm: TBaseForm
     end
   end
   object ImageList1: TImageList
-    Left = 640
+    Left = 584
     Top = 17
     Bitmap = {
       494C01010D000E00040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600

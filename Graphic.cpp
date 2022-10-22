@@ -24,6 +24,8 @@ __fastcall TGraphicForm::TGraphicForm(TComponent* Owner)
      //BitMap = new Graphics::TBitmap;
      gant->Canvas->Brush->Color=clRed;
      SavePictureDialog1->InitialDir=GetCurrentDir();
+     scr1=0;
+     scr2=0;
 }
 //---------------------------------------------------------------------------
 //Переход в модуль расчета
@@ -99,6 +101,7 @@ void __fastcall TGraphicForm::ColorBox1Change(TObject *Sender)
 void __fastcall TGraphicForm::N1Click(TObject *Sender)
 {
      gant->Refresh();
+     BitBtn4->SetFocus();
 }
 //---------------------------------------------------------------------------
 
@@ -117,6 +120,29 @@ void __fastcall TGraphicForm::N4Click(TObject *Sender)
      OptionsForm->ColorOptions->ItemIndex=1;
      BaseForm->multicoloured=true;
      BaseForm->PaintGant();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TGraphicForm::ScrollBar1Scroll(TObject *Sender,
+      TScrollCode ScrollCode, int &ScrollPos)
+{
+     if (scr1 == ScrollPos)
+          return;
+     scr1=ScrollPos;
+     ClearGantField();
+     BaseForm->DrawGant(ScrollPos,ScrollBar2->Position);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TGraphicForm::ScrollBar2Scroll(TObject *Sender,
+      TScrollCode ScrollCode, int &ScrollPos)
+{
+     if (scr2 == ScrollPos)
+          return;
+     scr2=ScrollPos;
+     ClearGantField();
+     BaseForm->DrawGant(ScrollBar1->Position,ScrollPos);
 }
 //---------------------------------------------------------------------------
 

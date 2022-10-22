@@ -44,6 +44,8 @@ __published:	// IDE-managed Components
      TMenuItem *N2;
      TMenuItem *N3;
      TMenuItem *N4;
+     TScrollBar *ScrollBar1;
+     TScrollBar *ScrollBar2;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall SpeedButton2Click(TObject *Sender);
@@ -54,14 +56,22 @@ __published:	// IDE-managed Components
      void __fastcall N1Click(TObject *Sender);
      void __fastcall N2Click(TObject *Sender);
      void __fastcall N4Click(TObject *Sender);
+     void __fastcall ScrollBar1Scroll(TObject *Sender,
+          TScrollCode ScrollCode, int &ScrollPos);
+     void __fastcall ScrollBar2Scroll(TObject *Sender,
+          TScrollCode ScrollCode, int &ScrollPos);
 private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
      __fastcall TGraphicForm(TComponent* Owner);
+     int scr1,scr2;
+
      void ClearGantField()
      {
           gant->Canvas->Brush->Color=ColorBox1->Selected;
           gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
+          gant->Canvas->Rectangle(Rect(56,72,357,233));
+
      }
 };
 //---------------------------------------------------------------------------

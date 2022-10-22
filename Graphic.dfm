@@ -1,6 +1,6 @@
 object GraphicForm: TGraphicForm
-  Left = 54
-  Top = 105
+  Left = 115
+  Top = 111
   Width = 763
   Height = 465
   Anchors = []
@@ -22,12 +22,11 @@ object GraphicForm: TGraphicForm
   object gant: TImage
     Left = 0
     Top = 56
-    Width = 755
-    Height = 375
+    Width = 738
+    Height = 358
     Align = alClient
     IncrementalDisplay = True
     PopupMenu = PopupMenu1
-    Proportional = True
   end
   object ControlBar1: TControlBar
     Left = 0
@@ -640,6 +639,30 @@ object GraphicForm: TGraphicForm
       end
     end
   end
+  object ScrollBar1: TScrollBar
+    Left = 0
+    Top = 414
+    Width = 755
+    Height = 17
+    Align = alBottom
+    LargeChange = 20
+    PageSize = 50
+    Position = 1
+    SmallChange = 5
+    TabOrder = 1
+    OnScroll = ScrollBar1Scroll
+  end
+  object ScrollBar2: TScrollBar
+    Left = 738
+    Top = 56
+    Width = 17
+    Height = 358
+    Align = alRight
+    Kind = sbVertical
+    PageSize = 50
+    TabOrder = 2
+    OnScroll = ScrollBar2Scroll
+  end
   object GantBrushColor: TColorDialog
     Ctl3D = True
     Color = 16744576
@@ -685,7 +708,7 @@ object GraphicForm: TGraphicForm
       OnClick = N2Click
     end
     object N3: TMenuItem
-      Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1083#1080#1085#1080#1080
+      Caption = #1042#1099#1074#1077#1089#1090#1080' '#1083#1080#1085#1080#1080' '#1089#1077#1090#1082#1080
     end
     object N4: TMenuItem
       Caption = #1062#1074#1077#1090#1085#1099#1077' '#1073#1083#1086#1082#1080

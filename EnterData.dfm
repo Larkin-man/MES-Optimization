@@ -39,6 +39,7 @@ object EnterDataForm: TEnterDataForm
     LabelSpacing = 3
     ParentFont = False
     TabOrder = 0
+    OnChange = Field1Change
     OnExit = Field1Exit
   end
   object Field2: TLabeledEdit
@@ -64,6 +65,7 @@ object EnterDataForm: TEnterDataForm
     LabelSpacing = 3
     ParentFont = False
     TabOrder = 1
+    OnChange = Field2Change
     OnExit = Field2Exit
   end
   object BitBtnOkResize: TBitBtn

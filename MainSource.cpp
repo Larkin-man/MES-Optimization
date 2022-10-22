@@ -12,21 +12,15 @@
 #define PetrovSokol 1
 #define MethodVG 2
 #define MethodVGModify 3
+#define Stupenki 4
 
 TBaseForm *BaseForm;
 //---------------------------------------------------------------------------
 __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
 {    //при созданиии формы
      Output->Clear();
-     scale = 18;
      M=0;
      N=0;
-     NViewOneClick(NULL);
-     Optimization->Enabled=false;
-     GantDiagram->Enabled=false;
-     Report->Enabled=false;
-     FileSave->Enabled=false;
-     NTranspon->Enabled=false;
      FileOpen->Dialog->InitialDir=GetCurrentDir();
      FileSave->Dialog->InitialDir=GetCurrentDir();
      BaseForm->Table->RowHeights[0]=26;
@@ -40,27 +34,54 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
      StatusBar1->Panels->Items[0]->Width=450;
      StatusBar1->Panels->Items[0]->Text=("Для начала работы нужно открыть данные (.txt) или заполнить случайно (Ctrl + R)");
      FontEdit->Dialog->Font=Table->Font;
+     scale = 18;
      BH=30;
      BI=10;
+     Brightness = 25;
+     NTranspon->Enabled=false;
+     Ready(false);
+     BaseForm->Height=576;
+     BaseForm->Width=832;
+     Output->SetBounds(284,64,533,432);
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
 void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
 {
+      TStringList *pStrings = new TStringList;
+      pStrings->LoadFromFile(FileOpen->Dialog->FileName);
+      char *s;
+      int nC=0,nS=0;
+      for(int i = 0; i < pStrings->Count; i++) //Цикл по строкам
+      {
+          s = pStrings->Strings[i].c_str();
+          for (int j = 0;j < pStrings->Strings[i].Length();j++) //Цикл по символам для поиска цифр
+               if ((s[j] >= '0') && (s[j] <= '9'))
+                    nC++;
+               else
+                    if (s[j]!= ' ')
+                         nS++;
+      }
+      //ShowMessage("Цифр "+IntToStr(nC)+" Букв "+IntToStr(nS));
+      if (nS*OptionsForm->OpenCheck->Value > nC)
+      {
+          Application->MessageBox (
+               "Неверные данные. Файл должен содержать матрицу длительностей обработки",
+               "Ошибка открытия файла",
+               MB_OK + MB_ICONSTOP);
+          StatusBar1->Panels->Items[0]->Text="Ошибка открытия файла "+FileOpen->Dialog->FileName;
+          delete pStrings;
+          return;
+      }
+
       StatusBar1->Panels->Items[0]->Text=FileOpen->Dialog->FileName;
       for (int i=1;i<Table->RowCount;i++)
           for (int j=1;j<Table->ColCount;j++)
                Table->Cells[j][i]="";
-
       N=0;
-      TStringList *pStrings = new TStringList;
-      pStrings->LoadFromFile(FileOpen->Dialog->FileName);
-      if (pStrings->Count >= Table->RowCount)
-          Table->RowCount = pStrings->Count+1;
+      Table->RowCount = pStrings->Count+1;
 
       AnsiString Tx; //Для хранения лишнего текста
-      Tx+=' ';
-      Tx+='\n';
       int delrow=0;  //Удаленных строк
       for(int i=0; i < pStrings->Count; i++) //Цикл по строкам
       {
@@ -68,7 +89,7 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
           bool deletestring = true;
           for (int j =0;j < pStrings->Strings[i].Length();j++) //Цикл по символам для поиска цифр
           {
-               if ((s[j] >= 48) && (s[j] <= 57))
+               if ((s[j] >= '0') && (s[j] <= '9'))
                {
                     deletestring = false;
                     break;
@@ -84,50 +105,65 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
           int column = 1; //Столбец
           for (int j = 0;j < pStrings->Strings[i].Length();j++) //Цикл по символам
           {
-               if (s[j]== ' ')
+               if ((s[j] >= '0') && (s[j] <= '9'))
+                    Table->Cells[column][i-delrow+1]=Table->Cells[column][i-delrow+1]+s[j];
+               else
                {
-                    //if (BaseForm->Table->Cells[column-1][i+1]!="")
+                    if (BaseForm->Table->Cells[column][i-delrow+1]!="")
                          column++;
-                    //Table->Cells[row][i+1]="";  //clear
                     if (BaseForm->Table->ColCount <= column)   //Добавить столбец в таблицу
-                    {
+                    {                                   
                          for (int k=1;k<Table->RowCount;k++)
                               Table->Cells[column][k]="";
                          BaseForm->Table->ColCount++;
-                         BaseForm->Table->Cells[column][0]=column;
+                         //BaseForm->Table->Cells[column][0]=column; //detal
                     }
-                    if (Tx[Tx.Length()] != ' ' )
-                    Tx+=' ';
-               }
-               else
-               {
-                    //Output->Lines->Add(s[j]);
-                    if ((s[j] >= 48) && (s[j] <= 57))   //int 48 = char 0, 57 - 9
-                         Table->Cells[column][i-delrow+1]=Table->Cells[column][i-delrow+1]+s[j];
-                    else
-                         Tx+=s[j];
+                    Tx+=s[j];
                }
           }
+          if (BaseForm->Table->Cells[column][i-delrow+1]=="")
+               column--;
           if (N < column)
                N = column;
-          //Table->Cells[0][i+1]=i+1;
-          Table->Cells[0][i-delrow+1]="Деталь " + IntToStr(i-delrow+1)+":";
-          Tx+='\n';
+          //Table->Cells[0][i-delrow+1]="Деталь " + IntToStr(i-delrow+1)+":";
      }
      if (delrow > 0)
+     {
+          Table->RowCount = pStrings->Count+1-delrow;
           Output->Lines->Add("Удалено строк: "+IntToStr(delrow));
+     }
+     if (N+1 < Table->ColCount)
+          Table->ColCount=N+1;
      Output->Text=Output->Text+Tx;
      Output->Lines->Add("");
      M = (pStrings->Count)-delrow;
+     TableRefresh();
      delete pStrings;
-     Ready();
+     Swapf();
 }
 //---------------------------------------------------------------------------
 //СОХРАНИТЬ
 void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
 {
-     Output->Lines->SaveToFile(FileSave->Dialog->FileName);
-     StatusBar1->Panels->Items[0]->Text=FileSave->Dialog->FileName;
+     if (BaseForm->ActiveControl == Table)
+     {
+          TStringList *pStrings = new TStringList;
+          AnsiString Added;
+          for (int  i=1;i<M+1;i++)
+          {
+               Added="";
+               for (int  j=1;j<N+1;j++)
+                    Added+=(Table->Cells[j][i]+" ");
+               pStrings->Add(Added);       
+          }
+          pStrings->SaveToFile(FileSave->Dialog->FileName);
+     }
+     else
+     {
+          //Application->MessageBox ("Сохранить", "Сохранение" , MB_ICONSTOP) ;
+          Output->Lines->SaveToFile(FileSave->Dialog->FileName);
+          StatusBar1->Panels->Items[0]->Text=FileSave->Dialog->FileName;
+     }
 }
 //---------------------------------------------------------------------------
 //РАССЧЕТ
@@ -143,9 +179,10 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
 
      delete Optimizer;   //TODO: Зачем Я удаляю ?
      Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
-     delete ColorBox;
+     delete ColorBox;           /* TODO : А гдке он удаляется */
      ColorBox = new TColor[M];
      ColorPit();
+     Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
      Optimizer->debugging=OptionsForm->Debug->Checked;
      int *T = new int[N];
      for (int i = 1;i<M+1;i++)
@@ -168,8 +205,9 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
                     T[j-1]=abs(T[j-1]);
                }
           }
-          Optimizer->add(N,T);
+          Optimizer->add(T, N);
      }
+     delete [] T;
      Output->Lines->Add("Исходная матрица:");
      PrintMatrix(Optimizer->InitBegin,N,false,false);
      TimeCycle[0]=ProductionCycle();
@@ -199,38 +237,26 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
                Output->Lines->Add("");
                MethodBH (true);
                break;
+          case Stupenki: 
+               Output->Lines->Add("Новый метод!");
+               Output->Lines->Add("");
+               NewMethod();
+               break;
           default:
+               ShowMessage("Ошибка выбранного метода");
                return;
      }
      Output->Lines->Add("");
      Output->Lines->Add("----------------------------------------");
      Output->Lines->Add("");
-     PaintGant();
-     FileSave->Enabled=true;
-     Optimization->Enabled=true;
-     GantDiagram->Enabled=true;
-     Report->Enabled=true;
+     GraphicForm->ScrollBar1->Position=0;
+     GraphicForm->ScrollBar2->Position=0;
+     PaintGant();  
+     Ready(true);
 }
 //---------------------------------------------------------------------------
 //ОБЫЧНЫЙ ВИД
-void __fastcall TBaseForm::NViewOneClick(TObject *Sender)
-{
-     BaseForm->Height=576;
-     BaseForm->Width=832;
-     Output->SetBounds(284,64,533,432);
-     //Output->Anchors=Panel1->Anchors;
-}
-//---------------------------------------------------------------------------
 //КОМПАКТНЫЙ
-void __fastcall TBaseForm::NViewTwoClick(TObject *Sender)
-{
-     BaseForm->Height=576;
-     BaseForm->Width=768;
-     Output->SetBounds(268,64,192,433);
-     //Panel1->SetBounds(464,64,417,433);
-     Output->Anchors=Table->Anchors;
-}
-//---------------------------------------------------------------------------
 //ДИАГРАММА ГАНТА
 void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
 {
@@ -256,6 +282,7 @@ void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
 //ОЧИСТИТЬ(МЕМО)
 void __fastcall TBaseForm::N12Click(TObject *Sender)
 {
+     FileSave->Enabled=false;
      Output->Clear();
 }
 //ЗАКРЫТЬ ФОРМУ
@@ -273,10 +300,7 @@ void __fastcall TBaseForm::FileNewExecute(TObject *Sender)
      delete Gant;
      Gant = NULL;
      TableRefresh();
-     FileSave->Enabled=false;
-     Optimization->Enabled=false;
-     GantDiagram->Enabled=false;
-     Report->Enabled=false;
+     Ready(false);
      GantBtn->Down=false;
      GraphicForm->Close();
      StatusBar1->Panels->Items[0]->Text=("");
@@ -289,9 +313,9 @@ void __fastcall TBaseForm::OptimizationExecute(TObject *Sender)
      OptionsForm->Caption=("Оптимизация");
      OptionsForm->ShowOptimization(true);
      OptionsForm->Position=poMainFormCenter;
-     if(OptionsForm->ShowModal()==IDOK)
-     {          
-     }
+     if(OptionsForm->ShowModal())
+     OptionsForm->PageControl->TabIndex=0;
+
 }
 //---------------------------------------------------------------------------
 //ТЕСТ ИЗ ВЫПАДАЮЩЕГО СПИСКА
@@ -310,7 +334,7 @@ void __fastcall TBaseForm::N1Click(TObject *Sender)
      //ColorPit();
      for (int i = 0;i<M;i++)
      {
-     Output->Lines->Add(ColorBox[i]);
+     //Output->Lines->Add(ColorBox[i]);
      }
      try
           {
@@ -322,6 +346,7 @@ void __fastcall TBaseForm::N1Click(TObject *Sender)
                //ShowMessage("Вы ввели ошибочное число");
                OpenBtn->Enabled=!OpenBtn->Enabled;
           }
+     GraphicForm->ScrollBar1->Max=55;
 
 }
 //---------------------------------------------------------------------------
@@ -331,19 +356,23 @@ void __fastcall TBaseForm::N2Click(TObject *Sender)
      for (int i=1;i<Table->RowCount;i++)
           for (int j=1;j<Table->ColCount;j++)
                Table->Cells[j][i]="";
+     N=0;
+     M=0;
+     NTranspon->Enabled=false;
 }
 //---------------------------------------------------------------------------
 //ТРАНСПОНИРОВАТЬ
 void __fastcall TBaseForm::NTransponClick(TObject *Sender)
 {
-     if ((Table->RowCount+1) < N)
-          Table->RowCount = N+1;
-     if ((Table->ColCount+1) < M)
-          Table->ColCount = M+1;
      int tempmax = (N > M)? N : M;
+     tempmax++;
+     if (Table->RowCount < tempmax)
+          Table->RowCount = tempmax;
+     if (Table->ColCount < tempmax)
+          Table->ColCount = tempmax;
      int temp;
-     for (int i = 1;i<tempmax+1;i++)
-          for (int j=i+1;j<tempmax+1;j++)
+     for (int i = 1;i<tempmax;i++)
+          for (int j=i+1;j<tempmax;j++)
           {
                temp=atoi(Table->Cells[i][j].c_str());
                Table->Cells[i][j]=Table->Cells[j][i];
@@ -365,9 +394,14 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
      {
           multicoloured=OptionsForm->ColorOptions->ItemIndex;
           CountScale(GraphicForm->TrackBar1->Position);
-          PaintGant();
           GraphicForm->N2->Checked=OptionsForm->WorkTimeOut->Checked;
           GraphicForm->N4->Checked=OptionsForm->ColorOptions->ItemIndex;
+          if ((Brightness != OptionsForm->SpinBrightness->Value) || (OptionsForm->Contrast->Checked))
+          {
+               Brightness = OptionsForm->SpinBrightness->Value;
+               ColorPit();
+          }
+          PaintGant();
      }
 }
 //---------------------------------------------------------------------------
@@ -389,7 +423,7 @@ void __fastcall TBaseForm::ResizeTableExecute(TObject *Sender)
      EnterDataForm->Free();  
 }
 //---------------------------------------------------------------------------
- //ЗАПОЛНЕНИЕ СЛУЧАЙНЫМИ ЧИСЛАМИ
+//ЗАПОЛНЕНИЕ СЛУЧАЙНЫМИ ЧИСЛАМИ
 void __fastcall TBaseForm::RandomExecute(TObject *Sender)
 {
      Application->CreateForm( __classid(TEnterDataForm),&EnterDataForm);
@@ -408,7 +442,6 @@ void __fastcall TBaseForm::N15Click(TObject *Sender)
      ShowMessage("Хочешь копировать жми CTRL+C!");
     // NViewTwoClick(Sender);
 }
-
 //ШРИФТ
 void __fastcall TBaseForm::FontEditAccept(TObject *Sender)
 {
@@ -465,4 +498,50 @@ void __fastcall TBaseForm::FontEditBeforeExecute(TObject *Sender)
 //---------------------------------------------------------------------------
 
 
+
+
+void __fastcall TBaseForm::TableSetEditText(TObject *Sender, int ACol,
+      int ARow, const AnsiString Value)
+{
+//Output->Lines->Add("seledit text");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::TableTopLeftChanged(TObject *Sender)
+{
+//     Output->Lines->Add("topleft changed ");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::TableGetEditText(TObject *Sender, int ACol,
+      int ARow, AnsiString &Value)
+{
+//Output->Lines->Add("getedittext");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::TableSelectCell(TObject *Sender, int ACol,
+      int ARow, bool &CanSelect)
+{
+//Output->Lines->Add("celectioncell");
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TBaseForm::NManualModeClick(TObject *Sender)
+{
+
+     BaseForm->Height=576;
+     BaseForm->Width=832;
+     Output->SetBounds(284,64,533,432);
+     //Output->Anchors=Panel1->Anchors;
+
+
+     BaseForm->Height=576;
+     BaseForm->Width=768;
+     Output->SetBounds(268,64,192,433);
+     //Panel1->SetBounds(464,64,417,433);
+     Output->Anchors=Table->Anchors;
+}
+//---------------------------------------------------------------------------
 
