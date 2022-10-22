@@ -1677,7 +1677,7 @@ object AboutBox1: TAboutBox1
       Top = 50
       Width = 63
       Height = 17
-      Caption = #1042#1077#1088#1089#1080#1103' 3.0'
+      Caption = #1042#1077#1088#1089#1080#1103' 3.1'
       IsControl = True
     end
     object Copyright: TLabel
@@ -1692,7 +1692,7 @@ object AboutBox1: TAboutBox1
     object Comments: TLabel
       Left = 16
       Top = 191
-      Width = 113
+      Width = 102
       Height = 34
       Caption = #1059#1095#1077#1073#1085#1072#1103' '#1043#1088#1091#1087#1087#1072' '#1050#1048'08-04'
       WordWrap = True

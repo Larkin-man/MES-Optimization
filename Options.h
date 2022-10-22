@@ -32,10 +32,10 @@ __published:	// IDE-managed Components
      TCheckBox *CheckBox1;
      TCheckBox *CheckBox2;
      TRadioGroup *MVGModify;
+     TCheckBox *HeightScaling;
      void __fastcall NoOutClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
      void __fastcall RadioGroupFiClick(TObject *Sender);
-     void __fastcall WorkTimeOutClick(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 private:	// User declarations
 

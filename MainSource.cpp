@@ -143,8 +143,6 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
 
      delete Optimizer;   //TODO: Зачем Я удаляю ?
      Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
-     delete Gant;
-     Gant = new Graphics::TBitmap;
      delete ColorBox;
      ColorBox = new TColor[M];
      ColorPit();
@@ -207,6 +205,7 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
      Output->Lines->Add("");
      Output->Lines->Add("----------------------------------------");
      Output->Lines->Add("");
+     PaintGant();
      FileSave->Enabled=true;
      Optimization->Enabled=true;
      GantDiagram->Enabled=true;
@@ -218,11 +217,8 @@ void __fastcall TBaseForm::NViewOneClick(TObject *Sender)
 {
      BaseForm->Height=576;
      BaseForm->Width=832;
-     NViewOne->Checked=true;
-     NViewTwo->Checked=false;
      Output->SetBounds(284,64,533,432);
      //Output->Anchors=Panel1->Anchors;
-     view();
 }
 //---------------------------------------------------------------------------
 //КОМПАКТНЫЙ
@@ -230,12 +226,9 @@ void __fastcall TBaseForm::NViewTwoClick(TObject *Sender)
 {
      BaseForm->Height=576;
      BaseForm->Width=768;
-     NViewTwo->Checked=true;
-     NViewOne->Checked=false;
      Output->SetBounds(268,64,192,433);
      //Panel1->SetBounds(464,64,417,433);
      Output->Anchors=Table->Anchors;
-     view();
 }
 //---------------------------------------------------------------------------
 //ДИАГРАММА ГАНТА
@@ -244,15 +237,18 @@ void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
      if (gantshow == false) //Show the gant diagram
      {
           GantBtn->Down=true;
+          gantshow=true;
+          PaintGant();
           GraphicForm->Show();
           GraphicForm->gant->Canvas->CopyRect(Rect(0,0,GantW,GantH),Gant->Canvas,Rect(0,0,GantW,GantH));
           if (BaseForm->WindowState == wsNormal)
                BaseForm->BringToFront();
-          gantshow=true;
+
      }
      else
      {
           GantBtn->Down=false;
+          gantshow=false;
           GraphicForm->Close();
      }
 }
@@ -320,7 +316,7 @@ void __fastcall TBaseForm::N1Click(TObject *Sender)
           {
                float f = atof("gug");
                Output->Lines->Add(f);
-          }
+          }                  
           catch (EConvertError&)
           {
                //ShowMessage("Вы ввели ошибочное число");
@@ -367,13 +363,11 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
      OptionsForm->Position=poMainFormCenter;
      if(OptionsForm->ShowModal()==IDOK)
      {
-          if (OptionsForm->Cvetpit != OptionsForm->ColorOptions->ItemIndex)
-          {
-               //ShowMessage("cv"+IntToStr(OptionsForm->Cvetpit)+" ite="+IntToStr(OptionsForm->ColorOptions->ItemIndex));
-               OptionsForm->Cvetpit=OptionsForm->ColorOptions->ItemIndex;
-               multicoloured=OptionsForm->Cvetpit;
-               PaintGant();
-          }
+          multicoloured=OptionsForm->ColorOptions->ItemIndex;
+          CountScale(GraphicForm->TrackBar1->Position);
+          PaintGant();
+          GraphicForm->N2->Checked=OptionsForm->WorkTimeOut->Checked;
+          GraphicForm->N4->Checked=OptionsForm->ColorOptions->ItemIndex;
      }
 }
 //---------------------------------------------------------------------------
@@ -412,7 +406,7 @@ void __fastcall TBaseForm::N15Click(TObject *Sender)
 {
      Output->CopyToClipboard();
      ShowMessage("Хочешь копировать жми CTRL+C!");
-     NViewTwoClick(Sender);
+    // NViewTwoClick(Sender);
 }
 
 //ШРИФТ
@@ -460,7 +454,7 @@ void __fastcall TBaseForm::StatusBar1DblClick(TObject *Sender)
      ShowMessage("DblClick in ("+IntToStr(x)+", "+IntToStr(y)+")");
 }
 //---------------------------------------------------------------------------
-
+//Ограничить размер шрифта
 void __fastcall TBaseForm::FontEditBeforeExecute(TObject *Sender)
 {
      if(((TComponent *)BaseForm->ActiveControl)->Name == "Table")
@@ -469,5 +463,6 @@ void __fastcall TBaseForm::FontEditBeforeExecute(TObject *Sender)
           FontEdit->Dialog->MaxFontSize=36;
 }
 //---------------------------------------------------------------------------
+
 
 

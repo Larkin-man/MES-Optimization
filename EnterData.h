@@ -11,6 +11,7 @@
 #include <ExtCtrls.hpp>
 #include <time.h>
 #include <stdlib.h>
+#include "CSPIN.h"
 //---------------------------------------------------------------------------
 class TEnterDataForm : public TForm
 {

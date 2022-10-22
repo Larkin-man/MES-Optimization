@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------
 #include "MainSource.h"
 #pragma package(smart_init)
+#pragma link "CSPIN"
 #pragma resource "*.dfm"
 TEnterDataForm *EnterDataForm;
 

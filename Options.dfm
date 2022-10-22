@@ -1,6 +1,6 @@
 object OptionsForm: TOptionsForm
-  Left = 493
-  Top = 123
+  Left = 326
+  Top = 104
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
@@ -38,7 +38,7 @@ object OptionsForm: TOptionsForm
     Top = 8
     Width = 329
     Height = 281
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alCustom
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -46,7 +46,7 @@ object OptionsForm: TOptionsForm
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #1054#1073#1097#1080#1077
@@ -146,9 +146,16 @@ object OptionsForm: TOptionsForm
         Top = 96
         Width = 265
         Height = 17
-        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1076#1083#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1086#1073#1088#1072#1073#1086#1090#1082#1080
+        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1076#1083#1080#1090#1077#1083#1100#1085#1086#1089#1090#1080' '#1086#1073#1088#1072#1073#1086#1090#1082#1080
         TabOrder = 1
-        OnClick = WorkTimeOutClick
+      end
+      object HeightScaling: TCheckBox
+        Left = 8
+        Top = 128
+        Width = 249
+        Height = 17
+        Caption = #1052#1072#1089#1096#1090#1072#1073#1080#1088#1086#1074#1072#1090#1100' '#1074#1099#1089#1086#1090#1091
+        TabOrder = 2
       end
     end
     object TabSheet4: TTabSheet

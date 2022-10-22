@@ -23,6 +23,7 @@ __fastcall TGraphicForm::TGraphicForm(TComponent* Owner)
      //ShowMessage("Screen-> width="+IntToStr(GraphicForm->Width)+" hei="+IntToStr(GraphicForm->Height));
      //BitMap = new Graphics::TBitmap;
      gant->Canvas->Brush->Color=clRed;
+     SavePictureDialog1->InitialDir=GetCurrentDir();
 }
 //---------------------------------------------------------------------------
 //Ïåğåõîä â ìîäóëü ğàñ÷åòà
@@ -50,6 +51,7 @@ void __fastcall TGraphicForm::SpeedButton2Click(TObject *Sender)
      {
           OptionsForm->ColorOptions->ItemIndex=0;
           BaseForm->multicoloured=false;
+          N4->Checked=false;
           BaseForm->PaintGant();
      }
 }
@@ -72,8 +74,8 @@ void __fastcall TGraphicForm::FormShow(TObject *Sender)
      //gant->Canvas->CleanupInstance();
      //gant->Canvas->Free();
      //ShowMessage(" gant form show");
-     gant->Canvas->Brush->Color=ColorBox1->Selected;
-     gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
+     BaseForm->CountScale(TrackBar1->Position);
+     ClearGantField();
      TrackBar1->Height=35;
      Label1->Height=35;
      //gant->Assign()
@@ -81,32 +83,40 @@ void __fastcall TGraphicForm::FormShow(TObject *Sender)
 //---------------------------------------------------------------------------
 //ÌÀÑØÒÀÁ 
 void __fastcall TGraphicForm::TrackBar1Change(TObject *Sender)
-{
-     FormShow(NULL);
-     delete BaseForm->Gant;
-     BaseForm->Gant = new Graphics::TBitmap;
-     BaseForm->scale=(TrackBar1->Position)+12+(TrackBar1->Position)/3;
-     //BaseForm->BH=26+(TrackBar1->Position)/2;
-     //BaseForm->BI=(BaseForm->BH)/3;
+{                                     
+     BaseForm->CountScale(TrackBar1->Position);
+     ClearGantField();
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TGraphicForm::ColorBox1Change(TObject *Sender)
 {
-     TrackBar1Change(Sender);
+     BaseForm->PaintGant();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TGraphicForm::N1Click(TObject *Sender)
+{
+     gant->Refresh();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TGraphicForm::N2Click(TObject *Sender)
 {
-     if (OptionsForm->WorkTimeOut->Checked == false)
-          OptionsForm->WorkTimeOutClick(NULL);
+     N2->Checked=true;
+     OptionsForm->WorkTimeOut->Checked=true;
+     BaseForm->CountScale(GraphicForm->TrackBar1->Position);
+     BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
-void __fastcall TGraphicForm::N1Click(TObject *Sender)
+
+void __fastcall TGraphicForm::N4Click(TObject *Sender)
 {
-     gant->Refresh();
+     N4->Checked=true;
+     OptionsForm->ColorOptions->ItemIndex=1;
+     BaseForm->multicoloured=true;
+     BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 object BaseForm: TBaseForm
-  Left = 61
-  Top = 54
+  Left = 57
+  Top = 83
   Width = 832
   Height = 500
   Caption = #1054#1087#1090#1080#1084#1080#1079#1072#1094#1080#1103' '#1079#1072#1087#1091#1089#1082#1072' '#1076#1077#1090#1072#1083#1077#1081' '#1074' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1086
@@ -2230,6 +2230,7 @@ object BaseForm: TBaseForm
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowMoving, goColMoving, goEditing]
     PopupMenu = PopupMenuGrid
     TabOrder = 5
+    Visible = False
     OnColumnMoved = TableColumnMoved
     OnRowMoved = TableRowMoved
   end
@@ -2271,20 +2272,6 @@ object BaseForm: TBaseForm
       object N10: TMenuItem
         Caption = #1047#1072#1076#1072#1090#1100' '#1087#1086#1088#1103#1076#1086#1082' '#1079#1072#1087#1091#1089#1082#1072' '#1074#1088#1091#1095#1085#1091#1102
         Enabled = False
-      end
-    end
-    object NMenuView: TMenuItem
-      Caption = '&'#1042#1080#1076
-      Enabled = False
-      object NViewOne: TMenuItem
-        Caption = #1054'&'#1073#1099#1095#1085#1099#1081
-        ShortCut = 113
-        OnClick = NViewOneClick
-      end
-      object NViewTwo: TMenuItem
-        Caption = '&'#1050#1086#1084#1087#1072#1082#1090#1085#1099#1081
-        ShortCut = 114
-        OnClick = NViewTwoClick
       end
     end
     object NMenuRun: TMenuItem

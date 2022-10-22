@@ -51,12 +51,18 @@ __published:	// IDE-managed Components
      void __fastcall FormShow(TObject *Sender);
      void __fastcall TrackBar1Change(TObject *Sender);
      void __fastcall ColorBox1Change(TObject *Sender);
-     void __fastcall N2Click(TObject *Sender);
      void __fastcall N1Click(TObject *Sender);
+     void __fastcall N2Click(TObject *Sender);
+     void __fastcall N4Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
      __fastcall TGraphicForm(TComponent* Owner);
+     void ClearGantField()
+     {
+          gant->Canvas->Brush->Color=ColorBox1->Selected;
+          gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
+     }
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TGraphicForm *GraphicForm;

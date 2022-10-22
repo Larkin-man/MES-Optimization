@@ -40,8 +40,6 @@ __published:	// IDE-managed Components
      TPopupMenu *PopupMenuMemo;
      TMenuItem *NMenuFile;
      TMenuItem *NMenuEdit;
-     TMenuItem *NMenuView;
-     TMenuItem *NViewOne;
      TMenuItem *N11;
      TMenuItem *N12;
      TStatusBar *StatusBar1;
@@ -50,7 +48,6 @@ __published:	// IDE-managed Components
      TMenuItem *NSize;
      TMenuItem *NMenuHelp;
      TMenuItem *NAbout;
-     TMenuItem *NViewTwo;
      TRadioGroup *RadioGroup1;
      TMenuItem *NMenuRun;
      TMenuItem *NOptSwitch;
@@ -160,11 +157,7 @@ public:		// User declarations
 //void PrintMatrix(MachineOptimizer::Link *list,int m,bool down=false);
 //     if(Key == VK_RETURN)       //ДЛЯ ФОКУСИРОВКИ
 //          BitBtn1->SetFocus();
-//Проверка видимости элементов
-void view()
-{
-     StringGrid1->Visible=NViewTwo->Checked;
-}
+
 //Готовность к запуску расчета
 void Ready()
 {
@@ -211,14 +204,7 @@ void ColorPit()
      //RadioGroup1->Color=254*256*256+254*256+256;
      //Table->Color=ColorBox[0];
 }
-//Удаление графики
-void ClearGant()
-{
-     delete Gant;
-     Gant = new Graphics::TBitmap;
-     //GraphicForm->gant->Canvas->Brush->Color=ColorBox1->Selected;
-     //GraphicForm->gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
-}
+
 //Функция выводит матрицу. down - с переходом вниз по дереву; subtractb - с вычитанием матрицы длительностей
 void PrintMatrix(MachineOptimizer::Link *list, int n, bool down, bool subtractb)
 {
@@ -330,7 +316,7 @@ void DrawDiagramFromDurationMatrix(MachineOptimizer::Link *List, bool down)
                Gant->Canvas->Rectangle((SX[s+1]-Item->T[s])*scale, vertix+(BH+BI)*s,
                          SX[s+1]*scale, vertix+(BH+BI)*s+BH);
                if (OptionsForm->WorkTimeOut->Checked)
-                    Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+TX-5,vertix+(BH+BI)*s+TY,IntToStr(Item->m)+" ("+IntToStr(Item->T[s])+")");
+                    Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+1,vertix+(BH+BI)*s+TY,IntToStr(Item->m)+" ("+IntToStr(Item->T[s])+")");
                else
                     Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+TX,vertix+(BH+BI)*s+TY,Item->m);
           }
@@ -367,12 +353,15 @@ void DrawDiagramFromEndingMatrix(MachineOptimizer::Link *Item)
 //Создание диаграммы Ганта и подготовка к рисованию
 void PaintGant()
 {
+     if (!gantshow)
+          return;
+     delete Gant;
+     Gant = new Graphics::TBitmap;    
      vertix=0;
+     
      TX=(scale-8)/2;
      TY=(BH-14)/2;
      //if (Optimizer == NULL) return;
-     //Label1->Repaint();    //TODO: repaint ?
-     //GraphicForm->gant->Canvas->Brush->Color=
      GantW=TimeCycle[0];
      for (int i=1;i<4;i++)
           if (TimeCycle[i] > GantW)
@@ -411,41 +400,23 @@ void PaintGant()
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по модифицированому методу ветвей и границ:");
           DrawDiagramFromEndingMatrix(Optimizer->OptimalBH);
      }
-     //GraphicForm->FormShow(NULL); //Очистить
+     GraphicForm->ClearGantField();
      if (gantshow)
           GraphicForm->gant->Canvas->CopyRect(Rect(0,0,GantW,GantH),Gant->Canvas,Rect(0,0,GantW,GantH));
-     /*
-     if (ultima)
+
+
+}
+//Пересчитать масштаб диаграммы
+void CountScale(int Scroller = 5)
+{
+     scale=Scroller+12+Scroller/3;
+     if (OptionsForm->WorkTimeOut->Checked)
+          scale+=4;
+     if (OptionsForm->HeightScaling->Checked)
      {
-          vt=290;
-          SA=0,XC=0;
-          Node *Item=Optimal;
-          for (;;Item = Item->Next)
-          {
-               SA+=Item->A;
-               Label2->Canvas->Rectangle((SA-Item->A)*scale,vt,SA*scale,vt+30);
-               XC = (SA >= XC)? SA+Item->B : XC+Item->B;
-               //Label2->Canvas->Rectangle((XC-Item->B)*scale,vt+40,XC*scale,vt+70);
-               Label2->Canvas->TextOut((SA-Item->A)*scale+6,vt+6,Item->M);
-               //Label2->Canvas->TextOut((XC-Item->B)*scale+6,vt+46,Item->M);
-               if (Item->Next == NULL)      //Условие выхода из бесконечного цикла
-                    break;
-          }
-          Label2->Canvas->TextOut(10,vt+75,"Время работы:");
-          Label2->Canvas->TextOut(130,vt+75,XC);
-
-
-          for (;;Item = Item->Prev)
-          {
-               Label2->Canvas->Rectangle((XC-Item->B)*scale,vt+40,XC*scale,vt+70);
-               Label2->Canvas->TextOut((XC-Item->B)*scale+6,vt+46,Item->M);
-               XC-=Item->B;
-               if (Item->Prev == NULL)      //Условие выхода из бесконечного цикла
-                    break;
-          }
-          //Label2->Canvas->TextOut(10,vt+75,"Время работы:");
-          ///Label2->Canvas->TextOut(130,vt+75,XC);
-     } */
+          BH=26+Scroller/2;
+          BI=BH/3;
+     }
 }
 
 void DjonsonAlgorithm()
@@ -462,7 +433,6 @@ void DjonsonAlgorithm()
           Output->Text=Output->Text+IntToStr(data[i])+" ";
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[1]));
      Output->Lines->Add("");
-     PaintGant();
 }
 
 void PetrovSokolMethod()
@@ -515,7 +485,6 @@ void PetrovSokolMethod()
           Output->Text=Output->Text+IntToStr(data[i])+" ";
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[2]));
      Output->Lines->Add("");
-     PaintGant();
 }
 
 void MethodBH (bool Modify = false) //Method  of branches and hordes
@@ -547,7 +516,10 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
                //Application->MessageBox ("Остановить?", "watchdog" , MB_YESNO);
 
                if (Application->MessageBox ("Остановить?", "Вывод отчета" , MB_YESNO + MB_ICONQUESTION) == IDNO)
+               {
+                    Application->ProcessMessages();
                     continue;
+               }
                else
                     break;
 
@@ -560,7 +532,6 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
      Output->Lines->Add(" ");
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
      Output->Lines->Add("");
-     PaintGant();
 }
 
 void garivogne()
