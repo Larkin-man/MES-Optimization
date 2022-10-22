@@ -76,3 +76,5 @@ about *.txt
 report*.txt
 *.ddp
 *.jpg
+*.GID
+*.HLP
