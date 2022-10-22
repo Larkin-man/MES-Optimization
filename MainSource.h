@@ -29,6 +29,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "CGRID.h"
+#include "CSPIN.h"
 //---------------------------------------------------------------------------
 
 #define max(A,B) (A>B ? A : B)
@@ -40,11 +41,11 @@ __published:	// IDE-managed Components
      TPopupMenu *PopupMenuMemo;
      TMenuItem *NMenuFile;
      TMenuItem *NMenuEdit;
-     TMenuItem *N11;
-     TMenuItem *N12;
+   TMenuItem *NFont1;
+   TMenuItem *NClear1;
      TStatusBar *StatusBar1;
      TMemo *Output;
-     TMenuItem *N15;
+   TMenuItem *NCopy;
      TMenuItem *NSize;
      TMenuItem *NMenuHelp;
      TMenuItem *NAbout;
@@ -54,10 +55,10 @@ __published:	// IDE-managed Components
      TMenuItem *NRun;
      TMenuItem *N9;
      TPopupMenu *PopupMenuGrid;
-     TMenuItem *N1;
+   TMenuItem *NTest;
      TMenuItem *NTranspon;
-     TMenuItem *N2;
-     TMenuItem *N3;
+   TMenuItem *NClear2;
+   TMenuItem *NResize2;
      TMenuItem *NMenuOptions;
      TMenuItem *NOptions;
      TToolBar *ToolBar1;
@@ -93,23 +94,28 @@ __published:	// IDE-managed Components
      TAction *GantDiagram;
      TAction *Report;
      TAction *ResizeTable;
-     TMenuItem *Pf1;
-     TMenuItem *N5;
+   TMenuItem *NRandom2;
+   TMenuItem *NRun2;
      TAction *Repaint;
      TToolButton *ToolButton8;
      TSpeedButton *SpeedButton1;
      TMenuItem *NRandom;
      TAction *Random;
-     TMenuItem *N8;
+   TMenuItem *NFont2;
      TStringGrid *Table;
-     TStringGrid *StringGrid1;
      TMenuItem *NManualMode;
-     void __fastcall N15Click(TObject *Sender);
+   TPanel *Panel1;
+   TStringGrid *ManualTable;
+   TSpeedButton *SpeedButton2;
+     TLabel *Label1;
+     TLabel *Label2;
+     TCSpinButton *CSpinButton1;
+     void __fastcall NCopyClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
-     void __fastcall N12Click(TObject *Sender);
+     void __fastcall NClear1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-     void __fastcall N1Click(TObject *Sender);
-     void __fastcall N2Click(TObject *Sender);
+     void __fastcall NTestClick(TObject *Sender);
+     void __fastcall NClear2Click(TObject *Sender);
      void __fastcall NTransponClick(TObject *Sender);
      void __fastcall NOptionsClick(TObject *Sender);
      void __fastcall FileOpenAccept(TObject *Sender);
@@ -129,13 +135,6 @@ __published:	// IDE-managed Components
      void __fastcall RandomExecute(TObject *Sender);
      void __fastcall StatusBar1DblClick(TObject *Sender);
      void __fastcall FontEditBeforeExecute(TObject *Sender);
-     void __fastcall TableSetEditText(TObject *Sender, int ACol, int ARow,
-          const AnsiString Value);
-     void __fastcall TableTopLeftChanged(TObject *Sender);
-     void __fastcall TableGetEditText(TObject *Sender, int ACol, int ARow,
-          AnsiString &Value);
-     void __fastcall TableSelectCell(TObject *Sender, int ACol, int ARow,
-          bool &CanSelect);
      void __fastcall NManualModeClick(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
@@ -408,8 +407,8 @@ void PaintGant()
      }
 
      GraphicForm->ClearGantField();
-     if (gantshow)
-          DrawGant(GraphicForm->ScrollBar1->Position,GraphicForm->ScrollBar2->Position);
+    // if (gantshow)
+    //      GraphicForm->DrawGant(GraphicForm->ScrollBar1->Position,GraphicForm->ScrollBar2->Position);
 
 
 }
@@ -443,6 +442,8 @@ void DrawGant(int PosX, int PosY)
                Rect(PosX,PosY,FormW+PosX,FormH+PosY));
 
 }
+
+
 //Пересчитать масштаб диаграммы
 void CountScale(int Scroller = 5)
 {
@@ -613,6 +614,22 @@ void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
      }
 }
 
+//Обновить таблицу
+void TableRefresh2()
+{
+     ManualTable->Cells[0][0]="    Станок:";
+     //Строки - детали Столбцы - станки
+     for (int i=1;i<ManualTable->RowCount;i++)
+          ManualTable->Cells[0][i]="Деталь " + IntToStr(i)+":";
+     for (int j=1;j<ManualTable->ColCount;j++)
+          ManualTable->Cells[j][0]=j;//"Станок №"+i;
+     if (ManualTable->RowCount <= 10)
+          ManualTable->ColWidths[0]=82;
+     else if (ManualTable->RowCount <= 100)
+          ManualTable->ColWidths[0]=88;
+     else
+          ManualTable->ColWidths[0]=96;
+}
 
 };
 //---------------------------------------------------------------------------

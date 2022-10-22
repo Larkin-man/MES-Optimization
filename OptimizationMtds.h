@@ -51,7 +51,7 @@ void add(int time[], int n);  //Добавление ДЕТАЛИ
 bool ClearData(char MethodID); //Функция очищает память
 int DjonsonRun(); //Запуск алгоритма Джонсона
 int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
-int MethodBHRun (char version, bool idleclean, bool idleall); //Method  of branches and hordes
+int MethodBHRun (char version, bool idleall); //Method  of branches and hordes
 int GetN() {return N;}
 int NewMethodRun();
      /* TODO : параметры по умолчанию должны быть сдесь */
@@ -74,7 +74,7 @@ protected:
      int max;
 
 
-Detal *CreateItem (int n,int M,int *time)
+Detal *CreateItem (const int &n,const int &M,int *time)
 {                //Функция создает новую деталь
      Detal *pItem = new Detal;
      pItem->T = new int[n];
@@ -417,7 +417,7 @@ int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
      return TimeCycle;
 }
 
-int MachineOptimizer::MethodBHRun (char version = 0, bool idleclean = false, bool idleall = false) //Method  of branches and hordes
+int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false) //Method  of branches and hordes
 {
      //ShowMessage("version="+IntToStr(version)+" bool1="+IntToStr(idleclean)+" bool1="+IntToStr(idleall));
      int
