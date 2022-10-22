@@ -9,7 +9,7 @@
 
 #ifndef OptimizationMtdsH
 #define OptimizationMtdsH
-#define max(A,B) (A>B ? A : B)
+//#define max(A,B) (A>B ? A : B)
 #define JohnsonAlgoritm 1
 #define PSMethod 2
 #define BranchesAndHordes 3
@@ -43,17 +43,16 @@ public:
      bool output;
      bool debugging;
 
-MachineOptimizer();
-~MachineOptimizer();
+     MachineOptimizer();
+     ~MachineOptimizer();         
+     void add(int time[], int n);  //Добавление ДЕТАЛИ
+     bool ClearData(char MethodID); //Функция очищает память
+     int DjonsonRun(); //Запуск алгоритма Джонсона
+     int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
+     int MethodBHRun (char version, bool idleall); //Method  of branches and hordes
+     int GetN() {return N;}
+     int NewMethodRun();
 
-
-void add(int time[], int n);  //Добавление ДЕТАЛИ
-bool ClearData(char MethodID); //Функция очищает память
-int DjonsonRun(); //Запуск алгоритма Джонсона
-int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
-int MethodBHRun (char version, bool idleall); //Method  of branches and hordes
-int GetN() {return N;}
-int NewMethodRun();
      /* TODO : параметры по умолчанию должны быть сдесь */
 
 protected:
@@ -61,7 +60,6 @@ protected:
      int
      N,   //Количество станков
      M;   //Количество деталей
-     int min[2];
      Link           //TODO: надо чета делать с этими концами
      *InitEnd,      //Конец списка иходных деталей
      *OptimalEnd,   //Конец списка detals по Джонсону
@@ -72,106 +70,15 @@ protected:
      **CdosEnd,     //End of Matrix OptimalBH(do,s)
      *OptimalNewEnd;
      int max;
-
-
-Detal *CreateItem (const int &n,const int &M,int *time)
-{                //Функция создает новую деталь
-     Detal *pItem = new Detal;
-     pItem->T = new int[n];
-     pItem->m=M;
-     if (time == NULL) return pItem;
-     for (int i=0;i<n;i++)
-     {
-          pItem->T[i]=time[i];
-     }
-     return pItem;
-}
-
-void CreateLink (Link **Begin, Detal **Item, Link **End, Link **Down = NULL)
-{    //Добавляет элемент в конец (End) списка Begin
-     Link *pLink = new Link;
-     pLink->next=NULL; 
-     pLink->curr=*Item;
-     if (Down == NULL)
-          pLink->down=*End;  //Обычный двусвязный список
-     else
-          pLink->down=*Down; //Дерево
-     if (*Begin == NULL)
-          *Begin = pLink;  //set the begin of initial list
-     else
-          (*End)->next=pLink;
-     *End=pLink;   //The end is always equal to a new item (Insert in the end of list)
-}
-
-void concatenate(Link *parent, Link *Item)  //REMARKABLE!
-{              //Функция соединяет два элемента
-     if (parent != NULL)
-          parent->next=Item;
-     if (Item!=NULL)
-          Item->down=parent;
-}
-
-bool Sort(int linker, int min,int J)
-{              //Функция сравнивает два числа - нужна для сортировки по ПС
-     if (J == 1)
-     {
-          return linker <= min;  //Sorting according increase
-     }
-     return linker >= min;       //Sorting according decrease
-}
-
-void DeleteLinks (Link *Item)
-{               //Функция удаляет список
-   if (Item->next != NULL)
-   {
-      DeleteLinks (Item->next);
-   }
-   delete Item;
-   Item=NULL;
-}
-void DeleteList (Link *Item)
-{
-     if (Item == NULL) return;
-     for (;Item!=NULL;Item=Item->next)
-     {
-          delete [] Item->curr->T;
-          delete Item->curr;
-     }
-}
-                                          
-bool rowind(int *D, int d) //проверка отсутствия детали d в списке D
-{
-     for (int i = 1;i<D[0]+2;i++)
-          if (d == D[i])
-               return false; //Деталь есть
-          return true;       //Детали нет
-}
-
-int ProductionCycle(Link *Matrix,bool down = false) //Находит длительность производственного цикла для матрицы В
-{
-     int *top = new int[N];
-     int left;
-     for (int i=0;i<N;i++)
-          top[i]=0;
-     for (;Matrix!=NULL;Matrix=Matrix->next)
-     {
-          left=0;
-          for (int i=0;i<N;i++)
-          {
-               top[i]=top[i]>left? top[i] : left;
-               if (down)
-                    top[i]+=Matrix->down->curr->T[i];  //спустившись вниз по дереву
-               else
-                    top[i]+=Matrix->curr->T[i]; 
-               left = top[i];
-          }
-     }
-
-     delete []top;
-     return left;
-}
-
-
+               
+     Detal* CreateItem (const int &n,const int &M,int *time);
+     void CreateLink (Link **Begin, Detal **Item, Link **End, Link **Down = NULL);
+     void concatenate(Link *parent, Link *Item);
+     bool Sort(int &linker, int &min,const int &J);
+     void DeleteLinks (Link *Item);
+     void DeleteList (Link *Item);
+     bool rowind(int *D, int &d);
+     int ProductionCycle(Link *Matrix,bool down = false);
 
 };
 
@@ -263,8 +170,108 @@ bool MachineOptimizer::ClearData(char MethodID) //Функция очищает память
      return false;
 }
 
+MachineOptimizer::Detal *MachineOptimizer::CreateItem (const int &n,const int &M,int *time)
+{                //Функция создает новую деталь
+     Detal *pItem = new Detal;
+     pItem->T = new int[n];
+     pItem->m=M;
+     if (time == NULL) return pItem;
+     for (int i=0;i<n;i++)
+     {
+          pItem->T[i]=time[i];
+     }
+     return pItem;
+}
+
+void MachineOptimizer::CreateLink (Link **Begin, Detal **Item, Link **End, Link **Down)
+{    //Добавляет элемент в конец (End) списка Begin
+     Link *pLink = new Link;
+     pLink->next=NULL;
+     pLink->curr=*Item;
+     if (Down == NULL)
+          pLink->down=*End;  //Обычный двусвязный список
+     else
+          pLink->down=*Down; //Дерево
+     if (*Begin == NULL)
+          *Begin = pLink;  //set the begin of initial list
+     else
+          (*End)->next=pLink;
+     *End=pLink;   //The end is always equal to a new item (Insert in the end of list)
+}
+
+void MachineOptimizer::concatenate(Link *parent, Link *Item)  //REMARKABLE!
+{              //Функция соединяет два элемента
+     if (parent != NULL)
+          parent->next=Item;
+     if (Item!=NULL)
+          Item->down=parent;
+}
+
+bool MachineOptimizer::Sort(int &linker, int &min,const int &J)
+{              //Функция сравнивает два числа - нужна для сортировки по ПС
+     if (J == 1)
+     {
+          return linker <= min;  //Sorting according increase
+     }
+     return linker >= min;       //Sorting according decrease
+}
+
+void MachineOptimizer::DeleteList (Link *Item)
+{
+     if (Item == NULL) return;
+     for (;Item!=NULL;Item=Item->next)
+     {
+          delete [] Item->curr->T;
+          delete Item->curr;
+     }
+}
+
+void MachineOptimizer::DeleteLinks (Link *Item)
+{               //Функция удаляет список
+   if (Item->next != NULL)
+   {
+      DeleteLinks (Item->next);
+   }
+   delete Item;
+   Item=NULL;
+}
+                                          
+bool MachineOptimizer::rowind(int *D, int &d) //проверка отсутствия детали d в списке D
+{
+     for (int i = 1;i<D[0]+2;i++)
+          if (d == D[i])
+               return false; //Деталь есть
+          return true;       //Детали нет
+}
+
+int MachineOptimizer::ProductionCycle(Link *Matrix,bool downed) //Находит длительность производственного цикла для матрицы В
+{
+     int *top = new int[N];
+     int left;
+     for (int i=0;i<N;i++)
+          top[i]=0;
+     for (;Matrix!=NULL;Matrix=Matrix->next)
+     {
+          left=0;
+          for (int i=0;i<N;i++)
+          {
+               top[i]=top[i]>left? top[i] : left;
+               if (downed)
+                    top[i]+=Matrix->down->curr->T[i];  //спустившись вниз по дереву
+               else
+                    top[i]+=Matrix->curr->T[i]; 
+               left = top[i];
+          }
+     }
+
+     delete []top;
+     return left;
+}
+
+
 int MachineOptimizer::DjonsonRun() //Запуск алгоритма Джонсона
 {
+     int min[2];
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
           CreateLink(&OptimalDJ,&Linker->curr,&OptimalEnd);
                //DONE: to issue as function!
@@ -1040,7 +1047,7 @@ int MachineOptimizer::NewMethodRun()
           Operative[min]*=(-1);
           for (Linker2 = InitBegin;Linker2!=NULL;Linker2=Linker2->next)
           {
-               max2=100;
+               max2=100;   //Never used
                if (Linker2->curr->m == min)
                {
                     max2=100;
@@ -1048,12 +1055,7 @@ int MachineOptimizer::NewMethodRun()
                }
           }
      }
-     
-     
-
-
      return ProductionCycle(OptimalNew);
 }
-
 
 #endif

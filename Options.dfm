@@ -52,45 +52,29 @@ object OptionsForm: TOptionsForm
       Caption = #1054#1073#1097#1080#1077
       object Label3: TLabel
         Left = 8
-        Top = 72
+        Top = 104
         Width = 211
         Height = 32
         Caption = #1055#1088#1086#1074#1077#1088#1082#1072' '#1085#1072' '#1089#1086#1086#1090#1085#1086#1096#1077#1085#1080#1077' '#1073#1091#1082#1074' '#1080' '#1094#1080#1092#1088'  '#1087#1088#1080' '#1086#1090#1082#1088#1099#1090#1080#1080' '#1092#1072#1081#1083#1072' '
         WordWrap = True
       end
-      object Debug: TCheckBox
-        Left = 8
-        Top = 112
-        Width = 289
-        Height = 25
-        Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1086#1090#1083#1072#1076#1086#1095#1085#1091#1102' '#1080#1085#1092#1086#1088#1084#1072#1094#1080#1102
-        Checked = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-        State = cbChecked
-        TabOrder = 0
-      end
       object OpenCheck: TCSpinEdit
-        Left = 232
-        Top = 76
+        Left = 224
+        Top = 108
         Width = 49
         Height = 26
         MaxValue = 10
-        TabOrder = 1
+        TabOrder = 0
         Value = 4
         OnChange = OpenCheckChange
       end
       object GroupBox2: TGroupBox
         Left = 8
-        Top = 144
+        Top = 152
         Width = 305
         Height = 65
         Caption = #1044#1080#1072#1087#1072#1079#1086#1085' '#1089#1083#1091#1095#1072#1081#1085#1099#1093' '#1095#1080#1089#1077#1083
-        TabOrder = 2
+        TabOrder = 1
         object Label5: TLabel
           Left = 16
           Top = 32
@@ -132,9 +116,9 @@ object OptionsForm: TOptionsForm
         Left = 8
         Top = 8
         Width = 305
-        Height = 51
+        Height = 81
         Caption = #1059#1089#1082#1086#1088#1077#1085#1080#1077' '#1088#1072#1073#1086#1090#1099' '#1072#1083#1075#1086#1088#1080#1090#1084#1086#1074
-        TabOrder = 3
+        TabOrder = 2
         object NoOut: TCheckBox
           Left = 9
           Top = 24
@@ -144,6 +128,20 @@ object OptionsForm: TOptionsForm
           TabOrder = 0
           OnClick = NoOutClick
         end
+        object Debug: TCheckBox
+          Left = 9
+          Top = 48
+          Width = 289
+          Height = 25
+          Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1087#1086#1076#1088#1086#1073#1085#1099#1081' '#1086#1090#1095#1077#1090
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+        end
       end
     end
     object TabSheet2: TTabSheet
@@ -151,7 +149,7 @@ object OptionsForm: TOptionsForm
       ImageIndex = 1
       object MVGModify: TRadioGroup
         Left = 4
-        Top = 72
+        Top = 40
         Width = 313
         Height = 169
         Caption = #1052#1077#1090#1086#1076' '#1088#1072#1089#1095#1077#1090#1072' '#1082#1088#1080#1090#1077#1088#1080#1103' '#1086#1087#1090#1080#1084#1072#1083#1100#1085#1086#1089#1090#1080
@@ -164,23 +162,15 @@ object OptionsForm: TOptionsForm
           #1044#1083#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074' '#1094#1080#1082#1083#1072)
         TabOrder = 0
       end
-      object MvgIdle: TCheckBox
-        Left = 8
-        Top = 8
-        Width = 305
-        Height = 25
-        Caption = #1059#1073#1088#1072#1090#1100' '#1079#1072#1076#1077#1088#1078#1082#1091' '#1085#1072' '#1087#1086#1089#1083#1077#1076#1085#1077#1084' '#1089#1090#1072#1085#1082#1077
-        TabOrder = 1
-      end
       object MvgIdleAll: TCheckBox
-        Left = 8
-        Top = 40
+        Left = 16
+        Top = 8
         Width = 305
         Height = 25
         Caption = #1059#1073#1088#1072#1090#1100' '#1087#1088#1086#1089#1090#1086#1080'  '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
         Checked = True
         State = cbChecked
-        TabOrder = 2
+        TabOrder = 1
       end
     end
     object TabSheet3: TTabSheet

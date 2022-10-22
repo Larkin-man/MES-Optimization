@@ -18,7 +18,6 @@ __published:	// IDE-managed Components
      TPageControl *PageControl;
      TTabSheet *TabSheet1;
      TTabSheet *TabSheet2;
-     TCheckBox *Debug;
      TTabSheet *TabSheet3;
      TBitBtn *BitBtn1;
      TBitBtn *BitBtn2;
@@ -44,8 +43,8 @@ __published:	// IDE-managed Components
      TCSpinEdit *RandomTo;
      TGroupBox *GroupBox1;
      TCheckBox *NoOut;
-     TCheckBox *MvgIdle;
      TCheckBox *MvgIdleAll;
+     TCheckBox *Debug;
      void __fastcall NoOutClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);

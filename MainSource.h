@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include "CGRID.h"
 #include "CSPIN.h"
+//#include "CSPIN.h"
 //---------------------------------------------------------------------------
 
 #define max(A,B) (A>B ? A : B)
@@ -41,11 +42,11 @@ __published:	// IDE-managed Components
      TPopupMenu *PopupMenuMemo;
      TMenuItem *NMenuFile;
      TMenuItem *NMenuEdit;
-   TMenuItem *NFont1;
-   TMenuItem *NClear1;
+     TMenuItem *NFont1;
+     TMenuItem *NClear1;
      TStatusBar *StatusBar1;
      TMemo *Output;
-   TMenuItem *NCopy;
+     TMenuItem *NCopy;
      TMenuItem *NSize;
      TMenuItem *NMenuHelp;
      TMenuItem *NAbout;
@@ -55,10 +56,10 @@ __published:	// IDE-managed Components
      TMenuItem *NRun;
      TMenuItem *N9;
      TPopupMenu *PopupMenuGrid;
-   TMenuItem *NTest;
+     TMenuItem *NTest;
      TMenuItem *NTranspon;
-   TMenuItem *NClear2;
-   TMenuItem *NResize2;
+     TMenuItem *NClear2;
+     TMenuItem *NResize2;
      TMenuItem *NMenuOptions;
      TMenuItem *NOptions;
      TToolBar *ToolBar1;
@@ -94,22 +95,27 @@ __published:	// IDE-managed Components
      TAction *GantDiagram;
      TAction *Report;
      TAction *ResizeTable;
-   TMenuItem *NRandom2;
-   TMenuItem *NRun2;
+     TMenuItem *NRandom2;
+     TMenuItem *NRun2;
      TAction *Repaint;
      TToolButton *ToolButton8;
-     TSpeedButton *SpeedButton1;
+     TSpeedButton *GoGantBtn;
      TMenuItem *NRandom;
      TAction *Random;
-   TMenuItem *NFont2;
+     TMenuItem *NFont2;
      TStringGrid *Table;
      TMenuItem *NManualMode;
-   TPanel *Panel1;
-   TStringGrid *ManualTable;
-   TSpeedButton *SpeedButton2;
+     TPanel *Panel1;
+     TStringGrid *ManualTable;
+     TSpeedButton *AddToGantBtn;
      TLabel *Label1;
      TLabel *Label2;
-     TCSpinButton *CSpinButton1;
+     TCSpinButton *Spinner;
+     TSpeedButton *ProdBtn;
+     THelpOnHelp *HelpOnHelp1;
+     TMenuItem *HelponHelp2;
+     THelpContents *HelpContents1;
+     TMenuItem *Contents1;
      void __fastcall NCopyClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
      void __fastcall NClear1Click(TObject *Sender);
@@ -131,11 +137,20 @@ __published:	// IDE-managed Components
           int ToIndex);
      void __fastcall TableRowMoved(TObject *Sender, int FromIndex,
           int ToIndex);
-     void __fastcall SpeedButton1Click(TObject *Sender);
+     void __fastcall GoGantBtnClick(TObject *Sender);
      void __fastcall RandomExecute(TObject *Sender);
      void __fastcall StatusBar1DblClick(TObject *Sender);
      void __fastcall FontEditBeforeExecute(TObject *Sender);
      void __fastcall NManualModeClick(TObject *Sender);
+     void __fastcall ManualTableSelectCell(TObject *Sender, int ACol,
+          int ARow, bool &CanSelect);
+     void __fastcall SpinnerDownClick(TObject *Sender);
+     void __fastcall SpinnerUpClick(TObject *Sender);
+     void __fastcall ManualTableExit(TObject *Sender);
+     void __fastcall ProdBtnClick(TObject *Sender);
+     void __fastcall ManualTableRowMoved(TObject *Sender, int FromIndex,
+          int ToIndex);
+     void __fastcall FileSaveBeforeExecute(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
 
@@ -156,6 +171,7 @@ public:		// User declarations
      TColor *ColorBox;   //Колорпит для разноцветных красивых блоков
      int Brightness;     //Яркость
      bool multicoloured;
+     DWORD Tick;
 
 //Готовность к запуску расчета
 void Ready(bool Access)
@@ -164,6 +180,7 @@ void Ready(bool Access)
      Optimization->Enabled=Access;
      GantDiagram->Enabled=Access;
      Report->Enabled=Access;
+     NManualMode->Enabled=Access;
 }
 
 void Swapf()
@@ -173,6 +190,8 @@ void Swapf()
      StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
      StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
      NTranspon->Enabled=true;
+     if (NManualMode->Checked)
+          ManualTableRefresh(true);
 }
 //Обновить таблицу
 void TableRefresh()
@@ -407,42 +426,10 @@ void PaintGant()
      }
 
      GraphicForm->ClearGantField();
-    // if (gantshow)
-    //      GraphicForm->DrawGant(GraphicForm->ScrollBar1->Position,GraphicForm->ScrollBar2->Position);
-
-
-}
-
-void DrawGant(int PosX, int PosY)
-{
-     int FormH=GraphicForm->gant->ClientHeight;
-     int FormW=GraphicForm->gant->ClientWidth;
-     int K;
-     if (GantW > FormW)
-     {
-          GraphicForm->ScrollBar1->Enabled=true;
-          K = GantW - FormW;
-          GraphicForm->ScrollBar1->Max=K+50;
-     }
-     else
-          GraphicForm->ScrollBar1->Enabled=false;
-
-     if (GantH > FormH)
-     {
-          GraphicForm->ScrollBar2->Enabled=true;
-          K = GantH - FormH;
-          GraphicForm->ScrollBar2->Max=K+50;
-     }
-     else
-          GraphicForm->ScrollBar2->Enabled=false;
-
-     GraphicForm->gant->Canvas->CopyRect(
-               Rect(0,0,FormW,FormH),
-               Gant->Canvas,
-               Rect(PosX,PosY,FormW+PosX,FormH+PosY));
+     if (gantshow)
+          GraphicForm->DrawGant(GraphicForm->ScrollBar1->Position,GraphicForm->ScrollBar2->Position);
 
 }
-
 
 //Пересчитать масштаб диаграммы
 void CountScale(int Scroller = 5)
@@ -460,8 +447,10 @@ void CountScale(int Scroller = 5)
 
 void DjonsonAlgorithm()
 {
-     StatusBar1->Panels->Items[0]->Text=("Алгоритм Джонсона для двух станков");
+     //StatusBar1->Panels->Items[0]->Text=("Алгоритм Джонсона для двух станков");
      TimeCycle[1] = Optimizer->DjonsonRun();  //Запуск алгоритма джонсона
+     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
+     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
      if (!(OptionsForm->NoOut->Checked))
      {
           Output->Lines->Add("Оптимальная последовательность запуска деталей:");
@@ -475,8 +464,10 @@ void DjonsonAlgorithm()
 
 void PetrovSokolMethod()
 {
-     StatusBar1->Panels->Items[0]->Text=("Метод Петрова-Соколицина");
+     //StatusBar1->Panels->Items[0]->Text=("Метод Петрова-Соколицина");
      TimeCycle[2] = Optimizer->PetrovSokolRun();   //Запуск алгоритма Петрова-Соколицина
+     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
+     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
      top = new int[N];
 
      if (!(OptionsForm->NoOut->Checked))
@@ -534,20 +525,21 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
 
      if (Modify)
      {
-          StatusBar1->Panels->Items[0]->Text=("Модифицированный метод ветвей и границ");
+          //StatusBar1->Panels->Items[0]->Text=("Модифицированный метод ветвей и границ");
           version = (OptionsForm->MVGModify->ItemIndex);
           TimeCycle[3]=Optimizer->MethodBHRun(version,
-               OptionsForm->MvgIdle->Checked,
                OptionsForm->MvgIdleAll->Checked);
      }
      else
      {
-          StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
+          //StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
           TimeCycle[3]=Optimizer->MethodBHRun(0,
-               false,
                false);
      }
+     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
+     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
      //Вывод отчета - может повесить прогу
+
      int podric=250;
      for (int i= 1;i<Optimizer->Report->Count;i++)
      {
@@ -564,20 +556,25 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
 
      }
      Application->ProcessMessages();
-     Output->Lines->Add("Матрица С:");
-     PrintMatrix(Optimizer->OptimalBH,N,false,false);
-     Output->Lines->Add(" ");
-     Output->Lines->Add("Матрица A:");
-     PrintMatrix(Optimizer->OptimalBH,N,false,true);
-     Output->Lines->Add(" ");
+     if (!(OptionsForm->NoOut->Checked))
+     {
+          Output->Lines->Add("Матрица С:");
+          PrintMatrix(Optimizer->OptimalBH,N,false,false);
+          Output->Lines->Add(" ");
+          Output->Lines->Add("Матрица A:");
+          PrintMatrix(Optimizer->OptimalBH,N,false,true);
+          Output->Lines->Add(" ");
+     }
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
      Output->Lines->Add("");
 }
 
 void NewMethod()
 {
-     StatusBar1->Panels->Items[0]->Text=("Новый метод запущен");
+     //StatusBar1->Panels->Items[0]->Text=("Новый метод запущен");
      TimeCycle[3]=Optimizer->NewMethodRun();
+     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
+     StatusBar1->Panels->Items[0]->Text=("Время расчета: "+FloatToStr(Tick)+" миллисек.");
      Output->Lines->Add("Итого: "+IntToStr(TimeCycle[3]));
 
 }
@@ -615,20 +612,53 @@ void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
 }
 
 //Обновить таблицу
-void TableRefresh2()
+void ManualTableRefresh(bool full)
 {
-     ManualTable->Cells[0][0]="    Станок:";
-     //Строки - детали Столбцы - станки
+     if (full)
+     {
+          ManualTable->RowCount=M+1;
+          ManualTable->ColCount=N+1;
+          for (int i=1;i<N+1;i++)
+               for (int j=1;j<M+1;j++)
+               {
+                    ManualTable->Cells[i][j]=j;
+               }
+          Label2->Caption=IntToStr(ProductionCycle2());
+     }
+
+     ManualTable->Cells[0][0]="Станок:";
      for (int i=1;i<ManualTable->RowCount;i++)
-          ManualTable->Cells[0][i]="Деталь " + IntToStr(i)+":";
+          ManualTable->Cells[0][i]="   № " + IntToStr(i)+":";
      for (int j=1;j<ManualTable->ColCount;j++)
-          ManualTable->Cells[j][0]=j;//"Станок №"+i;
-     if (ManualTable->RowCount <= 10)
-          ManualTable->ColWidths[0]=82;
-     else if (ManualTable->RowCount <= 100)
-          ManualTable->ColWidths[0]=88;
-     else
-          ManualTable->ColWidths[0]=96;
+          ManualTable->Cells[j][0]=j;
+}
+//Перерасчет длительности производственного цикла
+int ProductionCycle2()
+{
+     float *top = new float[M+1];
+     float left=0;
+     int det;
+
+     for (int i=1;i<M+1;i++)
+     {
+          det=StrToInt(ManualTable->Cells[1][i]);
+          left+=atof(Table->Cells[1][det].c_str());
+          top[det]=left;
+     }
+
+     for (int i=2;i<N+1;i++)
+     {
+          left=0;
+          for (int j=1;j<M+1;j++)
+          {
+               det=StrToInt(ManualTable->Cells[i][j]);     
+               top[det]=max(top[det],left);
+               top[det]+=atof(Table->Cells[i][det].c_str());
+               left = top[det];
+          }
+     }
+     delete [] top;
+     return left;
 }
 
 };

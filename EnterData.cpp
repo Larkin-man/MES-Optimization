@@ -3,7 +3,6 @@
 #include <vcl.h>
 #pragma hdrstop
 #include "EnterData.h"
-
 //---------------------------------------------------------------------------
 #include "MainSource.h"
 #pragma package(smart_init)
@@ -11,9 +10,9 @@
 #pragma resource "*.dfm"
 TEnterDataForm *EnterDataForm;
 
+
 //---------------------------------------------------------------------------
-__fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner)
-        : TForm(Owner)
+__fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner) : TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
@@ -22,15 +21,15 @@ void __fastcall TEnterDataForm::FormShow(TObject *Sender)
 {
      if (BitBtnOkResize->Visible)
      {
-          EnterDataForm->Field1->EditLabel->Caption="Кол-во строк";
-          EnterDataForm->Field2->EditLabel->Caption="Кол-во столбцов";
+          Field1->EditLabel->Caption="Кол-во строк";
+          Field2->EditLabel->Caption="Кол-во столбцов";
           Field1->Text="";
           Field2->Text="";
      }
      if (BitBtnOkRandom->Visible)
      {
-          EnterDataForm->Field1->EditLabel->Caption="Кол-во деталей";
-          EnterDataForm->Field2->EditLabel->Caption="Кол-во станков";
+          Field1->EditLabel->Caption="Кол-во деталей";
+          Field2->EditLabel->Caption="Кол-во станков";
           if (BaseForm->M > 2)
           {
                Field1->Text=IntToStr(BaseForm->M);
@@ -50,9 +49,9 @@ void __fastcall TEnterDataForm::FormShow(TObject *Sender)
 //ИЗМЕНЕНИЕ РАЗМЕРА ТАБЛИЦЫ
 void __fastcall TEnterDataForm::BitBtnOkResizeClick(TObject *Sender)
 {
-     if (EnterDataForm->Field1->Text.operator!=(""))
+     if (Field1->Text.operator!=(""))
           BaseForm->Table->RowCount=StrToInt(EnterDataForm->Field1->Text)+1;
-     if (EnterDataForm->Field2->Text != "")
+     if (Field2->Text != "")
           BaseForm->Table->ColCount=StrToInt(EnterDataForm->Field2->Text)+1;
      BaseForm->TableRefresh();
      bool NMchange=false;
@@ -82,9 +81,9 @@ void __fastcall TEnterDataForm::BitBtnOkRandomClick(TObject *Sender)
           for (int j=1;j<BaseForm->Table->ColCount;j++)
                BaseForm->Table->Cells[j][i]="";
 
-     if (EnterDataForm->Field1->Text != "")
+     if (Field1->Text != "")
           BaseForm->M=StrToInt(EnterDataForm->Field1->Text);
-     if (EnterDataForm->Field2->Text != "")
+     if (Field2->Text != "")
           BaseForm->N=StrToInt(EnterDataForm->Field2->Text);
 
      if (BaseForm->Table->RowCount < BaseForm->M+1)

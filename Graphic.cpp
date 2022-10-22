@@ -10,8 +10,7 @@
 #include "MainSource.h"
 TGraphicForm *GraphicForm;
 //---------------------------------------------------------------------------
-__fastcall TGraphicForm::TGraphicForm(TComponent* Owner)
-     : TForm(Owner)
+__fastcall TGraphicForm::TGraphicForm(TComponent* Owner) : TForm(Owner)
 {
      GraphicForm->Height=Screen->WorkAreaHeight;
      GraphicForm->Width=Screen->WorkAreaWidth;
@@ -97,14 +96,14 @@ void __fastcall TGraphicForm::ColorBox1Change(TObject *Sender)
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
-
+//Обновить
 void __fastcall TGraphicForm::N1Click(TObject *Sender)
 {
      gant->Refresh();
      BitBtn4->SetFocus();
 }
 //---------------------------------------------------------------------------
-
+//Выводить время работы
 void __fastcall TGraphicForm::N2Click(TObject *Sender)
 {
      N2->Checked=true;
@@ -113,7 +112,7 @@ void __fastcall TGraphicForm::N2Click(TObject *Sender)
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
-
+//Цветные блоки
 void __fastcall TGraphicForm::N4Click(TObject *Sender)
 {
      N4->Checked=true;
@@ -122,19 +121,18 @@ void __fastcall TGraphicForm::N4Click(TObject *Sender)
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
-
-
+//Горизонтальный ползунок двигается
 void __fastcall TGraphicForm::ScrollBar1Scroll(TObject *Sender,
-      TScrollCode ScrollCode, int &ScrollPos)
-{
+      TScrollCode ScrollCode, int &ScrollPos)  //параметр ScrollPos - позиция бегунка, передается
+{                                            //по ссылке, можно изменять
      if (scr1 == ScrollPos)
           return;
      scr1=ScrollPos;
      ClearGantField();
-     BaseForm->DrawGant(ScrollPos,ScrollBar2->Position);
+     DrawGant(ScrollPos,ScrollBar2->Position);
 }
 //---------------------------------------------------------------------------
-
+//Вертикальный ползунок двигается
 void __fastcall TGraphicForm::ScrollBar2Scroll(TObject *Sender,
       TScrollCode ScrollCode, int &ScrollPos)
 {
@@ -142,7 +140,35 @@ void __fastcall TGraphicForm::ScrollBar2Scroll(TObject *Sender,
           return;
      scr2=ScrollPos;
      ClearGantField();
-     BaseForm->DrawGant(ScrollBar1->Position,ScrollPos);
+     DrawGant(ScrollBar1->Position,ScrollPos);
 }
 //---------------------------------------------------------------------------
+
+void TGraphicForm::DrawGant(int PosX, int PosY)
+{
+     int FormH=gant->ClientHeight;
+     int FormW=gant->ClientWidth;
+     int K;
+     if (BaseForm->GantW > FormW)
+     {
+          ScrollBar1->Enabled=true;
+          K = BaseForm->GantW - FormW;
+          ScrollBar1->Max=K+50;
+     }
+     else
+          ScrollBar1->Enabled=false;
+
+     if (BaseForm->GantH > FormH)
+     {
+          ScrollBar2->Enabled=true;
+          K = BaseForm->GantH - FormH;
+          ScrollBar2->Max=K+50;
+     }
+     else
+          ScrollBar2->Enabled=false;
+      gant->Canvas->CopyRect(
+               Rect(0,0,FormW,FormH),
+               BaseForm->Gant->Canvas,
+               Rect(PosX,PosY,FormW+PosX,FormH+PosY));
+}
 

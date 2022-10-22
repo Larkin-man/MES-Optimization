@@ -11,8 +11,7 @@
 #pragma resource "*.dfm"
 TOptionsForm *OptionsForm;
 //---------------------------------------------------------------------------
-__fastcall TOptionsForm::TOptionsForm(TComponent* Owner)
-     : TForm(Owner)
+__fastcall TOptionsForm::TOptionsForm(TComponent* Owner) : TForm(Owner)
 {
      Label1->Caption="";
      //OptimizationWindow=false;
@@ -41,6 +40,7 @@ void __fastcall TOptionsForm::NoOutClick(TObject *Sender)
           Label1->Caption="Во время работы алгоритма данные не будут выводится на экран";
      else
           Label1->Caption="";
+     Debug->Enabled=!NoOut->Checked;
 }
 //---------------------------------------------------------------------------
 //Закрыть форму

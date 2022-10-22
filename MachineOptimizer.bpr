@@ -40,12 +40,12 @@
     <IDLCFLAGS value="-I&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot; 
       -I&quot;C:\Program Files\Borland\CBuilder6\Projects&quot; -I..\Графика -I..\Окошки 
       -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -D_DEBUG -boa"/>
-    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
-      -tW -tWM"/>
-    <PFLAGS value="-$YD -$W -$O- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a4 -4 -b- -k -y -v -vi- 
+      -c -tW -tWM"/>
+    <PFLAGS value="-$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -v"/>
+    <LFLAGS value="-D&quot;&quot; -S:0x200000 -aa -Tpe -GD -x -v"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -73,10 +73,10 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=3
-MinorVer=2
+MinorVer=3
 Release=1
-Build=22
-Debug=0
+Build=25
+Debug=1
 PreRelease=0
 Special=0
 Private=0
@@ -87,13 +87,13 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=3.2.1.22
+FileVersion=3.3.1.25
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
-ProductName=Дипломная работа
-ProductVersion=3.2
+ProductName=Модуль оптимизации информационной системы оперативного управления производством
+ProductVersion=3.3
 Comments=mail:  psylonaut@mail.ru
 
 [Excluded Packages]

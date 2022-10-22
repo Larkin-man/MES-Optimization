@@ -16,6 +16,7 @@
 #include <Dialogs.hpp>
 #include <ExtDlgs.hpp>
 #include <Menus.hpp>
+//#include "MainSource.h"
 
 //---------------------------------------------------------------------------
 class TGraphicForm : public TForm
@@ -64,18 +65,22 @@ private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
      __fastcall TGraphicForm(TComponent* Owner);
+     void DrawGant(int PosX, int PosY);
      int scr1,scr2;
+     int
+          GantH,    //Gant Height
+          GantW;    //Gant Weight
 
-     void ClearGantField()
+
+void ClearGantField()
      {
           gant->Canvas->Brush->Color=ColorBox1->Selected;
           gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
-          gant->Canvas->Rectangle(Rect(56,72,357,233));
 
      }
+
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TGraphicForm *GraphicForm;
 //---------------------------------------------------------------------------
-
 #endif

@@ -27,7 +27,6 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
      TableRefresh();
      Gant = NULL;
      gantshow = false;
-     //Image1->Align=alClient;
      for (int i=0;i<4;i++)
           TimeCycle[i] = 0;
      multicoloured=true;
@@ -40,9 +39,9 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
      Brightness = 25;
      NTranspon->Enabled=false;
      Ready(false);
-     BaseForm->Height=576;
-     BaseForm->Width=832;
-     Output->SetBounds(284,64,533,432);
+
+     NManualModeClick(NULL);
+     ManualTable->ColWidths[0]=64;
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
@@ -156,11 +155,13 @@ void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
                     Added+=(Table->Cells[j][i]+" ");
                pStrings->Add(Added);       
           }
+          FileSave->Dialog->FileName="input *";
           pStrings->SaveToFile(FileSave->Dialog->FileName);
      }
      else
      {
           //Application->MessageBox ("Сохранить", "Сохранение" , MB_ICONSTOP) ;
+          FileSave->Dialog->FileName="report *";
           Output->Lines->SaveToFile(FileSave->Dialog->FileName);
           StatusBar1->Panels->Items[0]->Text=FileSave->Dialog->FileName;
      }
@@ -170,7 +171,7 @@ void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
 void __fastcall TBaseForm::RunExecute(TObject *Sender)
 {
      if ((M <= 1)||(N <= 1))
-     {
+     {    
           Application->MessageBox ("Не задано количество станков и деталей", "Ошибка" , MB_ICONSTOP) ;
           StatusBar1->Panels->Items[1]->Text=("Станков: ?");
           StatusBar1->Panels->Items[2]->Text=("Деталей: ?");
@@ -182,7 +183,8 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
      delete ColorBox;           /* TODO : А гдке он удаляется */
      ColorBox = new TColor[M];
      ColorPit();
-     Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
+     //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
+     Optimizer->output=OptionsForm->Debug->Checked;
      Optimizer->debugging=OptionsForm->Debug->Checked;
      int *T = new int[N];
      for (int i = 1;i<M+1;i++)
@@ -191,8 +193,8 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
           {
                try
                {
-               //T[j-1]=atof(Table->Cells[j][i].c_str());
-               T[j-1]=StrToFloat(Table->Cells[j][i]);
+                    //T[j-1]=atof(Table->Cells[j][i].c_str());
+                    T[j-1]=StrToFloat(Table->Cells[j][i]);
                }
                catch(EConvertError&)
                {
@@ -208,13 +210,17 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
           Optimizer->add(T, N);
      }
      delete [] T;
-     Output->Lines->Add("Исходная матрица:");
-     PrintMatrix(Optimizer->InitBegin,N,false,false);
+     if (!(OptionsForm->NoOut->Checked))
+     {
+          Output->Lines->Add("Исходная матрица:");
+          PrintMatrix(Optimizer->InitBegin,N,false,false);
+     }
      TimeCycle[0]=ProductionCycle();
      StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
      Output->Lines->Add("");
      Output->Lines->Add("");
+     Tick = ::GetTickCount();
      switch (RadioGroup1->ItemIndex)
      {
           case Djohnson:
@@ -246,6 +252,7 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
                ShowMessage("Ошибка выбранного метода");
                return;
      }
+     Output->Lines->Add("Время расчета: "+FloatToStr(Tick)+" миллисек.");
      Output->Lines->Add("");
      Output->Lines->Add("----------------------------------------");
      Output->Lines->Add("");
@@ -255,8 +262,6 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
      Ready(true);
 }
 //---------------------------------------------------------------------------
-//ОБЫЧНЫЙ ВИД
-//КОМПАКТНЫЙ
 //ДИАГРАММА ГАНТА
 void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
 {
@@ -280,7 +285,7 @@ void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //ОЧИСТИТЬ(МЕМО)
-void __fastcall TBaseForm::N12Click(TObject *Sender)
+void __fastcall TBaseForm::NClear1Click(TObject *Sender)
 {
      FileSave->Enabled=false;
      Output->Clear();
@@ -304,6 +309,8 @@ void __fastcall TBaseForm::FileNewExecute(TObject *Sender)
      GantBtn->Down=false;
      GraphicForm->Close();
      StatusBar1->Panels->Items[0]->Text=("");
+     if (NManualMode->Checked)
+          NManualModeClick(Sender);
 
 }
 //---------------------------------------------------------------------------
@@ -314,12 +321,11 @@ void __fastcall TBaseForm::OptimizationExecute(TObject *Sender)
      OptionsForm->ShowOptimization(true);
      OptionsForm->Position=poMainFormCenter;
      if(OptionsForm->ShowModal())
-     OptionsForm->PageControl->TabIndex=0;
-
+     OptionsForm->PageControl->TabIndex=0;    
 }
 //---------------------------------------------------------------------------
 //ТЕСТ ИЗ ВЫПАДАЮЩЕГО СПИСКА
-void __fastcall TBaseForm::N1Click(TObject *Sender)
+void __fastcall TBaseForm::NTestClick(TObject *Sender)
 {
      Output->Lines->Add("Размеры поля L T H W");
      Output->Lines->Add(Output->Left);
@@ -328,14 +334,8 @@ void __fastcall TBaseForm::N1Click(TObject *Sender)
      Output->Lines->Add(Output->Width);
      //Optimizer->MethodBHt(Form1->Output);
      //Table->Cols[2]->Delete(4);   //I dont understand
-     /*for (MachineOptimizer::Link *Item =Optimizer->InitBegin;Item != NULL;Item = Item->next)
-          for (int s = 0 ; s < N; s++)
-               Table->Cells[s+1][Item->curr->m+4]=Item->curr->T[s];   //*/
-     //ColorPit();
-     for (int i = 0;i<M;i++)
-     {
-     //Output->Lines->Add(ColorBox[i]);
-     }
+      //ColorPit();
+     //for (int i = 0;i<M;i++)     {       Output->Lines->Add(ColorBox[i]);      }
      try
           {
                float f = atof("gug");
@@ -346,12 +346,11 @@ void __fastcall TBaseForm::N1Click(TObject *Sender)
                //ShowMessage("Вы ввели ошибочное число");
                OpenBtn->Enabled=!OpenBtn->Enabled;
           }
-     GraphicForm->ScrollBar1->Max=55;
-
+     GraphicForm->ScrollBar1->Max=55;      
 }
 //---------------------------------------------------------------------------
 //ОЧИСТИТЬ ТАБЛИЦУ
-void __fastcall TBaseForm::N2Click(TObject *Sender)
+void __fastcall TBaseForm::NClear2Click(TObject *Sender)
 {
      for (int i=1;i<Table->RowCount;i++)
           for (int j=1;j<Table->ColCount;j++)
@@ -381,8 +380,10 @@ void __fastcall TBaseForm::NTransponClick(TObject *Sender)
      temp=N;
      N=M;
      M=temp;
-     StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
-     StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
+     Swapf(); //возможно зря
+     TableRefresh();
+     //StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
+     //StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
 }
 //---------------------------------------------------------------------------
 //ОПЦИИ
@@ -409,6 +410,7 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
 void __fastcall TBaseForm::ReportExecute(TObject *Sender)
 {
      //OpenBtn->Enabled=!OpenBtn->Enabled;
+     Spinner->Visible=!Spinner->Visible;     
 }
 //---------------------------------------------------------------------------
 //ИЗМЕНИТЬ РАЗМЕР ТАБЛИЦЫ
@@ -436,11 +438,10 @@ void __fastcall TBaseForm::RandomExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //КОПИРОВАТЬ
-void __fastcall TBaseForm::N15Click(TObject *Sender)
+void __fastcall TBaseForm::NCopyClick(TObject *Sender)
 {
      Output->CopyToClipboard();
      ShowMessage("Хочешь копировать жми CTRL+C!");
-    // NViewTwoClick(Sender);
 }
 //ШРИФТ
 void __fastcall TBaseForm::FontEditAccept(TObject *Sender)
@@ -452,18 +453,14 @@ void __fastcall TBaseForm::FontEditAccept(TObject *Sender)
      //Output->Font=FontEdit->Dialog->Font;
 }
 //---------------------------------------------------------------------------
+//Перемещение строк и столбцов
 void __fastcall TBaseForm::TableColumnMoved(TObject *Sender, int FromIndex, int ToIndex)
-{
-     TableRefresh();     
-}
-//---------------------------------------------------------------------------
+{    TableRefresh();     }
 void __fastcall TBaseForm::TableRowMoved(TObject *Sender, int FromIndex, int ToIndex)
-{
-     TableRefresh();     
-}
+{    TableRefresh();     }
 //---------------------------------------------------------------------------
 //Перейти на диаграмму Ганта
-void __fastcall TBaseForm::SpeedButton1Click(TObject *Sender)
+void __fastcall TBaseForm::GoGantBtnClick(TObject *Sender)
 {
      GraphicForm->BringToFront();
      GraphicForm->SetFocus();
@@ -477,7 +474,7 @@ void __fastcall TBaseForm::NAboutClick(TObject *Sender)
      AboutBox1->Free();
 }
 //---------------------------------------------------------------------------
-
+//Двойной клик в статусбаре
 void __fastcall TBaseForm::StatusBar1DblClick(TObject *Sender)
 {
      TPoint mouse;
@@ -496,52 +493,88 @@ void __fastcall TBaseForm::FontEditBeforeExecute(TObject *Sender)
           FontEdit->Dialog->MaxFontSize=36;
 }
 //---------------------------------------------------------------------------
-
-
-
-
-void __fastcall TBaseForm::TableSetEditText(TObject *Sender, int ACol,
-      int ARow, const AnsiString Value)
-{
-//Output->Lines->Add("seledit text");
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TBaseForm::TableTopLeftChanged(TObject *Sender)
-{
-//     Output->Lines->Add("topleft changed ");
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TBaseForm::TableGetEditText(TObject *Sender, int ACol,
-      int ARow, AnsiString &Value)
-{
-//Output->Lines->Add("getedittext");
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TBaseForm::TableSelectCell(TObject *Sender, int ACol,
-      int ARow, bool &CanSelect)
-{
-//Output->Lines->Add("celectioncell");
-}
-//---------------------------------------------------------------------------
-
-
+//Задать порядок запуска вручную
 void __fastcall TBaseForm::NManualModeClick(TObject *Sender)
 {
-
      BaseForm->Height=576;
      BaseForm->Width=832;
-     Output->SetBounds(284,64,533,432);
-     //Output->Anchors=Panel1->Anchors;
+     Panel1->Visible=!NManualMode->Checked;
+     if(NManualMode->Checked)
+     {
+          NManualMode->Checked=false;
+          Output->SetBounds(284,64,533,432);
+          Output->Anchors=Panel1->Anchors;
+     }
+     else
+     {
+          NManualMode->Checked=true;
+          Output->SetBounds(284,64,256,432);
+          Output->Anchors=Table->Anchors;
+          ManualTableRefresh(true);
+     }
 
 
-     BaseForm->Height=576;
-     BaseForm->Width=768;
-     Output->SetBounds(268,64,192,433);
-     //Panel1->SetBounds(464,64,417,433);
-     Output->Anchors=Table->Anchors;
+}
+//---------------------------------------------------------------------------
+//Выбор ячейки в таблице порядка запуска
+void __fastcall TBaseForm::ManualTableSelectCell(TObject *Sender, int ACol,
+      int ARow, bool &CanSelect)
+{
+     Spinner->Visible=true;
+     Spinner->Left=37*ACol+597;   //37 - DefaultRowWidth + GridLineWidth
+     Spinner->Top=27*ARow+67;
+
+}
+//---------------------------------------------------------------------------
+//Нажатие вниз на спиннере
+void __fastcall TBaseForm::SpinnerDownClick(TObject *Sender)
+{
+     //ShowMessage("Col Row ("+IntToStr(ManualTable->Col)+", "+IntToStr(ManualTable->Row)+")");
+     if (ManualTable->Row != M)
+     {
+          int c = StrToInt(ManualTable->Cells[ManualTable->Col][ManualTable->Row]);
+          ManualTable->Cells[ManualTable->Col][ManualTable->Row]=ManualTable->Cells[ManualTable->Col][ManualTable->Row+1];
+          ManualTable->Cells[ManualTable->Col][ManualTable->Row+1]=c;
+     }
+}
+//---------------------------------------------------------------------------
+//Нажатие вверх на спиннере
+void __fastcall TBaseForm::SpinnerUpClick(TObject *Sender)
+{
+     if (ManualTable->Row != 1)
+     {
+          int c = StrToInt(ManualTable->Cells[ManualTable->Col][ManualTable->Row]);
+          ManualTable->Cells[ManualTable->Col][ManualTable->Row]=ManualTable->Cells[ManualTable->Col][ManualTable->Row-1];
+          ManualTable->Cells[ManualTable->Col][ManualTable->Row-1]=c;
+     }
+}
+//---------------------------------------------------------------------------
+//Потеря фокуса таблицей
+void __fastcall TBaseForm::ManualTableExit(TObject *Sender)
+{
+     Spinner->Visible=false;     
+}
+//---------------------------------------------------------------------------
+//Нажатие на пересчет длительности производственного цикла
+void __fastcall TBaseForm::ProdBtnClick(TObject *Sender)
+{
+     Label2->Caption=ProductionCycle2();     
+}
+//---------------------------------------------------------------------------
+//Перемещение строк
+void __fastcall TBaseForm::ManualTableRowMoved(TObject *Sender,
+      int FromIndex, int ToIndex)
+{
+     ManualTableRefresh(false);     
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::FileSaveBeforeExecute(TObject *Sender)
+{
+     if (BaseForm->ActiveControl == Table)
+          FileSave->Dialog->FileName="input *";
+     else
+          FileSave->Dialog->FileName="report *";
 }
 //---------------------------------------------------------------------------
 
