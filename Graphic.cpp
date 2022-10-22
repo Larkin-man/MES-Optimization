@@ -46,12 +46,12 @@ void __fastcall TGraphicForm::FormClose(TObject *Sender, TCloseAction &Action)
 //Цветпит
 void __fastcall TGraphicForm::SpeedButton2Click(TObject *Sender)
 {
-     if (GantBrushColor->Execute())
+     if (GantBrushColor->Execute() == IDOK)
      {
-          gant->Canvas->Brush->Color=GantBrushColor->Color;
+          OptionsForm->ColorOptions->ItemIndex=0;
+          BaseForm->multicoloured=false;
+          BaseForm->PaintGant();
      }
-     BaseForm->PaintGant();
-
 }
 //---------------------------------------------------------------------------
 //Сохранить изображение диаграммы
@@ -79,4 +79,20 @@ void __fastcall TGraphicForm::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+
+void __fastcall TGraphicForm::TrackBar1Change(TObject *Sender)
+{
+     FormShow(NULL);
+     delete BaseForm->Gant;
+     BaseForm->Gant = new Graphics::TBitmap;
+     BaseForm->scale=(TrackBar1->Position)+12+(TrackBar1->Position)/3;
+     BaseForm->PaintGant();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TGraphicForm::ColorBox1Change(TObject *Sender)
+{
+     TrackBar1Change(Sender);
+}
+//---------------------------------------------------------------------------
 

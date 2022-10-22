@@ -13,7 +13,8 @@ object OptionsForm: TOptionsForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
+  Position = poMainFormCenter
+  OnClose = FormClose
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -37,7 +38,7 @@ object OptionsForm: TOptionsForm
     Top = 8
     Width = 329
     Height = 281
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alCustom
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -45,7 +46,7 @@ object OptionsForm: TOptionsForm
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #1054#1073#1097#1080#1077
@@ -83,13 +84,13 @@ object OptionsForm: TOptionsForm
       object GroupBox1: TGroupBox
         Left = 8
         Top = 8
-        Width = 289
-        Height = 65
+        Width = 305
+        Height = 51
         Caption = #1059#1089#1082#1086#1088#1077#1085#1080#1077' '#1088#1072#1073#1086#1090#1099' '#1072#1083#1075#1086#1088#1080#1090#1084#1086#1074
         TabOrder = 0
         object NoOut: TCheckBox
           Left = 9
-          Top = 32
+          Top = 24
           Width = 272
           Height = 17
           Caption = #1054#1090#1082#1083#1102#1095#1080#1090#1100' '#1074#1099#1074#1086#1076' '#1076#1072#1085#1085#1099#1093' '
@@ -99,8 +100,8 @@ object OptionsForm: TOptionsForm
       end
       object RadioGroupFi: TRadioGroup
         Left = 8
-        Top = 88
-        Width = 289
+        Top = 64
+        Width = 305
         Height = 81
         Caption = #1042#1099#1073#1086#1088' '#1084#1072#1090#1088#1080#1094' '#1089' '#1086#1076#1080#1085#1072#1082#1086#1074#1099#1084' Fi '#1074' '#1052#1042#1043
         ItemIndex = 0
@@ -110,17 +111,29 @@ object OptionsForm: TOptionsForm
         TabOrder = 1
         OnClick = RadioGroupFiClick
       end
+      object MVGModify: TRadioGroup
+        Left = 8
+        Top = 152
+        Width = 305
+        Height = 81
+        Caption = #1048#1089#1087#1086#1083#1100#1079#1091#1077#1084#1072#1103' '#1084#1086#1076#1080#1092#1080#1082#1072#1094#1080#1103' '#1052#1042#1043
+        ItemIndex = 0
+        Items.Strings = (
+          #1042#1077#1088#1089#1080#1103' 1.3 ('#1052#1072#1082#1089#1080#1084#1072#1083#1100#1085#1099#1081' Fi)'
+          #1042#1077#1088#1089#1080#1103' 1.4 ('#1044#1086#1083#1075#1080#1081' '#1088#1072#1089#1095#1077#1090' Fi)')
+        TabOrder = 2
+      end
     end
     object TabSheet3: TTabSheet
       Caption = #1044#1080#1072#1075#1088#1072#1084#1084#1072' '#1043#1072#1085#1090#1072
       ImageIndex = 2
-      object RadioGroupGant: TRadioGroup
+      object ColorOptions: TRadioGroup
         Left = 8
         Top = 8
         Width = 305
         Height = 73
         Caption = #1047#1072#1082#1088#1072#1096#1080#1074#1072#1085#1080#1077' '#1073#1083#1086#1082#1086#1074
-        ItemIndex = 0
+        ItemIndex = 1
         Items.Strings = (
           #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1086#1076#1080#1085' '#1094#1074#1077#1090
           #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1089#1083#1091#1095#1072#1081#1085#1099#1077' '#1094#1074#1077#1090#1072)
@@ -134,6 +147,32 @@ object OptionsForm: TOptionsForm
         Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1074#1088#1077#1084#1103' '#1088#1072#1073#1086#1090#1099
         TabOrder = 1
         OnClick = WorkTimeOutClick
+      end
+    end
+    object TabSheet4: TTabSheet
+      Caption = #1050#1088#1080#1090#1077#1088#1080#1080' '#1086#1087#1090#1080#1084#1080#1079#1072#1094#1080#1080
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ImageIndex = 3
+      ParentFont = False
+      object CheckBox1: TCheckBox
+        Left = 8
+        Top = 7
+        Width = 175
+        Height = 33
+        Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1074#1082#1083#1102#1095#1077#1085#1080#1081
+        TabOrder = 0
+      end
+      object CheckBox2: TCheckBox
+        Left = 8
+        Top = 40
+        Width = 305
+        Height = 33
+        Caption = #1050#1086#1083'-'#1074#1086' '#1086#1076#1085#1086#1074#1088#1077#1084#1077#1085#1085#1086' '#1088#1072#1073#1086#1090#1072#1102#1097#1080#1093' '#1089#1090#1072#1085#1082#1086#1074
+        TabOrder = 1
       end
     end
   end

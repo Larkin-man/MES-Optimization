@@ -30,12 +30,12 @@ public:
           Node *curr;    //Текущая деталь
           Link *down;    //Вниз по дереву
      }
-     *InitBegin,    //Начало списка иходных деталей
-     *OptimalDJ,      //Начало списка деталей по Джонсону
-     *OptimalPS,
+     *InitBegin,    //Список исходных деталей
+     *OptimalDJ,    //Список деталей по Джонсону
+     *OptimalPS,    //Список деталей по Петрову-Соколицину (->down)
+     *OptimalBH,    //Матрица С для метода ветвей и границ
      *PSBegin[4],   //Начало списка деталей по Петрову-Соколицину
-     *OptimalBH,            //Матрица С для метода ветвей и границ
-     **Cdos;        //Arari asimpaspari parire pararu parrapupa ta ta ta ua
+     **Cdos;        //Arari asimpaspari parire pararu parrapupa ta ta ta ua (fusrodah song)
      int *OutSequence,   //Оптимальная последовательность обработки деталей для Джонсона и ПС
           **OutMatrix;   //Оптимальная последовательность обработки деталей для МВГ
      int StackOfCalls[4]; //Стек запусков методов
@@ -86,7 +86,7 @@ MachineOptimizer()
      //ShowMessage("Данные удалены!");
 }
 
-void add(int n,int *time)  //Добавление ДЕТАЛИ
+void add(int n, int *time)  //Добавление ДЕТАЛИ
 {
      if (n<N)
           N=n;
@@ -131,7 +131,7 @@ bool ClearData(int MethodID) //Функция очищает память
      return false;
 }
 
-int DjonsonRun()      //For two machines  Fortune havor!
+int DjonsonRun()
 {
      for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
      {                                    //TODO: to issue as function!
@@ -304,7 +304,7 @@ int PetrovSokolRun(TMemo *output = NULL)
      return Time;
 }
 
-int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
+int MethodBHRun (char version = 0, TMemo *output = NULL) //Method  of branches and hordes
 {
      int
           s,   //Текущий станок
@@ -489,7 +489,7 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
                          pLink->next=NULL;
                          pLink->down=Linker;
                          pLink->curr=Linker->curr;
-                         if (rowind(D,Linker->curr->m,output))
+                         if (rowind(D,Linker->curr->m))
                          {   //Если одинаковые данные то не создавать копию
                               Node *pItem = new Node;
                               pItem->T = new int[N];
@@ -526,31 +526,43 @@ int MethodBHRun (TMemo *output = NULL) //Method  of branches and hordes
                          }
                     }
 
+                  if (version == 0)
+                  {
                     // 7) Начнем поиск минимальных и сортировку по предпоследнему станку для нахождения фи
                     int T = 0;   // 8) T
                     Link *minimal=Cdos[det];          //минимальный = первый
-                    int min=Cdos[det]->curr->T[N-2];
+                    int min=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
                     for (int i=0;i<M;i++)
                     {
                          min=max;
                          for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
                          {
-                              if ((Linker->curr->T[N-2] < min) && (Linker->curr->m >=0))
+                              if ((Linker->curr->T[s-1] < min) && (Linker->curr->m >=0))    //(Linker->curr->T[N-2] < min)
                               {
                                    minimal=Linker;
-                                   min=Linker->curr->T[N-2];
+                                   min=Linker->curr->T[s-1];             //min=Linker->curr->T[N-2];
                               }
                          }
 
                          //минимальный найден
                          minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-                         if (T <= minimal->curr->T[N-2])   // 9) Сравниваем Т и С(fq,n)
-                              T = minimal->curr->T[N-1];
+                         if (T <= minimal->curr->T[s-1])   // 9) Сравниваем Т и С(fq,n-1)   // (T <= minimal->curr->T[N-2])
+                              T = minimal->curr->T[s];                                    //T = minimal->curr->T[N-1];
                          else
-                              T+=minimal->down->down->curr->T[N-1];
+                              T+=minimal->down->down->curr->T[s];                    //T+=minimal->down->down->curr->T[N-1];
                     }
 
                     Fi[det]=T;   //11
+                  } //version 0
+                  else //version > 0 
+                  {
+                    Fi[det]=0;
+                    for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
+                         {
+                              if (Linker->curr->T[N-1] > Fi[det])
+                                   Fi[det] = Linker->curr->T[N-1];
+                         }
+                  }
                     for (int i=0;i<M;i++)   //по выходной матрице
                          if (d == OutMatrix[i][s-1])
                          {
@@ -690,16 +702,12 @@ void DeleteList (Link *Item)
           delete Item->curr;
 }
                                           
-bool rowind(int *D, int d,TMemo *out) //проверка наличия детали d в списке D
+bool rowind(int *D, int d) //проверка наличия детали d в списке D
 {
-     //out->Lines->Add("d="+IntToStr(d));
-     //out->Lines->Add("Massiv D");
-     //for (int i=0;i<M+1;i++)
-     //out->Lines->Add(IntToStr(D[i]));
      for (int i = 1;i<D[0]+2;i++)
           if (d == D[i])
                return false;
-          //ShowMessage("true");
+          //ShowMessage("detal in D");
           return true;
 }
 

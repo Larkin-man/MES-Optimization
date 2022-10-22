@@ -14,6 +14,12 @@ __fastcall TOptionsForm::TOptionsForm(TComponent* Owner)
      : TForm(Owner)
 {
      Label1->Caption="";
+     //OptimizationWindow=false;
+     TabSheet3->Enabled=false;
+          //TabSheet4->Hide();
+     ShowOptimization(false);
+     Cvetpit=ColorOptions->ItemIndex;
+
 }
 //---------------------------------------------------------------------------
 
@@ -42,6 +48,8 @@ void __fastcall TOptionsForm::RadioGroupFiClick(TObject *Sender)
 
 void __fastcall TOptionsForm::WorkTimeOutClick(TObject *Sender)
 {
+     if (OptionsForm->Visible == false)
+          WorkTimeOut->Checked = true;
      if(WorkTimeOut->Checked)
      {
           BaseForm->scale=22;
@@ -50,8 +58,20 @@ void __fastcall TOptionsForm::WorkTimeOutClick(TObject *Sender)
      {
           BaseForm->scale=18;
      }
+     delete BaseForm->Gant;
+     BaseForm->Gant = new Graphics::TBitmap;
      BaseForm->PaintGant();
 
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TOptionsForm::FormClose(TObject *Sender,
+      TCloseAction &Action)
+{
+     ShowOptimization(false);
+     //ShowMessage("On Close");
+}
+//---------------------------------------------------------------------------
+
+
 

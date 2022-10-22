@@ -33,7 +33,6 @@
 
 #define max(A,B) (A>B ? A : B)
 
-
 class TBaseForm : public TForm
 {
 __published:	// IDE-managed Components
@@ -46,7 +45,6 @@ __published:	// IDE-managed Components
      TMenuItem *NViewOne;
      TMenuItem *N11;
      TMenuItem *N12;
-     TFontDialog *FontDialog1;
      TStatusBar *StatusBar1;
      TMemo *Output;
      TMenuItem *N15;
@@ -64,16 +62,12 @@ __published:	// IDE-managed Components
      TMenuItem *NMenuRun;
      TMenuItem *NOptSwitch;
      TMenuItem *NRun;
-     TFontDialog *FontDialog2;
      TStringGrid *Table;
      TMenuItem *NGantTime;
      TMenuItem *N9;
      TPopupMenu *PopupMenuGrid;
      TMenuItem *N1;
      TMenuItem *NTranspon;
-     TGroupBox *GroupBox1;
-     TCheckBox *CheckBox1;
-     TCheckBox *CheckBox2;
      TMenuItem *N2;
      TMenuItem *N3;
      TMenuItem *NMenuOptions;
@@ -102,7 +96,7 @@ __published:	// IDE-managed Components
      TFileOpen *FileOpen;
      TFileSaveAs *FileSave;
      TFileExit *FileExit;
-     TFontEdit *FontEdit1;
+     TFontEdit *FontEdit;
      TAction *FileNew;
      TMenuItem *N4;
      TMenuItem *SaveAs1;
@@ -115,10 +109,11 @@ __published:	// IDE-managed Components
      TAction *ResizeTable;
      TMenuItem *Pf1;
      TMenuItem *N5;
-     TPanel *Panel1;
-     TLabel *Label1;
      TAction *Repaint;
-     void __fastcall NFontClick(TObject *Sender);
+     TPanel *Panel1;
+     TImage *Image1;
+     TToolButton *ToolButton8;
+     TSpeedButton *SpeedButton1;
      void __fastcall N15Click(TObject *Sender);
      void __fastcall NViewOneClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
@@ -141,8 +136,13 @@ __published:	// IDE-managed Components
      void __fastcall ReportExecute(TObject *Sender);
      void __fastcall ResizeTableExecute(TObject *Sender);
      void __fastcall Pf1Click(TObject *Sender);
-     void __fastcall RepaintExecute(TObject *Sender);
      void __fastcall NGantTimeClick(TObject *Sender);
+     void __fastcall FontEditAccept(TObject *Sender);
+     void __fastcall TableColumnMoved(TObject *Sender, int FromIndex,
+          int ToIndex);
+     void __fastcall TableRowMoved(TObject *Sender, int FromIndex,
+          int ToIndex);
+     void __fastcall SpeedButton1Click(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
 
@@ -151,17 +151,20 @@ public:		// User declarations
      Graphics::TBitmap *Gant;
      int vertix,scale,i,j;
      int  BH,  //Block Height = 30 (не меньше 14!)
-          BI,  //Block Interval
+          BI,  //Block Interval = 10
           TX,  //Text Out X = 5
           TY,  //Text Out Y = 8
           GantH,    //Gant Height
           GantW;    //Gant Weight
-     bool graphik,ultima,debugging;
+     bool ultima,debugging;
      int *top;
      int M,N; //M - Станки, N - Детали
      int TimeCycle[4];
      bool gantshow;
-     TColor *Box;
+     TColor *ColorBox;
+     int Brightness;     //Яркость
+     int delet;
+     bool multicoloured;
 
 
      __fastcall TBaseForm(TComponent* Owner);  //Объявление конструктора
@@ -172,11 +175,10 @@ public:		// User declarations
 //Проверка видимости элементов
 void view()
 {
-     Label1->Visible=NViewTwo->Checked;
+     Image1->Visible=NViewTwo->Checked;
      Panel1->Visible=NViewTwo->Checked;
-     GroupBox1->Visible=NViewOne->Checked;
      StaticText1->Visible=NViewTwo->Checked;
-     TrackBar1->Visible=NViewTwo->Checked;
+     TrackBar1->Visible=NViewTwo->Checked;  
 }
 
 void Print(MachineOptimizer::Link *list)
@@ -194,6 +196,40 @@ void Ready()
      FileSave->Enabled=true;
      Run->Enabled=true;
      NTranspon->Enabled=true;
+}
+
+void TableRefresh()
+{
+     Table->Cells[0][0]="    Станок:";
+     //Строки - детали Столбцы - станки
+     for (int i=1;i<Table->RowCount;i++)
+          Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
+     for (int j=1;j<Table->ColCount;j++)
+          Table->Cells[j][0]=j;//"Станок №"+i;
+}
+void ColorPit()
+{
+     Brightness = 25;
+     TColor red,green,blue;
+     srand(time(NULL));
+     for (int i = 0;i<M;i++)
+     {
+     red=TColor(rand()%(256-Brightness)+Brightness);
+     green=TColor((rand()%(255-Brightness)+Brightness)*256+256);
+     blue=TColor((rand()%(255-Brightness)+Brightness)*256*256+256*256);
+     ColorBox[i]=TColor(blue+green+red);
+     }
+     //ToolBar1->Color=0*256+256;
+     //RadioGroup1->Color=254*256*256+254*256+256;
+     //Table->Color=ColorBox[0];
+}
+
+void ClearGant()
+{
+     delete Gant;
+     Gant = new Graphics::TBitmap;
+     //GraphicForm->gant->Canvas->Brush->Color=ColorBox1->Selected;
+     //GraphicForm->gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
 }
 //Функция выводит матрицу. down - с переходом вниз по дереву; subtractb - с вычитанием матрицы длительностей
 void PrintMatrix(MachineOptimizer::Link *list, int n, bool down, bool subtractb)
@@ -224,7 +260,7 @@ void PrintMatrix(MachineOptimizer::Link *list, int n, bool down, bool subtractb)
                Output->Lines->Add("");
                Output->Text=Output->Text+IntToStr(list->curr->m)+"  |  ";
                for (int i = 0;i<n;i++)
-                    Output->Text=Output->Text+IntToStr(list->curr->T[i]-StrToInt(Table->Cells[i+1][j]))+"  ";
+                    Output->Text=Output->Text+IntToStr(list->curr->T[i]-atoi(Table->Cells[i+1][j].c_str()))+"  ";
           }
      }
 }
@@ -284,11 +320,9 @@ int ProductionCycle()
 void DrawDiagramFromDurationMatrix(MachineOptimizer::Link *List, bool down)
 {
      vertix+=BH;
-     Gant->Canvas->Brush->Color=GraphicForm->GantBrushColor->Color;
      int *SX = new int[N+1];
           for (int o = 0 ; o < N+1; o++)
                SX[o]=0;
-     int del=0;
      MachineOptimizer::Node *Item;
      for (;List != NULL;List = List->next)   //По деталям
      {
@@ -296,6 +330,10 @@ void DrawDiagramFromDurationMatrix(MachineOptimizer::Link *List, bool down)
                Item=List->down->curr;
           else
                Item=List->curr;
+          if (multicoloured)
+               Gant->Canvas->Brush->Color=ColorBox[Item->m-1];
+          else
+               Gant->Canvas->Brush->Color=GraphicForm->GantBrushColor->Color;
           for (int s = 0 ; s < N; s++)       //По станкам
           {
                //ShowMessage("s="+IntToStr(s)+" del="+IntToStr(del));
@@ -318,10 +356,12 @@ void DrawDiagramFromDurationMatrix(MachineOptimizer::Link *List, bool down)
 void DrawDiagramFromEndingMatrix(MachineOptimizer::Link *Item)
 {
      vertix+=BH;
-     Gant->Canvas->Brush->Color=GraphicForm->GantBrushColor->Color;
-
      for (;Item != NULL;Item = Item->next)   //По деталям
           {
+          if (multicoloured)
+               Gant->Canvas->Brush->Color=ColorBox[Item->curr->m-1];
+          else
+               Gant->Canvas->Brush->Color=GraphicForm->GantBrushColor->Color;
                for (int s = 0 ; s < N; s++)       //По станкам
                {
                     Gant->Canvas->Rectangle(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale, vertix+(BH+BI)*s,
@@ -339,7 +379,6 @@ void DrawDiagramFromEndingMatrix(MachineOptimizer::Link *Item)
 
 void PaintGant()
 {
-     if (!graphik) return;
      vertix=0;
      BH=30;
      BI=10;
@@ -347,6 +386,7 @@ void PaintGant()
      TY=(BH-14)/2;
      //if (Optimizer == NULL) return;
      //Label1->Repaint();    //TODO: repaint ?
+     //GraphicForm->gant->Canvas->Brush->Color=
      GantW=TimeCycle[0];
      for (int i=1;i<4;i++)
           if (TimeCycle[i] > GantW)
@@ -358,12 +398,14 @@ void PaintGant()
      Gant->Height=GantH;
      Gant->Canvas->Pen->Color=GantPenColor->Color;
      Gant->Canvas->Pen->Width=1;
+     Gant->Canvas->Brush->Color=GraphicForm->ColorBox1->Selected;
+     Gant->Canvas->FillRect(Rect(0,0,GantW,GantH));
      //Gant->Canvas->Rectangle(0,0,Gant->Width,Gant->Height);
      Gant->Canvas->TextOut(TX,TY,"Исходные данные:");
      DrawDiagramFromDurationMatrix(Optimizer->InitBegin,false);
      Gant->Canvas->CopyMode=cmSrcCopy;
      //ShowMessage("jvj"+IntToStr(Optimizer->OptimalPS->down->curr->m));
-     if ((RadioGroup1->ItemIndex == 0) && (Optimizer->OptimalDJ != NULL))
+     if ((RadioGroup1->ItemIndex == 0) && (Optimizer->OptimalDJ != NULL))    //TODO: switch case
      {
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по алгоритму Джонсона:");
           DrawDiagramFromDurationMatrix(Optimizer->OptimalDJ,false);
@@ -378,9 +420,14 @@ void PaintGant()
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по методу ветвей и границ:");
           DrawDiagramFromEndingMatrix(Optimizer->OptimalBH);
      }
-
-     Label1->Canvas->CopyMode = cmSrcCopy;
-     Label1->Canvas->CopyRect(Rect(0,0,Label1->Width,Label1->Height),Gant->Canvas,Rect(0,0,Label1->Width,Label1->Height));
+     if ((RadioGroup1->ItemIndex == 3) && (Optimizer->OptimalBH != NULL))
+     {
+          Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по модифицированому методу ветвей и границ:");
+          DrawDiagramFromEndingMatrix(Optimizer->OptimalBH);
+     }
+     Image1->Canvas->CopyMode = cmSrcCopy;
+     Image1->Canvas->CopyRect(Rect(0,0,Image1->Width+50,Image1->Height+50),Gant->Canvas,Rect(0,0,Image1->Width+50,Image1->Height+50));
+     //GraphicForm->FormShow(NULL); //Очистить
      if (gantshow)
           GraphicForm->gant->Canvas->CopyRect(Rect(0,0,GantW,GantH),Gant->Canvas,Rect(0,0,GantW,GantH));
      /*
@@ -420,7 +467,6 @@ void PaintGant()
 void DjonsonAlgorithm()
 {
      StatusBar1->Panels->Items[0]->Text=("Алгоритм Джонсона для двух станков");
-     graphik = false;
      TimeCycle[1] = Optimizer->DjonsonRun();  //Запуск алгоритма джонсона
      //Output->Lines->Add("Исходная последовательность:");
      //MachineOptimizer::Link *list = Optimizer->InitBegin;
@@ -432,14 +478,12 @@ void DjonsonAlgorithm()
           Output->Text=Output->Text+IntToStr(data[i])+" ";
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[1]));
      Output->Lines->Add("");
-     graphik = true;
      PaintGant();
 }
 
 void PetrovSokolMethod()
 {
      StatusBar1->Panels->Items[0]->Text=("Метод Петрова-Соколицина");
-     graphik = false;
      TimeCycle[2] = Optimizer->PetrovSokolRun(Output);   //Запуск алгоритма Петрова-Соколицина
      top = new int[N];
 
@@ -486,18 +530,30 @@ void PetrovSokolMethod()
           Output->Text=Output->Text+IntToStr(data[i])+" ";
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[2]));
      Output->Lines->Add("");
-     graphik = true;
      PaintGant();
 }
 
-void MethodBH () //Method  of branches and hordes
+void MethodBH (bool Modify = false) //Method  of branches and hordes
 {
-     StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
-     graphik = false;
-     if (OptionsForm->NoOut->Checked)
-          TimeCycle[3]=Optimizer->MethodBHRun(NULL);
+     char version = 0;
+     if (Modify)
+          switch (OptionsForm->MVGModify->ItemIndex)
+          {
+               case 0:
+                    StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ v1.3");
+                    version = 1;
+                    break;
+               case 1:
+                    StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ v1.4");
+                    version = 2;
+                    break;
+          }
      else
-          TimeCycle[3]=Optimizer->MethodBHRun(Output);
+          StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
+     if (OptionsForm->NoOut->Checked)
+          TimeCycle[3]=Optimizer->MethodBHRun(version, NULL);
+     else
+          TimeCycle[3]=Optimizer->MethodBHRun(version, Output);
      Output->Lines->Add("Матрица С:");
      PrintMatrix(Optimizer->OptimalBH,N,false,false);
      Output->Lines->Add(" ");
@@ -506,7 +562,6 @@ void MethodBH () //Method  of branches and hordes
      Output->Lines->Add(" ");
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
      Output->Lines->Add("");
-     graphik = true;
      PaintGant();
 }
 
@@ -521,13 +576,6 @@ void garivogne()
      StatusBar1->SimpleText=("");
 }
 
-void TableRowColumnMoved()
-{
-     for (int i=1;i<Table->RowCount;i++)
-          Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
-     for (int j=1;j<Table->ColCount;j++)
-          Table->Cells[j][0]=j;
-}
 
 };
 //---------------------------------------------------------------------------

@@ -21,19 +21,30 @@ class TGraphicForm : public TForm
 {
 __published:	// IDE-managed Components
      TImage *gant;
-     TControlBar *ControlBar1;
-     TTrackBar *TrackBar1;
-     TSpeedButton *SpeedButton2;
      TColorDialog *GantBrushColor;
-     TSpeedButton *SpeedButton3;
      TSavePictureDialog *SavePictureDialog1;
+     TControlBar *ControlBar1;
+     TToolBar *ToolBar1;
+     TBitBtn *BitBtn4;
+     TSpeedButton *SpeedButton3;
+     TSpeedButton *SpeedButton2;
+     TToolButton *ToolButton1;
+     TToolButton *ToolButton2;
+     TToolBar *ToolBar2;
+     TLabel *Label2;
+     TTrackBar *TrackBar1;
+     TToolBar *ToolBar3;
+     TPanel *Panel1;
+     TLabel *Label1;
      TColorBox *ColorBox1;
-     TBitBtn *BitBtn1;
+     TToolButton *ToolButton3;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall SpeedButton2Click(TObject *Sender);
      void __fastcall SpeedButton3Click(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
+     void __fastcall TrackBar1Change(TObject *Sender);
+     void __fastcall ColorBox1Change(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;

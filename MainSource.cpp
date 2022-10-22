@@ -11,6 +11,7 @@
 #define Djohnson 0
 #define PetrovSokol 1
 #define MethodVG 2
+#define MethodVGModify 3
 
 TBaseForm *BaseForm;
 //---------------------------------------------------------------------------
@@ -21,10 +22,7 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner)
      scale = 18;
      M=0;
      N=0;
-     Label1->Caption="";
-     NViewOne->Checked=true;
-     Output->SetBounds(464,64,418,337);
-     graphik=false;
+     NViewOneClick(NULL);
      ultima=false;
      Run->Enabled=false;
      Optimization->Enabled=false;
@@ -32,26 +30,21 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner)
      Report->Enabled=false;
      FileSave->Enabled=false;
      NTranspon->Enabled=false;
-     //ReportBtn->Enabled=false;
      FileOpen->Dialog->InitialDir=GetCurrentDir();
      FileSave->Dialog->InitialDir=GetCurrentDir();
-     Label1->Canvas->Pen->Color=clHotLight;
+     Image1->Canvas->Pen->Color=clHotLight;
      BaseForm->Table->RowHeights[0]=26;
      BaseForm->Table->ColWidths[0]=82;
-     BaseForm->Table->Cells[0][0]="    Станок:";
-     view();
-     //Строки - детали Столбцы - станки
-     for (int i=1;i<Table->RowCount;i++)
-          BaseForm->Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
-     for (int j=1;j<Table->ColCount;j++)
-          BaseForm->Table->Cells[j][0]=j;//"Станок №"+i;
-          //Output->Lines->Add("ColCount="+IntToStr(Table->ColCount));
-     //Form1->SetFocus();
-      Gant = NULL;
-      gantshow = false;
-      Label1->Align=alClient;
-      for (int i=0;i<4;i++)
+     TableRefresh();
+     Gant = NULL;
+     gantshow = false;
+     //Image1->Align=alClient;
+     for (int i=0;i<4;i++)
           TimeCycle[i] = 0;
+     Image1->Width=Panel1->Width;
+     Image1->Height=Panel1->Height;
+     delet =0;
+     multicoloured=true;
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
@@ -137,6 +130,9 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
      Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
      delete Gant;
      Gant = new Graphics::TBitmap;
+     delete ColorBox;
+     ColorBox = new TColor[M];
+     ColorPit();
 
      int *T = new int[N];
      for (int i = 1;i<M+1;i++)
@@ -171,12 +167,18 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
                Output->Lines->Add("");
                MethodBH ();
                break;
+          case MethodVGModify:
+               Output->Lines->Add("Метод ветвей и границ (Модифицированый)");
+               Output->Lines->Add("");
+               MethodBH (true);
+               break;
           default:
                return;
      }
      Output->Lines->Add("");
      Output->Lines->Add("----------------------------------------");
      Output->Lines->Add("");
+     FileSave->Enabled=true;
      Optimization->Enabled=true;
      GantDiagram->Enabled=true;
      Report->Enabled=true;
@@ -185,12 +187,11 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
 //ОБЫЧНЫЙ ВИД
 void __fastcall TBaseForm::NViewOneClick(TObject *Sender)
 {
-     BaseForm->Height=480;
+     BaseForm->Height=576;
      BaseForm->Width=896;
      NViewOne->Checked=true;
      NViewTwo->Checked=false;
-     Table->SetBounds(8,168,450,232);
-     Output->SetBounds(464,64,417,336);
+     Output->SetBounds(268,64,613,432);
      Output->Anchors=Panel1->Anchors;
      view();
 }
@@ -198,15 +199,12 @@ void __fastcall TBaseForm::NViewOneClick(TObject *Sender)
 //КОМПАКТНЫЙ
 void __fastcall TBaseForm::NViewTwoClick(TObject *Sender)
 {
-     Panel1->Visible=false;
-     BaseForm->Height=480;
+     BaseForm->Height=576;
      BaseForm->Width=896;
      NViewTwo->Checked=true;
      NViewOne->Checked=false;
-     Table->SetBounds(272,64,187,336);
-     Output->SetBounds(8,168,257,232);
-     Panel1->SetBounds(464,64,417,336);
-     //Output->Anchors=akLeft,akTop,akRight,akBottom;
+     Output->SetBounds(268,64,192,433);
+     Panel1->SetBounds(464,64,417,433);
      Output->Anchors=Table->Anchors;
      view();
 }
@@ -227,9 +225,6 @@ void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
           GantBtn->Down=false;
           GraphicForm->Close();
      }
-     //Box = new TColor[BaseForm->M];
-     //for (int i=0;i<BaseForm->M;i++)
-     //     Box[i]=TColor(random(16000000));
 }
 //---------------------------------------------------------------------------
 //ОЧИСТИТЬ(МЕМО)
@@ -238,19 +233,12 @@ void __fastcall TBaseForm::N12Click(TObject *Sender)
      Output->Clear();
 }
 //---------------------------------------------------------------------------
-//ПЕРЕРИСОВАТЬ / OnPaint
-void __fastcall TBaseForm::RepaintExecute(TObject *Sender)
-{
-     if (graphik)
-          Label1->Canvas->CopyRect(Rect(0,0,600,400),Gant->Canvas,Rect(0,0,600,400));
-}
-//---------------------------------------------------------------------------
 //ШРИФТ ДИАГРАММЫ
 void __fastcall TBaseForm::NGantFontClick(TObject *Sender)
 {
-     if (FontDialog2->Execute())  /* TODO 2 : Сделать для сендера */
+     if (FontEdit->Dialog->Execute())  /* TODO 2 : Сделать для сендера */
      {
-          Label1->Font=FontDialog2->Font;
+          //Image1->Font=FontEdit->Dialog->Font;
      }
      PaintGant();
 }
@@ -268,6 +256,10 @@ void __fastcall TBaseForm::NGantColorClick(TObject *Sender)
 //ИЗМЕНЕНИЕ МАСШТАБА ПОЛЗУНКОМ
 void __fastcall TBaseForm::TrackBar1Change(TObject *Sender)
 {
+     //Image1->~TImage();
+     //Gant->FreeImage();
+     delete Gant;
+     Gant = new Graphics::TBitmap;
      scale=(TrackBar1->Position)+14;
      PaintGant();
 }
@@ -283,56 +275,50 @@ void __fastcall TBaseForm::FormClose(TObject *Sender, TCloseAction &Action)
 void __fastcall TBaseForm::FileNewExecute(TObject *Sender)
 {
      Output->Clear();
-     graphik = false;
      delete Optimizer;
      Optimizer = NULL;
      delete Gant;
      Gant = NULL;
-     for (int i=1;i<Table->RowCount;i++)
-          Table->Cells[0][i]="Деталь " + IntToStr(i)+":";
-     for (int j=1;j<Table->ColCount;j++)
-          Table->Cells[j][0]=j;
+     TableRefresh();
      FileSave->Enabled=false;
      Optimization->Enabled=false;
      GantDiagram->Enabled=false;
      Report->Enabled=false;
      GantBtn->Down=false;
      GraphicForm->Close();
-
-     /*
-     int red,green,blue;
-     srand(time(NULL));
-     red=rand()%256;
-     green=(rand()%255)*256+256;
-     blue=(rand()%255)*256*256+256*256;
-     ToolBar1->Color=TColor(red);
-     GroupBox1->Color=TColor(green);
-     RadioGroup1->Color=TColor(blue);
-     Table->Color=TColor(blue+green+red);         */
 }
 //---------------------------------------------------------------------------
-//ОПТИМИЗАЦИЯ - КОЛИЧЕСТВО ВКЛЮЧЕНИЙ
+//ОПТИМИЗАЦИЯ
 void __fastcall TBaseForm::OptimizationExecute(TObject *Sender)
 {
-     ultima=true;
+     OptionsForm->Caption=("Оптимизация");
+     OptionsForm->ShowOptimization(true);
+     OptionsForm->Position=poMainFormCenter;
+     if(OptionsForm->ShowModal()==IDOK)
+     {          
+     }
 }
 //---------------------------------------------------------------------------
 //ТЕСТ ИЗ ВЫПАДАЮЩЕГО СПИСКА
 void __fastcall TBaseForm::N1Click(TObject *Sender)
 {
-     Output->Lines->Add("Размеры таблицы L T H W");
-     Output->Lines->Add(Table->Left);
-     Output->Lines->Add(Table->Top);
-     Output->Lines->Add(Table->Height);
-     Output->Lines->Add(Table->Width);
+     Output->Lines->Add("Размеры поля L T H W");
+     Output->Lines->Add(Output->Left);
+     Output->Lines->Add(Output->Top);
+     Output->Lines->Add(Output->Height);
+     Output->Lines->Add(Output->Width);
      //Optimizer->MethodBHt(Form1->Output);
      //Table->Cols[2]->Delete(4);   //I dont understand
-     for (MachineOptimizer::Link *Item =Optimizer->InitBegin;Item != NULL;Item = Item->next)
+     /*for (MachineOptimizer::Link *Item =Optimizer->InitBegin;Item != NULL;Item = Item->next)
           for (int s = 0 ; s < N; s++)
-               Table->Cells[s+1][Item->curr->m+4]=Item->curr->T[s];
-     for (MachineOptimizer::Link *Item =Optimizer->OptimalDJ;Item != NULL;Item = Item->next)
-          for (int s = 0 ; s < N; s++)
-               Table->Cells[s+4][Item->curr->m+4]=Item->curr->T[s];
+               Table->Cells[s+1][Item->curr->m+4]=Item->curr->T[s];   //*/
+     Image1->Width=Panel1->Width;
+     Image1->Height=Panel1->Height;
+     //ColorPit();
+     for (int i = 0;i<M;i++)
+     {
+     Output->Lines->Add(ColorBox[i]);
+     }
 
 }
 //---------------------------------------------------------------------------
@@ -370,7 +356,13 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
      OptionsForm->Position=poMainFormCenter;
      if(OptionsForm->ShowModal()==IDOK)
      {
-
+          if (OptionsForm->Cvetpit != OptionsForm->ColorOptions->ItemIndex)
+          {
+               //ShowMessage("cv"+IntToStr(OptionsForm->Cvetpit)+" ite="+IntToStr(OptionsForm->ColorOptions->ItemIndex));
+               OptionsForm->Cvetpit=OptionsForm->ColorOptions->ItemIndex;
+               multicoloured=OptionsForm->Cvetpit;
+               PaintGant();
+          }
      }
 }
 //---------------------------------------------------------------------------
@@ -391,8 +383,7 @@ void __fastcall TBaseForm::ResizeTableExecute(TObject *Sender)
      EnterDataForm->ShowModal();
      // strcpy(temp.city,Form2->Edit1->Text.c_str());
      // AddA(temp);
-     EnterDataForm->Free();
-
+     EnterDataForm->Free();  
 }
 //---------------------------------------------------------------------------
 //ЗАПОЛНЕНИЕ СЛУЧАЙНЫМИ ЧИСЛАМИ
@@ -407,15 +398,6 @@ void __fastcall TBaseForm::Pf1Click(TObject *Sender)
      EnterDataForm->Free();
 }
 //---------------------------------------------------------------------------
-//ШРИФТ
-void __fastcall TBaseForm::NFontClick(TObject *Sender)
-{
-     if (FontDialog1->Execute())
-     {
-          Output->Font=FontDialog1->Font;
-     }
-}
-//---------------------------------------------------------------------------
 //КОПИРОВАТЬ
 void __fastcall TBaseForm::N15Click(TObject *Sender)
 {
@@ -427,10 +409,35 @@ void __fastcall TBaseForm::N15Click(TObject *Sender)
 //Выводить время работы
 void __fastcall TBaseForm::NGantTimeClick(TObject *Sender)
 {
-     NGantTime->Checked=true;
      if (OptionsForm->WorkTimeOut->Checked == false)
           OptionsForm->WorkTimeOutClick(NULL);
-     OptionsForm->WorkTimeOut->Checked == true;
+     NGantTime->Checked=OptionsForm->WorkTimeOut->Checked;
+}
+//---------------------------------------------------------------------------
+//ШРИФТ
+void __fastcall TBaseForm::FontEditAccept(TObject *Sender)
+{
+          Output->Font=FontEdit->Dialog->Font;
+}
+//---------------------------------------------------------------------------
+void __fastcall TBaseForm::TableColumnMoved(TObject *Sender, int FromIndex,
+      int ToIndex)
+{
+     TableRefresh();     
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::TableRowMoved(TObject *Sender, int FromIndex,
+      int ToIndex)
+{
+     TableRefresh();     
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::SpeedButton1Click(TObject *Sender)
+{
+     GraphicForm->BringToFront();
+     GraphicForm->SetFocus();
 }
 //---------------------------------------------------------------------------
 

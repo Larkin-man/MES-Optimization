@@ -72,9 +72,9 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=2
-MinorVer=8
+MinorVer=9
 Release=0
-Build=15
+Build=16
 Debug=0
 PreRelease=1
 Special=0
@@ -86,13 +86,13 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Оптимизация запуска деталей в производство
-FileVersion=2.8.0.15
+FileVersion=2.9.0.16
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Дипломная работа
-ProductVersion=2.8
+ProductVersion=2.9
 Comments=mail:  psylonaut@mail.ru
 
 [Debugging]

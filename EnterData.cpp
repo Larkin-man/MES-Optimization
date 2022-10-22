@@ -30,8 +30,16 @@ void __fastcall TEnterDataForm::FormShow(TObject *Sender)
      {
           EnterDataForm->Field1->EditLabel->Caption="Кол-во деталей";
           EnterDataForm->Field2->EditLabel->Caption="Кол-во станков";
-          Field1->Text="4";
-          Field2->Text="3";
+          if (BaseForm->M > 2)
+          {
+               Field1->Text=IntToStr(BaseForm->M);
+               Field2->Text=IntToStr(BaseForm->N);
+          }
+          else
+          {
+               Field1->Text="4";
+               Field2->Text="3";
+          }
      }
      BitBtnOkResize->Default=BitBtnOkResize->Visible;
      BitBtnOkRandom->Default=BitBtnOkRandom->Visible;
