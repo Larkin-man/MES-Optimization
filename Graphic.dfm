@@ -1,6 +1,6 @@
 object GraphicForm: TGraphicForm
-  Left = 115
-  Top = 111
+  Left = 84
+  Top = 138
   Width = 763
   Height = 465
   Anchors = []
@@ -638,6 +638,44 @@ object GraphicForm: TGraphicForm
         end
       end
     end
+    object ToolBar4: TToolBar
+      Left = 587
+      Top = 2
+      Width = 150
+      Height = 48
+      ButtonHeight = 46
+      Caption = 'ToolBar4'
+      TabOrder = 3
+      object Panel2: TPanel
+        Left = 0
+        Top = 2
+        Width = 152
+        Height = 46
+        Ctl3D = True
+        ParentCtl3D = False
+        TabOrder = 0
+        object CheckBox1: TCheckBox
+          Left = 4
+          Top = 4
+          Width = 97
+          Height = 16
+          Caption = #1057#1090#1072#1085#1082#1080
+          Checked = True
+          State = cbChecked
+          TabOrder = 0
+          OnClick = CheckBox1Click
+        end
+        object CheckBox2: TCheckBox
+          Left = 4
+          Top = 24
+          Width = 144
+          Height = 17
+          Caption = #1047#1072#1087#1086#1084#1085#1080#1090#1100' '#1094#1074#1077#1090
+          TabOrder = 1
+          OnClick = CheckBox2Click
+        end
+      end
+    end
   end
   object ScrollBar1: TScrollBar
     Left = 0
@@ -713,6 +751,10 @@ object GraphicForm: TGraphicForm
     object N4: TMenuItem
       Caption = #1062#1074#1077#1090#1085#1099#1077' '#1073#1083#1086#1082#1080
       OnClick = N4Click
+    end
+    object N5: TMenuItem
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1094#1074#1077#1090' '#1076#1077#1090#1072#1083#1080
+      OnClick = N5Click
     end
   end
 end

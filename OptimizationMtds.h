@@ -49,7 +49,7 @@ public:
      bool ClearData(char MethodID); //Функция очищает память
      int DjonsonRun(); //Запуск алгоритма Джонсона
      int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
-     int MethodBHRun (char version, bool idleall); //Method  of branches and hordes
+     int MethodBHRun (char version, bool idleall, TStaticText *out); //Method  of branches and hordes
      int GetN() {return N;}
      int NewMethodRun();
 
@@ -424,9 +424,11 @@ int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
      return TimeCycle;
 }
 
-int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false) //Method  of branches and hordes
+int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false, TStaticText *out = NULL) //Method  of branches and hordes
 {
      //ShowMessage("version="+IntToStr(version)+" bool1="+IntToStr(idleclean)+" bool1="+IntToStr(idleall));
+     if (out != NULL)
+              out->Caption=1;
      int
           s,   //Текущий станок
           d,   //Текущая деталь
@@ -469,6 +471,8 @@ int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false) //Met
      
 /*S*/for (s = 1;s<N+1;s++)   // 2. Цикл по станкам!
      {
+          if (out != NULL)
+               out->Caption="Станок: "+IntToStr(s);
           int k = 0;
           if (output)
           {
@@ -1047,10 +1051,8 @@ int MachineOptimizer::NewMethodRun()
           Operative[min]*=(-1);
           for (Linker2 = InitBegin;Linker2!=NULL;Linker2=Linker2->next)
           {
-               max2=100;   //Never used
                if (Linker2->curr->m == min)
                {
-                    max2=100;
                     Linker->curr=Linker2->curr;
                }
           }

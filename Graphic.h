@@ -47,6 +47,11 @@ __published:	// IDE-managed Components
      TMenuItem *N4;
      TScrollBar *ScrollBar1;
      TScrollBar *ScrollBar2;
+     TToolBar *ToolBar4;
+     TPanel *Panel2;
+     TCheckBox *CheckBox1;
+     TCheckBox *CheckBox2;
+     TMenuItem *N5;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall SpeedButton2Click(TObject *Sender);
@@ -61,6 +66,9 @@ __published:	// IDE-managed Components
           TScrollCode ScrollCode, int &ScrollPos);
      void __fastcall ScrollBar2Scroll(TObject *Sender,
           TScrollCode ScrollCode, int &ScrollPos);
+     void __fastcall CheckBox1Click(TObject *Sender);
+     void __fastcall CheckBox2Click(TObject *Sender);
+     void __fastcall N5Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;

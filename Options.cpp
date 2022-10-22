@@ -37,7 +37,10 @@ void __fastcall TOptionsForm::FormShow(TObject *Sender)
 void __fastcall TOptionsForm::NoOutClick(TObject *Sender)
 {
      if (NoOut->Checked)
-          Label1->Caption="Во время работы алгоритма данные не будут выводится на экран";
+     {
+          Label1->Caption="Во время расчета данные не будут выводится на экран";
+          Debug->Checked=false;
+     }
      else
           Label1->Caption="";
      Debug->Enabled=!NoOut->Checked;
@@ -60,6 +63,8 @@ void __fastcall TOptionsForm::SpinBrightnessChange(TObject *Sender)
 void __fastcall TOptionsForm::ColorOptionsClick(TObject *Sender)
 {
      SpinBrightness->Enabled=ColorOptions->ItemIndex;
+     GraphicForm->N4->Checked=ColorOptions->ItemIndex;
+     GraphicForm->N5->Enabled=ColorOptions->ItemIndex;
 }
 //---------------------------------------------------------------------------
 //Проверка
@@ -87,4 +92,6 @@ void __fastcall TOptionsForm::RandomToChange(TObject *Sender)
      RandomFrom->MaxValue=RandomTo->Value-1;
 }
 //---------------------------------------------------------------------------
+
+
 

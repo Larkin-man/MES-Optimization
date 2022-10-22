@@ -112,10 +112,7 @@ __published:	// IDE-managed Components
      TLabel *Label2;
      TCSpinButton *Spinner;
      TSpeedButton *ProdBtn;
-     THelpOnHelp *HelpOnHelp1;
-     TMenuItem *HelponHelp2;
-     THelpContents *HelpContents1;
-     TMenuItem *Contents1;
+     TStaticText *StaticText1;
      void __fastcall NCopyClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
      void __fastcall NClear1Click(TObject *Sender);
@@ -130,7 +127,6 @@ __published:	// IDE-managed Components
      void __fastcall RunExecute(TObject *Sender);
      void __fastcall OptimizationExecute(TObject *Sender);
      void __fastcall GantDiagramExecute(TObject *Sender);
-     void __fastcall ReportExecute(TObject *Sender);
      void __fastcall ResizeTableExecute(TObject *Sender);
      void __fastcall FontEditAccept(TObject *Sender);
      void __fastcall TableColumnMoved(TObject *Sender, int FromIndex,
@@ -164,13 +160,16 @@ public:		// User declarations
           TX,  //Text Out X = 5
           TY,  //Text Out Y = 8
           GantH,    //Gant Height
-          GantW;    //Gant Weight
+          GantW,   //Gant Weight
+          Edge,     //Поле для названия станков = 60
+          ColorSave; //Количество сохраненных цветов
+
      int M,N; //N - Станки, M - Детали
      int TimeCycle[4];
      bool gantshow;
      TColor *ColorBox;   //Колорпит для разноцветных красивых блоков
      int Brightness;     //Яркость
-     bool multicoloured;
+     bool multicoloured, out;
      DWORD Tick;
 
 //Готовность к запуску расчета
@@ -214,7 +213,7 @@ void ColorPit()
 {
      TColor red,green,blue;
      srand(time(NULL));
-     for (int i = 0;i<M;i++)
+     for (int i = ColorSave;i<M;i++)
      {
      red=TColor(rand()%(256-Brightness)+Brightness);
      green=TColor(rand()%(255-Brightness)+Brightness);
@@ -251,12 +250,15 @@ void ColorPit()
      //ToolBar1->Color=red;
      //RadioGroup1->Color=green;
      //Table->Color=blue;
+     if (ColorSave !=0)
+          ColorSave=M;
 }
 
 //Функция выводит матрицу. down - с переходом вниз по дереву; subtractb - с вычитанием матрицы длительностей
 void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subtractb)
 {
      //ShowMessage("n="+IntToStr(n));
+     AnsiString row;
      if (!subtractb)
      {
           MachineOptimizer::Detal *Item;
@@ -266,11 +268,11 @@ void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subt
                     Item = list->down->curr;      //Спустится вниз по дереву
                else
                     Item = list->curr;
-
-               Output->Lines->Add("");
-               Output->Text=Output->Text+IntToStr(Item->m)+"  |  ";
+               row="";
+               row+=(IntToStr(Item->m)+"  |  ");
                for (int i = 0;i<n;i++)
-                    Output->Text=Output->Text+IntToStr(Item->T[i])+"  ";
+                    row+=(IntToStr(Item->T[i])+"  ");
+               Output->Lines->Append(row);
           }
      }
      else            
@@ -279,12 +281,14 @@ void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subt
           for (;list != NULL;list = list->next)
           {
                j++;
-               Output->Lines->Add("");
-               Output->Text=Output->Text+IntToStr(list->curr->m)+"  |  ";
+               row="";
+               row+=(IntToStr(list->curr->m)+"  |  ");
                for (int i = 0;i<n;i++)
-                    Output->Text=Output->Text+IntToStr(list->curr->T[i]-atoi(Table->Cells[i+1][j].c_str()))+"  ";
+                    row+=(IntToStr(list->curr->T[i]-atoi(Table->Cells[i+1][j].c_str()))+"  ");
+               Output->Lines->Append(row);
           }
      }
+
 }
 
 //Функция ищет длительность производственного цикла
@@ -316,6 +320,12 @@ void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down
           for (int o = 0 ; o < N+1; o++)
                SX[o]=0;
      MachineOptimizer::Detal *Item;
+     if (Edge < 60)
+          Edge = 0;
+     if (Edge >= 60)
+          for (int s = 0 ; s < N; s++)       //Названия станков
+               Gant->Canvas->TextOut(TX,vertix+(BH+BI)*s+TY,"Станок "+IntToStr(s+1));
+
      for (;List != NULL;List = List->next)   //По деталям
      {
           if (down)
@@ -328,19 +338,17 @@ void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down
                Gant->Canvas->Brush->Color=GraphicForm->GantBrushColor->Color;
           for (int s = 0 ; s < N; s++)       //По станкам
           {
-               //ShowMessage("s="+IntToStr(s)+" del="+IntToStr(del));
-               //Table->Cells[s+1][del+4]=Item->down->curr->T[s];
                SX[s+1] = (SX[s] >= SX[s+1])? SX[s]+Item->T[s] : SX[s+1]+Item->T[s];
-               Gant->Canvas->Rectangle((SX[s+1]-Item->T[s])*scale, vertix+(BH+BI)*s,
-                         SX[s+1]*scale, vertix+(BH+BI)*s+BH);
+               Gant->Canvas->Rectangle((SX[s+1]-Item->T[s])*scale+Edge, vertix+(BH+BI)*s,
+                         SX[s+1]*scale+Edge, vertix+(BH+BI)*s+BH);
                if (OptionsForm->WorkTimeOut->Checked)
-                    Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+1,vertix+(BH+BI)*s+TY,IntToStr(Item->m)+" ("+IntToStr(Item->T[s])+")");
+                    Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+1+Edge,vertix+(BH+BI)*s+TY,IntToStr(Item->m)+" ("+IntToStr(Item->T[s])+")");
                else
-                    Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+TX,vertix+(BH+BI)*s+TY,Item->m);
+                    Gant->Canvas->TextOut((SX[s+1]-Item->T[s])*scale+TX+Edge,vertix+(BH+BI)*s+TY,Item->m);
           }
      }
      Gant->Canvas->Brush->Color=GraphicForm->ColorBox1->Selected;
-     Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Время работы: "+FloatToStr(SX[N]));
+     Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Длительность производственного цикла: "+FloatToStr(SX[N]));
      vertix=vertix+(BH+BI)*N-BI+BH;
      delete [] SX;
 }
@@ -349,6 +357,12 @@ void DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item)
 {
      vertix+=BH;
      int N = Optimizer->GetN();
+     if (Edge < 60)
+          Edge = 0;
+     if (Edge >= 60)
+          for (int s = 0 ; s < N; s++)       //Названия станков
+               Gant->Canvas->TextOut(TX,vertix+(BH+BI)*s+TY,"Станок "+IntToStr(s+1));
+
      for (;Item != NULL;Item = Item->next)   //По деталям
           {
           if (multicoloured)
@@ -357,16 +371,16 @@ void DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item)
                Gant->Canvas->Brush->Color=GraphicForm->GantBrushColor->Color;
                for (int s = 0 ; s < N; s++)       //По станкам
                {
-                    Gant->Canvas->Rectangle(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale, vertix+(BH+BI)*s,
-                              (Item->curr->T[s])*scale, vertix+(BH+BI)*s+BH);
+                    Gant->Canvas->Rectangle(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale+Edge, vertix+(BH+BI)*s,
+                              (Item->curr->T[s])*scale+Edge, vertix+(BH+BI)*s+BH);
                     if (OptionsForm->WorkTimeOut->Checked)
-                         Gant->Canvas->TextOut(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale+1, vertix+(BH+BI)*s+TY, IntToStr(Item->curr->m)+" ("+IntToStr(Item->down->curr->T[s])+")");
+                         Gant->Canvas->TextOut(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale+1+Edge, vertix+(BH+BI)*s+TY, IntToStr(Item->curr->m)+" ("+IntToStr(Item->down->curr->T[s])+")");
                     else
-                         Gant->Canvas->TextOut(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale+TX, vertix+(BH+BI)*s+TY, Item->curr->m);
+                         Gant->Canvas->TextOut(((Item->curr->T[s])-(Item->down->curr->T[s]))*scale+TX+Edge, vertix+(BH+BI)*s+TY, Item->curr->m);
                }
           } 
      Gant->Canvas->Brush->Color=GraphicForm->ColorBox1->Selected;
-     Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Время работы: "+FloatToStr(TimeCycle[3]));
+     Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Длительность производственного цикла: "+FloatToStr(TimeCycle[3]));
      vertix=vertix+(BH+BI)*N-BI+BH;
 }
 //Создание диаграммы Ганта и подготовка к рисованию
@@ -386,7 +400,7 @@ void PaintGant()
           if (TimeCycle[i] > GantW)
                GantW=TimeCycle[i];
      //ShowMessage("Gant weight="+IntToStr(GantW));
-     GantW=GantW*scale+2;
+     GantW=GantW*scale+2+Edge;
      GantH=(BH+BI)*(N-1)*2+BH*6;
      Gant->Width=GantW;
      Gant->Height=GantH;
@@ -451,15 +465,16 @@ void DjonsonAlgorithm()
      TimeCycle[1] = Optimizer->DjonsonRun();  //Запуск алгоритма джонсона
      Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
      StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
-     if (!(OptionsForm->NoOut->Checked))
+     if (out)
      {
           Output->Lines->Add("Оптимальная последовательность запуска деталей:");
           int *data = Optimizer->OutSequence;
           for (int i=0;i<M;i++)
                Output->Text=Output->Text+IntToStr(data[i])+" ";
-          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[1]));
-          Output->Lines->Add("");
      }
+     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[1]));
+     float eff=((float)TimeCycle[0]/(float)TimeCycle[1]-1)*100;
+     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 }
 
 void PetrovSokolMethod()
@@ -470,7 +485,7 @@ void PetrovSokolMethod()
      StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
      top = new int[N];
 
-     if (!(OptionsForm->NoOut->Checked))
+     if (OptionsForm->Debug->Checked)
      {
           Output->Lines->Add("Матрица сумм:");
           PrintMatrix(Optimizer->PSBegin[0],3,false,false);
@@ -509,55 +524,61 @@ void PetrovSokolMethod()
           PrintMatrixPS(Optimizer->PSBegin[3],N,0,0);
           Output->Lines->Add("");
           Output->Lines->Add("");
+     }
+     if (out)
+     {
+
           Output->Lines->Add("Оптимальная последовательность запуска деталей: ");
           int *data = Optimizer->OutSequence;
           for (int i=0;i<M;i++)
                Output->Text=Output->Text+IntToStr(data[i])+" ";
-          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[2]));
-          Output->Lines->Add("");
-          delete [] top;
      }
+          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[2]));
+          float eff=((float)TimeCycle[0]/(float)TimeCycle[2]-1)*100;
+          Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
+          delete [] top;
 }
 
 void MethodBH (bool Modify = false) //Method  of branches and hordes
 {
      char version = 0;
 
+     StaticText1->Visible=true;
      if (Modify)
      {
           //StatusBar1->Panels->Items[0]->Text=("Модифицированный метод ветвей и границ");
           version = (OptionsForm->MVGModify->ItemIndex);
           TimeCycle[3]=Optimizer->MethodBHRun(version,
-               OptionsForm->MvgIdleAll->Checked);
+               OptionsForm->MvgIdleAll->Checked, StaticText1);
      }
      else
      {
           //StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
           TimeCycle[3]=Optimizer->MethodBHRun(0,
-               false);
+               false, StaticText1);
      }
      Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
      StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
+     StaticText1->Caption="Ok";
      //Вывод отчета - может повесить прогу
-
-     int podric=250;
-     for (int i= 1;i<Optimizer->Report->Count;i++)
+     if (out)
      {
-          Output->Lines->Add(Optimizer->Report->Strings[i]);
-          if (i == podric)
-               if (Application->MessageBox ("Остановить?", "Вывод отчета" , MB_YESNO + MB_ICONQUESTION) == IDNO)
-               {
-                    podric=podric*2+50;
-                    Application->ProcessMessages();
-                    continue;
-               }
-               else
-                    break;
+          int podric=250;
+          for (int i= 1;i<Optimizer->Report->Count;i++)
+          {
+               Output->Lines->Add(Optimizer->Report->Strings[i]);
+               if (i == podric)
+                    if (Application->MessageBox ("Остановить?", "Вывод отчета" , MB_YESNO + MB_ICONQUESTION) == IDNO)
+                    {
+                         podric=podric*2+50;
+                         Application->ProcessMessages();
+                         continue;
+                    }
+                    else
+                         break;
 
-     }
-     Application->ProcessMessages();
-     if (!(OptionsForm->NoOut->Checked))
-     {
+          }
+          Application->ProcessMessages();
           Output->Lines->Add("Матрица С:");
           PrintMatrix(Optimizer->OptimalBH,N,false,false);
           Output->Lines->Add(" ");
@@ -566,7 +587,8 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
           Output->Lines->Add(" ");
      }
      Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
-     Output->Lines->Add("");
+     float eff=((float)TimeCycle[0]/(float)TimeCycle[3]-1)*100;
+     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 }
 
 void NewMethod()
@@ -575,7 +597,9 @@ void NewMethod()
      TimeCycle[3]=Optimizer->NewMethodRun();
      Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
      StatusBar1->Panels->Items[0]->Text=("Время расчета: "+FloatToStr(Tick)+" миллисек.");
-     Output->Lines->Add("Итого: "+IntToStr(TimeCycle[3]));
+     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
+     float eff=((float)TimeCycle[0]/(float)TimeCycle[3]-1)*100;
+     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 
 }
      int *top;

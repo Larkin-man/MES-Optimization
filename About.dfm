@@ -1,6 +1,6 @@
 object AboutBox1: TAboutBox1
-  Left = 257
-  Top = 124
+  Left = 353
+  Top = 148
   BorderStyle = bsDialog
   Caption = #1054' '#1055#1088#1086#1075#1088#1072#1084#1084#1077
   ClientHeight = 286
@@ -30,14 +30,18 @@ object AboutBox1: TAboutBox1
     Top = 8
     Width = 276
     Height = 233
-    BevelInner = bvRaised
-    BevelOuter = bvLowered
+    BevelOuter = bvNone
+    BiDiMode = bdLeftToRight
+    BorderStyle = bsSingle
     Color = clSkyBlue
+    Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Book Antiqua'
     Font.Style = []
+    ParentBiDiMode = False
+    ParentCtl3D = False
     ParentFont = False
     TabOrder = 0
     object ProgramIcon: TImage
@@ -1677,7 +1681,7 @@ object AboutBox1: TAboutBox1
       Top = 50
       Width = 63
       Height = 17
-      Caption = #1042#1077#1088#1089#1080#1103' 3.3'
+      Caption = #1042#1077#1088#1089#1080#1103' 3.4'
       IsControl = True
     end
     object Copyright: TLabel
@@ -1692,18 +1696,20 @@ object AboutBox1: TAboutBox1
     object Comments: TLabel
       Left = 16
       Top = 191
-      Width = 102
+      Width = 101
       Height = 34
-      Caption = #1059#1095#1077#1073#1085#1072#1103' '#1043#1088#1091#1087#1087#1072' '#1050#1048'08-04'
+      Caption = #1059#1095#1077#1073#1085#1072#1103' '#1075#1088#1091#1087#1087#1072': '#1050#1048'08-04'
       WordWrap = True
       IsControl = True
     end
     object Label1: TLabel
       Left = 16
       Top = 131
-      Width = 84
+      Width = 87
       Height = 51
+      BiDiMode = bdRightToLeftReadingOnly
       Caption = #1057#1080#1073#1080#1088#1089#1082#1080#1081' '#1060#1077#1076#1077#1088#1072#1083#1100#1085#1099#1081' '#1059#1085#1080#1074#1077#1088#1089#1080#1090#1077#1090
+      ParentBiDiMode = False
       WordWrap = True
       IsControl = True
     end

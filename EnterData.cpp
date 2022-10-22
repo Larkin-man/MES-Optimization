@@ -9,8 +9,6 @@
 #pragma link "CSPIN"
 #pragma resource "*.dfm"
 TEnterDataForm *EnterDataForm;
-
-
 //---------------------------------------------------------------------------
 __fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner) : TForm(Owner)
 {
@@ -18,39 +16,36 @@ __fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner) : TForm(Owner)
 //---------------------------------------------------------------------------
 //ÏÎÊÀÇÀÒÜ ÔÎÐÌÓ
 void __fastcall TEnterDataForm::FormShow(TObject *Sender)
-{
-     if (BitBtnOkResize->Visible)
-     {
-          Field1->EditLabel->Caption="Êîë-âî ñòðîê";
-          Field2->EditLabel->Caption="Êîë-âî ñòîëáöîâ";
-          Field1->Text="";
-          Field2->Text="";
-     }
-     if (BitBtnOkRandom->Visible)
-     {
-          Field1->EditLabel->Caption="Êîë-âî äåòàëåé";
-          Field2->EditLabel->Caption="Êîë-âî ñòàíêîâ";
-          if (BaseForm->M > 2)
-          {
-               Field1->Text=IntToStr(BaseForm->M);
-               Field2->Text=IntToStr(BaseForm->N);
-          }
-          else
-          {
-               Field1->Text="4";
-               Field2->Text="3";
-          }
-     }
-     BitBtnOkResize->Default=BitBtnOkResize->Visible;
-     BitBtnOkRandom->Default=BitBtnOkRandom->Visible;
-     Field1->SetFocus();
+{    Field1->SetFocus();      }
+//---------------------------------------------------------------------------
+//Ïðîâåðêà ââåäåííûõ ñèìâîëîâ
+void __fastcall TEnterDataForm::Field1Exit(TObject *Sender)
+{    CheckConvert((TLabeledEdit*)Sender);    }
+void __fastcall TEnterDataForm::Field2Exit(TObject *Sender)
+{    CheckConvert((TLabeledEdit*)Sender);    }
+//---------------------------------------------------------------------------
+
+void __fastcall TEnterDataForm::BitBtn2Click(TObject *Sender)
+{    Close();       }
+//---------------------------------------------------------------------------
+//Ïðîâåðêà îòñóòñòâèÿ ñèìâîëîâ
+void __fastcall TEnterDataForm::Field1Change(TObject *Sender)
+{    if (Result == random)
+          BitBtnOk->Enabled=!((Field1->Text=="") && (Field2->Text==""));
+}
+void __fastcall TEnterDataForm::Field2Change(TObject *Sender)
+{    if (Result == random)
+          BitBtnOk->Enabled=!((Field1->Text=="") && (Field2->Text==""));
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TEnterDataForm::BitBtnOkClick(TObject *Sender)
+{
 //ÈÇÌÅÍÅÍÈÅ ÐÀÇÌÅÐÀ ÒÀÁËÈÖÛ
-void __fastcall TEnterDataForm::BitBtnOkResizeClick(TObject *Sender)
+if (Result == resize)
 {
      if (Field1->Text.operator!=(""))
-          BaseForm->Table->RowCount=StrToInt(EnterDataForm->Field1->Text)+1;
+          BaseForm->Table->RowCount=(StrToInt(EnterDataForm->Field1->Text)+1);
      if (Field2->Text != "")
           BaseForm->Table->ColCount=StrToInt(EnterDataForm->Field2->Text)+1;
      BaseForm->TableRefresh();
@@ -69,12 +64,12 @@ void __fastcall TEnterDataForm::BitBtnOkResizeClick(TObject *Sender)
           BaseForm->Swapf();
      Close();
 }
-//---------------------------------------------------------------------------
+
 //ÇÀÏÎËÍÅÍÈÅ ÑËÓ×ÀÉÍÛÌÈ ×ÈÑËÀÌÈ
-void __fastcall TEnterDataForm::BitBtnOkRandomClick(TObject *Sender)
+if (Result == random)
 {
      CheckConvert(Field1);
-     CheckConvert(Field2);      
+     CheckConvert(Field2);
      if ((Field1->Text=="") && (Field2->Text==""))
           return;
      for (int i=1;i<BaseForm->Table->RowCount;i++)
@@ -102,37 +97,33 @@ void __fastcall TEnterDataForm::BitBtnOkRandomClick(TObject *Sender)
      BaseForm->StatusBar1->Panels->Items[0]->Text=("Çàïîëíåíî ñëó÷àéíûìè ÷èñëàìè");
      BaseForm->Swapf();
 }
-//---------------------------------------------------------------------------
 
-void __fastcall TEnterDataForm::Field1Exit(TObject *Sender)
+//ÓÑÒÀÍÎÂÈÒÜ ÖÂÅÒ ÄÅÒÀËÈ
+if (Result == color)
 {
-     CheckConvert((TLabeledEdit*)Sender);
+     CheckConvert(Field1);
+     if (Field1->Text=="")
+          return;
+     int det = StrToInt(Field1->Text);  
+     if (det <= BaseForm->M)
+     {
+          BaseForm->ColorBox[det-1]=Field2->Color;
+          BaseForm->PaintGant();
+     }
+     Field2->Color=clWindow;
+     Field2->Cursor=crDefault;
+}
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TEnterDataForm::Field2Exit(TObject *Sender)
+//Âûáîð öâåòà
+void __fastcall TEnterDataForm::Field2Click(TObject *Sender)
 {
-     CheckConvert((TLabeledEdit*)Sender);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TEnterDataForm::BitBtn2Click(TObject *Sender)
-{
-     Close();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TEnterDataForm::Field1Change(TObject *Sender)
-{
-     if (BitBtnOkRandom->Visible)
-          BitBtnOkRandom->Enabled=!((Field1->Text=="") && (Field2->Text==""));
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TEnterDataForm::Field2Change(TObject *Sender)
-{
-     if (BitBtnOkRandom->Visible)
-          BitBtnOkRandom->Enabled=!((Field1->Text=="") && (Field2->Text==""));
+     if (Result == color)
+     {
+          ColorDialog1->Execute();
+          Field2->Color=ColorDialog1->Color;
+          Field1->SetFocus();
+     }
 }
 //---------------------------------------------------------------------------
 

@@ -73,9 +73,9 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=3
-MinorVer=3
+MinorVer=4
 Release=1
-Build=25
+Build=27
 Debug=1
 PreRelease=0
 Special=0
@@ -87,13 +87,13 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=3.3.1.25
+FileVersion=3.4.1.27
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=3.3
+ProductVersion=3.4
 Comments=mail:  psylonaut@mail.ru
 
 [Excluded Packages]

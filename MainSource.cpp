@@ -1,4 +1,4 @@
-//------------файл реализации---------------------------------------------------------------
+//------------файл реализации------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -19,29 +19,32 @@ TBaseForm *BaseForm;
 __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
 {    //при созданиии формы
      Output->Clear();
-     M=0;
-     N=0;
+     M = 0;
+     N = 0;
      FileOpen->Dialog->InitialDir=GetCurrentDir();
      FileSave->Dialog->InitialDir=GetCurrentDir();
-     BaseForm->Table->RowHeights[0]=26;
+     BaseForm->Table->RowHeights[0] = 26;
      TableRefresh();
      Gant = NULL;
      gantshow = false;
      for (int i=0;i<4;i++)
           TimeCycle[i] = 0;
      multicoloured=true;
-     StatusBar1->Panels->Items[0]->Width=450;
+     StatusBar1->Panels->Items[0]->Width = 450;
      StatusBar1->Panels->Items[0]->Text=("Для начала работы нужно открыть данные (.txt) или заполнить случайно (Ctrl + R)");
      FontEdit->Dialog->Font=Table->Font;
      scale = 18;
-     BH=30;
-     BI=10;
+     BH = 30;
+     BI = 10;
      Brightness = 25;
      NTranspon->Enabled=false;
      Ready(false);
 
      NManualModeClick(NULL);
-     ManualTable->ColWidths[0]=64;
+     ManualTable->ColWidths[0] = 64;
+     Edge = 60;
+     ColorSave = 0;
+     StaticText1->Visible=false;
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
@@ -155,7 +158,6 @@ void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
                     Added+=(Table->Cells[j][i]+" ");
                pStrings->Add(Added);       
           }
-          FileSave->Dialog->FileName="input *";
           pStrings->SaveToFile(FileSave->Dialog->FileName);
      }
      else
@@ -180,10 +182,14 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
 
      delete Optimizer;   //TODO: Зачем Я удаляю ?
      Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
-     delete ColorBox;           /* TODO : А гдке он удаляется */
-     ColorBox = new TColor[M];
-     ColorPit();
+     if (ColorSave != M)
+     {
+          delete ColorBox;           /* TODO : А гдке он удаляется */
+          ColorBox = new TColor[M];
+          ColorPit();
+     }
      //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
+     out=!(OptionsForm->NoOut->Checked);
      Optimizer->output=OptionsForm->Debug->Checked;
      Optimizer->debugging=OptionsForm->Debug->Checked;
      int *T = new int[N];
@@ -210,42 +216,36 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
           Optimizer->add(T, N);
      }
      delete [] T;
-     if (!(OptionsForm->NoOut->Checked))
+     TimeCycle[0]=ProductionCycle();
+     if (out)
      {
           Output->Lines->Add("Исходная матрица:");
           PrintMatrix(Optimizer->InitBegin,N,false,false);
+          StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
+          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
+          Output->Lines->Add("");
      }
-     TimeCycle[0]=ProductionCycle();
-     StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
-     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
-     Output->Lines->Add("");
-     Output->Lines->Add("");
      Tick = ::GetTickCount();
      switch (RadioGroup1->ItemIndex)
      {
           case Djohnson:
                Output->Lines->Add("Алгоритм Джонсона");
-               Output->Lines->Add("");
                DjonsonAlgorithm();
                break;
           case PetrovSokol:
                Output->Lines->Add("Метод Петрова-Соколицина");
-               Output->Lines->Add("");
                PetrovSokolMethod();
                break;
           case MethodVG:
                Output->Lines->Add("Метод ветвей и границ");
-               Output->Lines->Add("");
                MethodBH ();
                break;
           case MethodVGModify:
                Output->Lines->Add("Метод ветвей и границ (Модифицированый)");
-               Output->Lines->Add("");
                MethodBH (true);
                break;
           case Stupenki: 
                Output->Lines->Add("Новый метод!");
-               Output->Lines->Add("");
                NewMethod();
                break;
           default:
@@ -253,13 +253,14 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
                return;
      }
      Output->Lines->Add("Время расчета: "+FloatToStr(Tick)+" миллисек.");
-     Output->Lines->Add("");
+     if (out)
+          Output->Lines->Add("");
      Output->Lines->Add("----------------------------------------");
-     Output->Lines->Add("");
      GraphicForm->ScrollBar1->Position=0;
      GraphicForm->ScrollBar2->Position=0;
      PaintGant();  
      Ready(true);
+     StaticText1->Visible=false;
 }
 //---------------------------------------------------------------------------
 //ДИАГРАММА ГАНТА
@@ -273,8 +274,7 @@ void __fastcall TBaseForm::GantDiagramExecute(TObject *Sender)
           GraphicForm->Show();
           GraphicForm->gant->Canvas->CopyRect(Rect(0,0,GantW,GantH),Gant->Canvas,Rect(0,0,GantW,GantH));
           if (BaseForm->WindowState == wsNormal)
-               BaseForm->BringToFront();
-
+               BaseForm->BringToFront(); 
      }
      else
      {
@@ -346,7 +346,8 @@ void __fastcall TBaseForm::NTestClick(TObject *Sender)
                //ShowMessage("Вы ввели ошибочное число");
                OpenBtn->Enabled=!OpenBtn->Enabled;
           }
-     GraphicForm->ScrollBar1->Max=55;      
+     GraphicForm->ScrollBar1->Max=55;
+     //Optimizer->ClearData(6, StaticText1);
 }
 //---------------------------------------------------------------------------
 //ОЧИСТИТЬ ТАБЛИЦУ
@@ -406,20 +407,12 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
      }
 }
 //---------------------------------------------------------------------------
-//ОТЧЕТ
-void __fastcall TBaseForm::ReportExecute(TObject *Sender)
-{
-     //OpenBtn->Enabled=!OpenBtn->Enabled;
-     Spinner->Visible=!Spinner->Visible;     
-}
-//---------------------------------------------------------------------------
 //ИЗМЕНИТЬ РАЗМЕР ТАБЛИЦЫ
 void __fastcall TBaseForm::ResizeTableExecute(TObject *Sender)
 {
      Application->CreateForm( __classid(TEnterDataForm),&EnterDataForm);
      EnterDataForm->Caption=("Изменение размера таблицы");
-     EnterDataForm->BitBtnOkRandom->Visible=false;
-     EnterDataForm->BitBtnOkResize->Visible=true;
+     EnterDataForm->StartResize();
      EnterDataForm->Position=poMainFormCenter;
      EnterDataForm->ShowModal();
      EnterDataForm->Free();  
@@ -430,8 +423,7 @@ void __fastcall TBaseForm::RandomExecute(TObject *Sender)
 {
      Application->CreateForm( __classid(TEnterDataForm),&EnterDataForm);
      EnterDataForm->Caption=("Заполнение случайными числами");
-     EnterDataForm->BitBtnOkRandom->Visible=true;
-     EnterDataForm->BitBtnOkResize->Visible=false;
+     EnterDataForm->StartRandom(M,N);
      EnterDataForm->Position=poMainFormCenter;
      EnterDataForm->ShowModal();
      EnterDataForm->Free();
@@ -511,9 +503,7 @@ void __fastcall TBaseForm::NManualModeClick(TObject *Sender)
           Output->SetBounds(284,64,256,432);
           Output->Anchors=Table->Anchors;
           ManualTableRefresh(true);
-     }
-
-
+     }        
 }
 //---------------------------------------------------------------------------
 //Выбор ячейки в таблице порядка запуска
@@ -521,9 +511,8 @@ void __fastcall TBaseForm::ManualTableSelectCell(TObject *Sender, int ACol,
       int ARow, bool &CanSelect)
 {
      Spinner->Visible=true;
-     Spinner->Left=37*ACol+597;   //37 - DefaultRowWidth + GridLineWidth
-     Spinner->Top=27*ARow+67;
-
+     Spinner->Left=37*ACol+597;   //37 = DefaultRowWidth + GridLineWidth
+     Spinner->Top=27*ARow+67;    
 }
 //---------------------------------------------------------------------------
 //Нажатие вниз на спиннере
@@ -565,9 +554,10 @@ void __fastcall TBaseForm::ProdBtnClick(TObject *Sender)
 void __fastcall TBaseForm::ManualTableRowMoved(TObject *Sender,
       int FromIndex, int ToIndex)
 {
-     ManualTableRefresh(false);     
+     ManualTableRefresh(false);
 }
 //---------------------------------------------------------------------------
+
 
 void __fastcall TBaseForm::FileSaveBeforeExecute(TObject *Sender)
 {
