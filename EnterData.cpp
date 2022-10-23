@@ -96,6 +96,7 @@ if (Result == random)
 	     }
      BaseForm->StatusBar1->Panels->Items[0]->Text=("Çàïîëíåíî ñëó÷àéíûìè ÷èñëàìè");
      BaseForm->Swapf();
+     Close();
 }
 
 //ÓÑÒÀÍÎÂÈÒÜ ÖÂÅÒ ÄÅÒÀËÈ
@@ -104,14 +105,15 @@ if (Result == color)
      CheckConvert(Field1);
      if (Field1->Text=="")
           return;
-     int det = StrToInt(Field1->Text);  
-     if (det <= BaseForm->M)
+     int det = StrToInt(Field1->Text);
+     if (det <= BaseForm->ColorSave)
      {
           BaseForm->ColorBox[det-1]=Field2->Color;
           BaseForm->PaintGant();
      }
      Field2->Color=clWindow;
      Field2->Cursor=crDefault;
+     Close();
 }
 }
 //---------------------------------------------------------------------------
@@ -120,8 +122,10 @@ void __fastcall TEnterDataForm::Field2Click(TObject *Sender)
 {
      if (Result == color)
      {
+          Field2->OnExit(NULL);
           ColorDialog1->Execute();
           Field2->Color=ColorDialog1->Color;
+          Field2->Text="";
           Field1->SetFocus();
      }
 }

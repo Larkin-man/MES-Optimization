@@ -1,6 +1,6 @@
 object GraphicForm: TGraphicForm
-  Left = 84
-  Top = 138
+  Left = 110
+  Top = 107
   Width = 763
   Height = 465
   Anchors = []
@@ -665,14 +665,13 @@ object GraphicForm: TGraphicForm
           TabOrder = 0
           OnClick = CheckBox1Click
         end
-        object CheckBox2: TCheckBox
+        object CheckBoxColorSave: TCheckBox
           Left = 4
           Top = 24
           Width = 144
           Height = 17
           Caption = #1047#1072#1087#1086#1084#1085#1080#1090#1100' '#1094#1074#1077#1090
           TabOrder = 1
-          OnClick = CheckBox2Click
         end
       end
     end
@@ -752,9 +751,9 @@ object GraphicForm: TGraphicForm
       Caption = #1062#1074#1077#1090#1085#1099#1077' '#1073#1083#1086#1082#1080
       OnClick = N4Click
     end
-    object N5: TMenuItem
+    object NChangeColor: TMenuItem
       Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1094#1074#1077#1090' '#1076#1077#1090#1072#1083#1080
-      OnClick = N5Click
+      OnClick = NChangeColorClick
     end
   end
 end

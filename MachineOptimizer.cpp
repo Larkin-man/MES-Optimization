@@ -15,7 +15,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
      {
            Application->Initialize();
            Application->Title = "(@)^(@)";
-           Application->HelpFile = "C:\\Documents and Settings\\Алекс\\Мои документы\\Билдер\\Оптимизация\\HELPPROJECT.HLP";
+           Application->HelpFile = "C:\\Documents and Settings\\Алекс\\Мои документы\\Билдер\\Оптимизация\\HELPMOISOUP.HLP";
            Application->CreateForm(__classid(TBaseForm), &BaseForm);
            Application->CreateForm(__classid(TGraphicForm), &GraphicForm);
            Application->CreateForm(__classid(TOptionsForm), &OptionsForm);

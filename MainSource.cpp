@@ -6,6 +6,8 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "CGRID"
+
+#pragma link "WinXP"
 #pragma resource "*.dfm"
 #include "EnterData.h"
 #define Djohnson 0
@@ -31,7 +33,7 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
           TimeCycle[i] = 0;
      multicoloured=true;
      StatusBar1->Panels->Items[0]->Width = 450;
-     StatusBar1->Panels->Items[0]->Text=("Для начала работы нужно открыть данные (.txt) или заполнить случайно (Ctrl + R)");
+     //StatusBar1->Panels->Items[0]->Text=("Для начала работы нужно открыть данные (.txt) или заполнить случайно (Ctrl + R)");
      FontEdit->Dialog->Font=Table->Font;
      scale = 18;
      BH = 30;
@@ -39,12 +41,13 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
      Brightness = 25;
      NTranspon->Enabled=false;
      Ready(false);
-
      NManualModeClick(NULL);
-     ManualTable->ColWidths[0] = 64;
+     ManualTable->ColWidths[0] = 80;
      Edge = 60;
      ColorSave = 0;
      StaticText1->Visible=false;
+     BaseForm->Height=600;
+     BaseForm->Width=950;
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
@@ -54,6 +57,7 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
       pStrings->LoadFromFile(FileOpen->Dialog->FileName);
       char *s;
       int nC=0,nS=0;
+      //Цикл считает количество цифр и других символов
       for(int i = 0; i < pStrings->Count; i++) //Цикл по строкам
       {
           s = pStrings->Strings[i].c_str();
@@ -77,6 +81,7 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
       }
 
       StatusBar1->Panels->Items[0]->Text=FileOpen->Dialog->FileName;
+      //Очистить ячейки таблицы
       for (int i=1;i<Table->RowCount;i++)
           for (int j=1;j<Table->ColCount;j++)
                Table->Cells[j][i]="";
@@ -88,29 +93,32 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
       for(int i=0; i < pStrings->Count; i++) //Цикл по строкам
       {
           char *s = pStrings->Strings[i].c_str();
+          //-----------Поиск и удаление лишних строк----------------------------
           bool deletestring = true;
           for (int j =0;j < pStrings->Strings[i].Length();j++) //Цикл по символам для поиска цифр
           {
                if ((s[j] >= '0') && (s[j] <= '9'))
-               {
+               {    //Если найдется хотябы одна цифра - строку не удалять
                     deletestring = false;
                     break;
                }
           }
           if (deletestring)
-          {
+          {    //Удаление строки
                delrow++;
                Tx+=pStrings->Strings[i];
                Tx+='\n';
                continue;
           }
+          //--------------------------------------------------------------------
+          //Разбор входного файла и перенос цифр в таблицу
           int column = 1; //Столбец
           for (int j = 0;j < pStrings->Strings[i].Length();j++) //Цикл по символам
           {
-               if ((s[j] >= '0') && (s[j] <= '9'))
+               if ((s[j] >= '0') && (s[j] <= '9')) //Пройдут только цифры
                     Table->Cells[column][i-delrow+1]=Table->Cells[column][i-delrow+1]+s[j];
                else
-               {
+               {    //Числа отделяются друг от друга любыми символами, в т.ч. пробелом
                     if (BaseForm->Table->Cells[column][i-delrow+1]!="")
                          column++;
                     if (BaseForm->Table->ColCount <= column)   //Добавить столбец в таблицу
@@ -120,7 +128,7 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
                          BaseForm->Table->ColCount++;
                          //BaseForm->Table->Cells[column][0]=column; //detal
                     }
-                    Tx+=s[j];
+                    Tx+=s[j];    //Добавить символ в список лишних
                }
           }
           if (BaseForm->Table->Cells[column][i-delrow+1]=="")
@@ -163,7 +171,6 @@ void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
      else
      {
           //Application->MessageBox ("Сохранить", "Сохранение" , MB_ICONSTOP) ;
-          FileSave->Dialog->FileName="report *";
           Output->Lines->SaveToFile(FileSave->Dialog->FileName);
           StatusBar1->Panels->Items[0]->Text=FileSave->Dialog->FileName;
      }
@@ -173,7 +180,7 @@ void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
 void __fastcall TBaseForm::RunExecute(TObject *Sender)
 {
      if ((M <= 1)||(N <= 1))
-     {    
+     {
           Application->MessageBox ("Не задано количество станков и деталей", "Ошибка" , MB_ICONSTOP) ;
           StatusBar1->Panels->Items[1]->Text=("Станков: ?");
           StatusBar1->Panels->Items[2]->Text=("Деталей: ?");
@@ -182,12 +189,6 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
 
      delete Optimizer;   //TODO: Зачем Я удаляю ?
      Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
-     if (ColorSave != M)
-     {
-          delete ColorBox;           /* TODO : А гдке он удаляется */
-          ColorBox = new TColor[M];
-          ColorPit();
-     }
      //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
      out=!(OptionsForm->NoOut->Checked);
      Optimizer->output=OptionsForm->Debug->Checked;
@@ -253,11 +254,18 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
                return;
      }
      Output->Lines->Add("Время расчета: "+FloatToStr(Tick)+" миллисек.");
-     if (out)
-          Output->Lines->Add("");
      Output->Lines->Add("----------------------------------------");
+     if (out)
+         Output->Lines->Add("");
      GraphicForm->ScrollBar1->Position=0;
      GraphicForm->ScrollBar2->Position=0;
+     if (GraphicForm->CheckBoxColorSave->Checked == false)
+     {
+          delete ColorBox;           /* DONE : А где он удаляется */
+          ColorBox = new TColor[M];
+          ColorSave=M;
+          ColorPit();
+     }
      PaintGant();  
      Ready(true);
      StaticText1->Visible=false;
@@ -294,6 +302,7 @@ void __fastcall TBaseForm::NClear1Click(TObject *Sender)
 void __fastcall TBaseForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
      delete Optimizer;
+     delete ColorBox;
 }
 //---------------------------------------------------------------------------
 //НОВЫЙ
@@ -311,7 +320,6 @@ void __fastcall TBaseForm::FileNewExecute(TObject *Sender)
      StatusBar1->Panels->Items[0]->Text=("");
      if (NManualMode->Checked)
           NManualModeClick(Sender);
-
 }
 //---------------------------------------------------------------------------
 //ОПТИМИЗАЦИЯ
@@ -401,7 +409,8 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
           if ((Brightness != OptionsForm->SpinBrightness->Value) || (OptionsForm->Contrast->Checked))
           {
                Brightness = OptionsForm->SpinBrightness->Value;
-               ColorPit();
+               if (gantshow)
+                  ColorPit();
           }
           PaintGant();
      }
@@ -511,8 +520,8 @@ void __fastcall TBaseForm::ManualTableSelectCell(TObject *Sender, int ACol,
       int ARow, bool &CanSelect)
 {
      Spinner->Visible=true;
-     Spinner->Left=37*ACol+597;   //37 = DefaultRowWidth + GridLineWidth
-     Spinner->Top=27*ARow+67;    
+     Spinner->Left=37*ACol+533+ManualTable->ColWidths[0];   //37 = DefaultRowWidth + GridLineWidth
+     Spinner->Top=27*ARow+67;
 }
 //---------------------------------------------------------------------------
 //Нажатие вниз на спиннере
@@ -557,14 +566,76 @@ void __fastcall TBaseForm::ManualTableRowMoved(TObject *Sender,
      ManualTableRefresh(false);
 }
 //---------------------------------------------------------------------------
-
-
+//После нажатия сохранить
 void __fastcall TBaseForm::FileSaveBeforeExecute(TObject *Sender)
 {
      if (BaseForm->ActiveControl == Table)
           FileSave->Dialog->FileName="input *";
      else
           FileSave->Dialog->FileName="report *";
+}
+//---------------------------------------------------------------------------
+//Открыть справочный файл
+void __fastcall TBaseForm::NHelpClick(TObject *Sender)
+{
+   Application->HelpCommand(HELP_CONTENTS, 0);
+}
+//---------------------------------------------------------------------------
+//РУЧНОЙ ВВОД
+void __fastcall TBaseForm::TableSetEditText(TObject *Sender, int ACol,
+      int ARow, const AnsiString Value)
+{
+   if (M < ARow)
+      M = ARow;
+   if (N < ACol)
+      N = ACol;
+   Swapf();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBaseForm::TableGetEditText(TObject *Sender, int ACol,
+int ARow, AnsiString &Value)                           {
+   //Output->Lines->Add("OnGET "+IntToStr(ACol)+":"+IntToStr(ARow));
+   }
+void __fastcall TBaseForm::TableSelectCell(TObject *Sender, int ACol, int ARow, bool &CanSelect)
+{
+//Output->Lines->Add("OnSelectCell "+IntToStr(ACol)+":"+IntToStr(ARow));
+}
+void __fastcall TBaseForm::TableGetEditMask(TObject *Sender, int ACol, int ARow, AnsiString &Value)
+{
+//Output->Lines->Add("OnGetEditMAsk "+IntToStr(ACol)+":"+IntToStr(ARow));
+}
+//---------------------------------------------------------------------------
+//ПОСТРОИТЬ МАТРИЦУ ОКОНЧАНИЙ ОБРАБОТКИ
+void __fastcall TBaseForm::ConstructCExecute(TObject *Sender)
+{
+   if ((N == 0) && (M == 0))
+   {
+       Application->MessageBox ("Не задана исходная матрица", "Ошибка" , MB_ICONSTOP) ;
+         return;
+   }
+   Output->Lines->Add("Матрица окончаний обработки: ");
+   AnsiString row;
+   float *top = new float[N];
+   float left;
+   for (int i=0;i<N;i++)
+      top[i]=0;
+   for (int j=1;j<M+1;j++)
+   {
+      left=0;
+      //row="";
+      row=(IntToStr(j)+"  |  ");
+      for (int i=1;i<N+1;i++)
+      {
+         top[i-1]=max(top[i-1],left);
+         top[i-1]+=atof(Table->Cells[i][j].c_str());
+         left = top[i-1];
+         row+=(FloatToStr(left)+"  ");
+      }
+      Output->Lines->Append(row);
+   }
+   delete [] top;
+   Output->Lines->Add("----------------------------------------");
 }
 //---------------------------------------------------------------------------
 

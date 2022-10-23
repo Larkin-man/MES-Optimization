@@ -50,7 +50,7 @@ void __fastcall TGraphicForm::FormClose(TObject *Sender, TCloseAction &Action)
 void __fastcall TGraphicForm::SpeedButton2Click(TObject *Sender)
 {
      if (N4->Checked)
-          N5Click(Sender);
+          NChangeColorClick(Sender);
 
      else
      {
@@ -126,7 +126,7 @@ void __fastcall TGraphicForm::N4Click(TObject *Sender)
      OptionsForm->ColorOptions->ItemIndex=1;
      BaseForm->multicoloured=true;
      BaseForm->PaintGant();
-     GraphicForm->N5->Enabled=true;
+     GraphicForm->NChangeColor->Enabled=true;
 }
 //---------------------------------------------------------------------------
 //Горизонтальный ползунок двигается
@@ -190,15 +190,7 @@ void __fastcall TGraphicForm::CheckBox1Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TGraphicForm::CheckBox2Click(TObject *Sender)
-{
-     if (CheckBox2->Checked)
-          BaseForm->ColorSave=BaseForm->M;
-     else
-          BaseForm->ColorSave=0;
-}
-//---------------------------------------------------------------------------
-void __fastcall TGraphicForm::N5Click(TObject *Sender)
+void __fastcall TGraphicForm::NChangeColorClick(TObject *Sender)
 {
      Application->CreateForm( __classid(TEnterDataForm),&EnterDataForm);
      EnterDataForm->Caption=("Установить цвет детали");

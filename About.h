@@ -25,7 +25,8 @@ __published:
 	TLabel *Comments;
 	TButton *OKButton;
      TLabel *Label1;
-     TLabel *Label2;
+   TLabel *Label3;
+   TLabel *Label2;
 private:
 public:
 	virtual __fastcall TAboutBox1(TComponent* AOwner);

@@ -76,20 +76,25 @@ public:
 
      void CheckConvert(TLabeledEdit *Sender)
      {
+          if (Sender->Text == "")
+               return;
           int c;
           try
           {
                c = StrToInt(Sender->Text);
+               if (c == 0)
+               {
+                  Sender->Text = "";
+                  return;
+               }
                c = (c<0)? -c : c;
                Sender->Text = c;
           }
           catch (EConvertError&)
           {
                //ShowMessage("Вы ввели ошибочное число");
-               Sender->Text="";  
-          }
-          if (c == 0)
-               Sender->Text = "";         
+               Sender->Text="";
+          }     
      }
 
 

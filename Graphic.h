@@ -50,8 +50,8 @@ __published:	// IDE-managed Components
      TToolBar *ToolBar4;
      TPanel *Panel2;
      TCheckBox *CheckBox1;
-     TCheckBox *CheckBox2;
-     TMenuItem *N5;
+   TCheckBox *CheckBoxColorSave;
+   TMenuItem *NChangeColor;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
      void __fastcall SpeedButton2Click(TObject *Sender);
@@ -67,8 +67,7 @@ __published:	// IDE-managed Components
      void __fastcall ScrollBar2Scroll(TObject *Sender,
           TScrollCode ScrollCode, int &ScrollPos);
      void __fastcall CheckBox1Click(TObject *Sender);
-     void __fastcall CheckBox2Click(TObject *Sender);
-     void __fastcall N5Click(TObject *Sender);
+     void __fastcall NChangeColorClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
      //Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;

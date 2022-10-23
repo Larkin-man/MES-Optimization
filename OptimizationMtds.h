@@ -1,7 +1,7 @@
 /*************************************************************\
 *      Optimization metods h - library version 3.0            *
 *      Aleksey Aponasenko ©                                   *
-*      2012 All Rights Reserved ®                             *
+*      2013 All Rights Reserved ®                             *
 *      The author is not responsible for any mistakes,        *
 *      found in this program                                  *
 *      or for inapropriate use of it or any of its parts.     *
@@ -60,13 +60,13 @@ protected:
      int
      N,   //Количество станков
      M;   //Количество деталей
-     Link           //TODO: надо чета делать с этими концами
+     Link
      *InitEnd,      //Конец списка иходных деталей
      *OptimalEnd,   //Конец списка detals по Джонсону
      *PSEnd[4],     //Конец списка detals по Петрову-Соколицину
      *Cend,         //end of OptimalBH matrix
      *Linker,       //Temp
-     **Cdos,        //Arari asimpaspari parire pararu parrapupa
+     **Cdos,
      **CdosEnd,     //End of Matrix OptimalBH(do,s)
      *OptimalNewEnd;
      int max;
@@ -282,7 +282,7 @@ int MachineOptimizer::DjonsonRun() //Запуск алгоритма Джонсона
      pLink->next=NULL;
      pLink->down=NULL;
      pLink->curr=Item;
-     OptimalDJ=pLink;    //нельзя с пом createlink из-за этой команды чтобеё
+     OptimalDJ=pLink;    //нельзя с пом createlink из-за этой команды
      Link *minimal[2];
      minimal[0]=NULL;
      minimal[1]=NULL;
@@ -468,7 +468,7 @@ int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false, TStat
           CreateLink(&OptimalBH,&pItem,&Cend,&Linker);
           //Создает дерево OptimalBH, с down, указывающим на InitBegin
      }
-     
+
 /*S*/for (s = 1;s<N+1;s++)   // 2. Цикл по станкам!
      {
           if (out != NULL)
@@ -488,9 +488,6 @@ int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false, TStat
                Report->Add("");
                Report->Add("Станок № "+IntToStr(s));
            }
-
-///////////////////{THYZ
-
 
 /***O***/ for(o = 1;o<M+1;o++)   //для каждой очередности       // 3.
           {
@@ -564,16 +561,8 @@ int MachineOptimizer::MethodBHRun (char version = 0, bool idleall = false, TStat
 
                }
 
-               //-------------сдесь должен быть отбор блокированых
+               //-----сдесь должен быть отбор блокированых
                //Нужно заблокировать детали, которые уже иду в обработку
-               /*   for (int i=1;i<E[0]+1;i++)  //по деталям списка D
-               for (int j=0;j<M;j++)   //по выходной матрице
-                    if ((E[i]>0) && (D[i] == OutMatrix[j][s-1]))
-                    {
-                         ShowMessage("Заблокировать деталь "+IntToStr(E[i]));
-                         Fi[i]+=1000;
-                    }         */
-
                //Создание Сдос
                Cdos = new Link* [E[0]+1];
 
@@ -1018,7 +1007,7 @@ int MachineOptimizer::NewMethodRun()
      for (int i=0;i<M+1;i++)
           Operative[i]=0;
 
-     for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)
+     for (Linker = InitBegin;Linker!=NULL;Linker=Linker->next)   //Создание копии списка
           CreateLink(&OptimalNew,&Linker->curr,&OptimalNewEnd);
 
 
@@ -1046,7 +1035,7 @@ int MachineOptimizer::NewMethodRun()
                     max2=Operative[i];
                     min=i;     /* TODO 1 : Нужно обязательно предусмотреть одинаковые */
                }
-          }
+          }   //i - номер детали с минимальным Operative
 
           Operative[min]*=(-1);
           for (Linker2 = InitBegin;Linker2!=NULL;Linker2=Linker2->next)
@@ -1054,6 +1043,7 @@ int MachineOptimizer::NewMethodRun()
                if (Linker2->curr->m == min)
                {
                     Linker->curr=Linker2->curr;
+                    break;
                }
           }
      }

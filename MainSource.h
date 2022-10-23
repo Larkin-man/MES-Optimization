@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include "CGRID.h"
 #include "CSPIN.h"
+#include "WinXP.hpp"
+
 //#include "CSPIN.h"
 //---------------------------------------------------------------------------
 
@@ -113,6 +115,11 @@ __published:	// IDE-managed Components
      TCSpinButton *Spinner;
      TSpeedButton *ProdBtn;
      TStaticText *StaticText1;
+   TMenuItem *NHelp;
+   TWinXP *WinXP1;
+   TAction *ConstructC;
+   TMenuItem *N1;
+   TMenuItem *N2;
      void __fastcall NCopyClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
      void __fastcall NClear1Click(TObject *Sender);
@@ -147,6 +154,16 @@ __published:	// IDE-managed Components
      void __fastcall ManualTableRowMoved(TObject *Sender, int FromIndex,
           int ToIndex);
      void __fastcall FileSaveBeforeExecute(TObject *Sender);
+   void __fastcall NHelpClick(TObject *Sender);
+   void __fastcall TableSetEditText(TObject *Sender, int ACol, int ARow,
+          const AnsiString Value);
+   void __fastcall TableGetEditText(TObject *Sender, int ACol, int ARow,
+          AnsiString &Value);
+   void __fastcall TableSelectCell(TObject *Sender, int ACol, int ARow,
+          bool &CanSelect);
+   void __fastcall TableGetEditMask(TObject *Sender, int ACol, int ARow,
+          AnsiString &Value);
+   void __fastcall ConstructCExecute(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
 
@@ -213,7 +230,7 @@ void ColorPit()
 {
      TColor red,green,blue;
      srand(time(NULL));
-     for (int i = ColorSave;i<M;i++)
+     for (int i = 0; i<M; i++)
      {
      red=TColor(rand()%(256-Brightness)+Brightness);
      green=TColor(rand()%(255-Brightness)+Brightness);
@@ -240,18 +257,11 @@ void ColorPit()
                     break;
           }
      }
-
-
      green=TColor(green*256+256);
-     blue=TColor(blue*256*256+256*256);
-
+     blue=TColor(blue*256*256+256*256);      
      ColorBox[i]=TColor(blue+green+red);
      }
-     //ToolBar1->Color=red;
-     //RadioGroup1->Color=green;
-     //Table->Color=blue;
-     if (ColorSave !=0)
-          ColorSave=M;
+     //ToolBar1->Color=red; RadioGroup1->Color=green; Table->Color=blue;
 }
 
 //Функция выводит матрицу. down - с переходом вниз по дереву; subtractb - с вычитанием матрицы длительностей
@@ -287,9 +297,9 @@ void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subt
                     row+=(IntToStr(list->curr->T[i]-atoi(Table->Cells[i+1][j].c_str()))+"  ");
                Output->Lines->Append(row);
           }
-     }
-
+     }    
 }
+
 
 //Функция ищет длительность производственного цикла
 int ProductionCycle()
@@ -311,6 +321,7 @@ int ProductionCycle()
      delete [] top;
      return left;
 }
+
 //Функция рисует диаграмму Ганта c помощью матрицы длительностей обработки
 void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down)
 {
@@ -402,8 +413,8 @@ void PaintGant()
      //ShowMessage("Gant weight="+IntToStr(GantW));
      GantW=GantW*scale+2+Edge;
      GantH=(BH+BI)*(N-1)*2+BH*6;
-     Gant->Width=GantW;
-     Gant->Height=GantH;
+     Gant->Width=GantW;  ///////////////////////
+     Gant->Height=GantH;  /* TODO : Предусмотреть ограничение ресурсов */
      Gant->Canvas->Pen->Color=clBlack;
      Gant->Canvas->Pen->Width=1;
      Gant->Canvas->Brush->Color=GraphicForm->ColorBox1->Selected;
@@ -602,6 +613,58 @@ void NewMethod()
      Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 
 }
+
+
+//Обновить таблицу
+void ManualTableRefresh(bool full)
+{
+     if (full)
+     {
+          ManualTable->RowCount=M+1;
+          ManualTable->ColCount=N+1;
+          for (int i=1;i<N+1;i++)
+               for (int j=1;j<M+1;j++)
+               {
+                    ManualTable->Cells[i][j]=j;
+               }
+          Label2->Caption=IntToStr(ProductionCycle2());
+     }
+
+     ManualTable->Cells[0][0]="Станок:";
+     for (int i=1;i<ManualTable->RowCount;i++)
+          ManualTable->Cells[0][i]="Деталь " + IntToStr(i)+":";
+     for (int j=1;j<ManualTable->ColCount;j++)
+          ManualTable->Cells[j][0]=j;
+}
+//Перерасчет длительности производственного цикла
+int ProductionCycle2()
+{
+     float *top = new float[M+1];
+     float left=0;
+     int det;
+
+     for (int i=1;i<M+1;i++)
+     {
+          det=StrToInt(ManualTable->Cells[1][i]);
+          left+=atof(Table->Cells[1][det].c_str());
+          top[det]=left;
+     }
+
+     for (int i=2;i<N+1;i++)
+     {
+          left=0;
+          for (int j=1;j<M+1;j++)
+          {
+               det=StrToInt(ManualTable->Cells[i][j]);     
+               top[det]=max(top[det],left);
+               top[det]+=atof(Table->Cells[i][det].c_str());
+               left = top[det];
+          }
+     }
+     delete [] top;
+     return left;
+}
+
      int *top;
 void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
 {
@@ -633,56 +696,6 @@ void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
           list = list->next;
           PrintMatrixPS(list,n,one,left);
      }
-}
-
-//Обновить таблицу
-void ManualTableRefresh(bool full)
-{
-     if (full)
-     {
-          ManualTable->RowCount=M+1;
-          ManualTable->ColCount=N+1;
-          for (int i=1;i<N+1;i++)
-               for (int j=1;j<M+1;j++)
-               {
-                    ManualTable->Cells[i][j]=j;
-               }
-          Label2->Caption=IntToStr(ProductionCycle2());
-     }
-
-     ManualTable->Cells[0][0]="Станок:";
-     for (int i=1;i<ManualTable->RowCount;i++)
-          ManualTable->Cells[0][i]="   № " + IntToStr(i)+":";
-     for (int j=1;j<ManualTable->ColCount;j++)
-          ManualTable->Cells[j][0]=j;
-}
-//Перерасчет длительности производственного цикла
-int ProductionCycle2()
-{
-     float *top = new float[M+1];
-     float left=0;
-     int det;
-
-     for (int i=1;i<M+1;i++)
-     {
-          det=StrToInt(ManualTable->Cells[1][i]);
-          left+=atof(Table->Cells[1][det].c_str());
-          top[det]=left;
-     }
-
-     for (int i=2;i<N+1;i++)
-     {
-          left=0;
-          for (int j=1;j<M+1;j++)
-          {
-               det=StrToInt(ManualTable->Cells[i][j]);     
-               top[det]=max(top[det],left);
-               top[det]+=atof(Table->Cells[i][det].c_str());
-               left = top[det];
-          }
-     }
-     delete [] top;
-     return left;
 }
 
 };

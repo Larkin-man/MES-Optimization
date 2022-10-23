@@ -12,8 +12,8 @@
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) MainSource.dfm About.dfm Graphic.dfm EnterData.dfm Options.dfm"/>
     <LIBFILES value=""/>
-    <LIBRARIES value="vclx.lib bcbsmp.lib rtl.lib vcl.lib"/>
-    <SPARELIBS value="vcl.lib rtl.lib bcbsmp.lib vclx.lib"/>
+    <LIBRARIES value="Package1.lib vclx.lib bcbsmp.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib bcbsmp.lib vclx.lib Package1.lib"/>
     <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
       vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi 
       visualclx.bpi visualdbclx.bpi dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi 
@@ -28,24 +28,24 @@
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="ilink32"/>
-    <USERDEFINES value="_DEBUG"/>
+    <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT"/>
     <MAINSOURCE value="MachineOptimizer.cpp"/>
-    <INCLUDEPATH value="&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot;;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot;;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="&quot;c:\program files\borland\winxp&quot;;$(BCB)\projects\winxp;&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot;;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="&quot;c:\program files\borland\winxp&quot;;$(BCB)\Projects\Lib;$(BCB)\projects\winxp;&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot;;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot; 
+    <IDLCFLAGS value="-I&quot;c:\program files\borland\winxp&quot; -I$(BCB)\projects\winxp 
+      -I&quot;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS&quot; 
       -I&quot;C:\Program Files\Borland\CBuilder6\Projects&quot; -I..\Графика -I..\Окошки 
-      -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -D_DEBUG -boa"/>
-    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a4 -4 -b- -k -y -v -vi- 
-      -c -tW -tWM"/>
-    <PFLAGS value="-$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
+      -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a4 -4 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
-    <AFLAGS value="/mx /w2 /zi"/>
-    <LFLAGS value="-D&quot;&quot; -S:0x200000 -aa -Tpe -GD -x -v"/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -S:0x200000 -aa -Tpe -GD -x"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -73,11 +73,11 @@
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=3
-MinorVer=4
+MinorVer=5
 Release=1
-Build=27
-Debug=1
-PreRelease=0
+Build=32
+Debug=0
+PreRelease=1
 Special=0
 Private=0
 DLL=0
@@ -87,25 +87,29 @@ CodePage=1251
 [Version Info Keys]
 CompanyName=СФУ
 FileDescription=Модуль оптимизации информационной системы оперативного управления производством
-FileVersion=3.4.1.27
+FileVersion=3.5.1.32
 InternalName=Дипломная работа
 LegalCopyright=Copyright © 2012 Aleksey Aponasenko
 LegalTrademarks=
 OriginalFilename=MachineOptimizer.exe
 ProductName=Модуль оптимизации информационной системы оперативного управления производством
-ProductVersion=3.4
+ProductVersion=3.5
 Comments=mail:  psylonaut@mail.ru
 
 [Excluded Packages]
 c:\program files\borland\cbuilder6\Bin\idefilters60.bpl=IDE Filter for CPP32
 
 [HistoryLists\hlIncludePath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
+Count=3
+Item0=c:\program files\borland\winxp;$(BCB)\projects\winxp;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
+Item1=$(BCB)\projects\winxp;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
+Item2=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=1
-Item0=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
+Count=3
+Item0=c:\program files\borland\winxp;$(BCB)\Projects\Lib;$(BCB)\projects\winxp;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
+Item1=$(BCB)\Projects\Lib;$(BCB)\projects\winxp;C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
+Item2=C:\PROGRAM FILES\BORLAND\CBUILDER6\OBJREPOS;C:\Program Files\Borland\CBuilder6\Projects;..\Графика;..\Окошки;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
 Count=1

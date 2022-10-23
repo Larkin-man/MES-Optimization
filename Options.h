@@ -21,7 +21,7 @@ __published:	// IDE-managed Components
      TTabSheet *TabSheet3;
      TBitBtn *BitBtn1;
      TBitBtn *BitBtn2;
-     TLabel *Label1;
+   TLabel *Info;
      TRadioGroup *ColorOptions;
      TCheckBox *WorkTimeOut;
      TTabSheet *TabSheet4;
@@ -54,11 +54,15 @@ __published:	// IDE-managed Components
      void __fastcall HeightScalingClick(TObject *Sender);
      void __fastcall RandomFromChange(TObject *Sender);
      void __fastcall RandomToChange(TObject *Sender);
+   void __fastcall BitBtn1Click(TObject *Sender);
+   void __fastcall BitBtn2Click(TObject *Sender);
 private:	// User declarations
 
 public:		// User declarations
      __fastcall TOptionsForm(TComponent* Owner);
      bool Cvetpit;
+     bool OptionBool[8];
+     int OptionInt[6];
 
 
      void ShowOptimization(bool OptimizatinWindow)
