@@ -36,7 +36,6 @@ __published:	// IDE-managed Components
    TGroupBox *GroupBoxRandom;
    TGroupBox *GroupBoxReport;
      TCheckBox *NoOut;
-     TCheckBox *MvgIdleAll;
      TCheckBox *Debug;
    TAdvSpinEdit *RandomFrom;
    TAdvSpinEdit *RandomTo;
@@ -47,6 +46,8 @@ __published:	// IDE-managed Components
    TCheckBox *Crit2;
    TCheckBox *Crit5;
    TCheckBox *Crit6;
+   TCheckBox *MvgMore;
+   TCheckBox *NoMiddle;
      void __fastcall NoOutClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -64,7 +65,7 @@ private:	// User declarations
 public:		// User declarations
      __fastcall TOptionsForm(TComponent* Owner);
      bool Cvetpit;
-     bool OptionBool[9];
+     bool OptionBool[11];
      int OptionInt[6];
      void __fastcall ShowOptimization(bool OptimizatinWindow);
 };

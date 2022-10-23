@@ -89,13 +89,41 @@ if (Result == random)
      srand(time(NULL));
      int max=OptionsForm->RandomTo->Value;
      int min=OptionsForm->RandomFrom->Value;
-	for (int i = 1; i < BaseForm->M+1; i++)
-          for (int j = 1; j < BaseForm->N+1; j++)
-	     {
-		     BaseForm->Table->Cells[j][i] = rand() % (max-min+1) + min;  //From min to max
-	     }
+     if (OptionsForm->NoMiddle->Checked)
+     {
+        int Mid = (min + max) / 2;
+        int Count = max - min + 1;
+        int Size = Count / 5;
+        int Add = Count / 3;
+        int MidPsize = Mid + Size;
+        int MidDsize = Mid - Size;
+        int Rand;
+        for (int i = 1; i < BaseForm->M+1; i++)
+            for (int j = 1; j < BaseForm->N+1; j++)
+            {
+                Rand = rand() % (max-min+1) + min;  //From min to max
+                if ( (Rand < Mid)&&(Rand > MidDsize) )
+                     Rand -= Add;
+                else if ( (Rand < MidPsize) && (Rand > Mid ) )
+                     Rand += Add;
+                else if (Rand == Mid)
+                    Rand = min;
+                BaseForm->Table->Cells[j][i] = Rand;
+            }
+     }
+     else
+     {
+         for (int i = 1; i < BaseForm->M+1; i++)
+            for (int j = 1; j < BaseForm->N+1; j++)
+                 BaseForm->Table->Cells[j][i] = rand() % (max-min+1) + min;  //From min to max
+      }
      BaseForm->StatusBar1->Panels->Items[0]->Text=("Заполнено случайными числами");
      BaseForm->Swapf();
+     BaseForm->Output->Lines->Add("Заполнено случайными числами. Станков: "+IntToStr(BaseForm->N)+" Деталей: "+IntToStr(BaseForm->M));
+     BaseForm->Output->Lines->Add("Длительность производственного цикла: "+IntToStr(BaseForm->CurrentCycle));
+     for (int i=0; i<METCOUNT; i++)
+          BaseForm->TimeCycleMethod[i] = 0;
+     BaseForm->Report->Enabled = false;
      Close();
 }
 

@@ -1,5 +1,5 @@
 object BaseForm: TBaseForm
-  Left = 93
+  Left = 119
   Top = 119
   Width = 784
   Height = 454
@@ -2772,10 +2772,6 @@ object BaseForm: TBaseForm
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       OnClick = NCopyClick
     end
-    object Test1: TMenuItem
-      Caption = 'Test'
-      OnClick = Test1Click
-    end
   end
   object PopupMenuGrid: TPopupMenu
     Left = 206
@@ -2883,6 +2879,7 @@ object BaseForm: TBaseForm
       Caption = #1054#1090#1095#1077#1090
       Hint = #1054#1090#1095#1077#1090' '#1087#1086' '#1084#1077#1090#1086#1076#1072#1084
       ImageIndex = 10
+      OnExecute = ReportExecute
     end
     object ResizeTable: TAction
       Category = 'Dialog'
@@ -3580,6 +3577,6 @@ object BaseForm: TBaseForm
   end
   object WinXP1: TWinXP
     Left = 552
-    Top = 10
+    Top = 16
   end
 end

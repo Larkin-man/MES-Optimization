@@ -1,5 +1,5 @@
 object EnterDataForm: TEnterDataForm
-  Left = 513
+  Left = 657
   Top = 223
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsDialog

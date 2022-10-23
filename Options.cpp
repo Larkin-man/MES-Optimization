@@ -92,7 +92,7 @@ void __fastcall TOptionsForm::BitBtnOKClick(TObject *Sender)
       //OptionInt[0]=OpenCheck->Value;  удалил опцию
       OptionInt[1]=RandomFrom->Value;
       OptionInt[2]=RandomTo->Value;  //--------
-   OptionBool[2]=MvgIdleAll->Checked;
+   //OptionBool[2]=MvgIdleAll->Checked;
       OptionInt[3]=MVGModify->ItemIndex;
    OptionBool[3]=WorkTimeOut->Checked;
    OptionBool[4]=ColorOptions->ItemIndex;
@@ -101,6 +101,8 @@ void __fastcall TOptionsForm::BitBtnOKClick(TObject *Sender)
    OptionBool[6]=HeightScaling->Checked;
       OptionInt[5]=SpinBI->Value;
    OptionBool[7]=OpenCheck->Checked;
+   OptionBool[8]=MvgMore->Checked;
+   OptionBool[9]=NoMiddle->Checked;
 }
 //---------------------------------------------------------------------------
 //Кнопка Cancel - Отмена всех изменений
@@ -111,7 +113,7 @@ void __fastcall TOptionsForm::BitBtnCancelClick(TObject *Sender)
       //OpenCheck->Value=OptionInt[0];
       RandomFrom->Value=OptionInt[1];
       RandomTo->Value=OptionInt[2];  //--------
-   MvgIdleAll->Checked=OptionBool[2];
+   //MvgIdleAll->Checked=OptionBool[2];
       MVGModify->ItemIndex=OptionInt[3];
    WorkTimeOut->Checked=OptionBool[3];
    ColorOptions->ItemIndex=OptionBool[4];
@@ -120,6 +122,8 @@ void __fastcall TOptionsForm::BitBtnCancelClick(TObject *Sender)
    HeightScaling->Checked=OptionBool[6];
       SpinBI->Value=OptionInt[5];
    OpenCheck->Checked=OptionBool[7];
+   MvgMore->Checked=OptionBool[8];
+   NoMiddle->Checked=OptionBool[9];
 }
 //---------------------------------------------------------------------------
 //Ограничить снизу максимальное

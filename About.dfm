@@ -1,5 +1,5 @@
 object AboutForm: TAboutForm
-  Left = 301
+  Left = 385
   Top = 151
   BorderStyle = bsDialog
   Caption = #1054' '#1055#1088#1086#1075#1088#1072#1084#1084#1077
@@ -1685,7 +1685,7 @@ object AboutForm: TAboutForm
       Width = 169
       Height = 17
       AutoSize = False
-      Caption = #1042#1077#1088#1089#1080#1103' 3.6'
+      Caption = #1042#1077#1088#1089#1080#1103' 3.7'
       IsControl = True
     end
     object Copyright: TLabel

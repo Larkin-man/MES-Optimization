@@ -6,11 +6,11 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "CGRID"
-#pragma link "WinXP"
+//#pragma link "WinXP"
 #pragma link "CSPIN"
+#pragma link "WinXP"
 #pragma resource "*.dfm"
 #include "EnterData.h"
-
 
 TBaseForm *BaseForm;
 //---------------------------------------------------------------------------
@@ -25,8 +25,8 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
      TableRefresh();
      Gant = NULL;
      gantshow = false;
-     for (int i=0;i<4;i++)
-          TimeCycle[i] = 0;
+     for (int i=0; i<METCOUNT; i++)
+          TimeCycleMethod[i] = 0;
      multicoloured=true;
      StatusBar1->Panels->Items[0]->Width = 450;
      StatusBar1->Panels->Items[0]->Text=("Для вывода справки нажмите F1");
@@ -46,6 +46,10 @@ __fastcall TBaseForm::TBaseForm(TComponent* Owner) : TForm(Owner)
      BaseForm->Width=950;
      Table->Width = 289;
      Table->Height = 300;
+     ColorBox = NULL;
+     Optimizer = NULL;
+     MVGTimeCycle = 100000;
+     CurrentCycle = 0;
 }
 //---------------------------------------------------------------------------
 //ОТКРЫТЬ
@@ -81,7 +85,14 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
           return;
       }
 
-      StatusBar1->Panels->Items[0]->Text=FileOpen->Dialog->FileName;
+      for (int i=FileOpen->Dialog->FileName.Length(); i>1; --i)
+          if (FileOpen->Dialog->FileName[i] == '\\')
+          {
+               StatusBar1->Panels->Items[0]->Text = FileOpen->Dialog->FileName.
+                    SubString( i+1, FileOpen->Dialog->FileName.Length());
+               break;
+          }
+      //StatusBar1->Panels->Items[0]->Text=FileOpen->Dialog->FileName;
       //Очистить ячейки таблицы
       for (int i=1;i<Table->RowCount;i++)
           for (int j=1;j<Table->ColCount;j++)
@@ -145,12 +156,19 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
      }
      if (N+1 < Table->ColCount)
           Table->ColCount=N+1;
-     Output->Text=Output->Text+Tx;
-     Output->Lines->Add("");
+     //Output->Lines->Add("");
      M = (pStrings->Count)-delrow;
      TableRefresh();
      delete pStrings;
      Swapf();
+     Output->Lines->Add("Открыт файл: "+StatusBar1->Panels->Items[0]->Text+" Станков: "+IntToStr(N)+" Деталей: "+IntToStr(M));
+     for (int i=1; i<Tx.Length(); ++i)
+          if (Tx[i] != ' ')
+          {
+               Output->Text=Output->Text+Tx;
+               break;
+          }    
+     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(CurrentCycle));
 }
 //---------------------------------------------------------------------------
 //СОХРАНИТЬ
@@ -172,7 +190,7 @@ void __fastcall TBaseForm::FileSaveAccept(TObject *Sender)
      }
      else
      {
-               Output->Lines->SaveToFile(FileSave->Dialog->FileName);
+          Output->Lines->SaveToFile(FileSave->Dialog->FileName);
           StatusBar1->Panels->Items[0]->Text="Отчет сохранен";
      }
 }
@@ -188,7 +206,7 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
           StatusBar1->Panels->Items[3]->Text="";
           return;
      }
-
+     Tick = ::GetTickCount();
      delete Optimizer;   //TODO: Зачем Я удаляю ?
      Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
      //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
@@ -219,47 +237,53 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
           Optimizer->add(T, N);
      }
      delete [] T;
-     TimeCycle[0]=ProductionCycle();
+     CurrentCycle = ProductionCycle();
      if (out)
      {
           Output->Lines->Add("Исходная матрица:");
           PrintMatrix(Optimizer->InitBegin,N,false,false);
-          StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
-          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[0]));
+          StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(CurrentCycle));
+          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(CurrentCycle));
           Output->Lines->Add("");
      }
-     Tick = ::GetTickCount();
+
      Output->Lines->Add(Method[Methods->ItemIndex]);
+     int ResultCycle = 0;
      switch (Methods->ItemIndex)
      {
           case MDJ:
-               DjonsonAlgorithm();
+               ResultCycle = DjonsonAlgorithm();
                break;
           case MPS:
-               PetrovSokolMethod();
+               ResultCycle = PetrovSokolMethod();
                break;
           case MVG:
-               MethodBH ();
+               ResultCycle = MethodBH (false);
                break;
           case MVGM:
-               MethodBH (true);
+               ResultCycle = MethodBH (true);
                break;
           case MNEW:
-               NewMethod();
+               ResultCycle = NewMethod();
                break;
           default:
                ShowMessage("Ошибка выбранного метода");
                return;
      }
+     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(ResultCycle));
+     float eff=((float)CurrentCycle/(float)ResultCycle-1)*100;
+     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
+     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
+     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
      Output->Lines->Add("Время расчета: "+FloatToStr(Tick)+" миллисек.");
-     Output->Lines->Add("----------------------------------------");
+     Output->Lines->Add("---------------------------------------------------");
      if (out)
-         Output->Lines->Add("");
+         Output->Lines->Add(" ");
      GraphicForm->ScrollBarHorz->Position=0;
      GraphicForm->ScrollBarVert->Position=0;
      if (GraphicForm->CheckBoxColorSave->Checked == false)
      {
-          delete ColorBox;           /* DONE : А где он удаляется */
+          delete [] ColorBox;           /* DONE : А где он удаляется */
           ColorBox = new TColor[M];
           ColorSave=M;
           ColorPit();
@@ -320,6 +344,8 @@ void __fastcall TBaseForm::FileNewExecute(TObject *Sender)
      StatusBar1->Panels->Items[0]->Text=("");
      if (NManualMode->Checked)
           NManualModeClick(Sender);
+     for (int i=0; i<METCOUNT; i++)
+          TimeCycleMethod[i] = 0;
 }
 //---------------------------------------------------------------------------
 //ОПТИМИЗАЦИЯ
@@ -424,6 +450,7 @@ void __fastcall TBaseForm::NCopyClick(TObject *Sender)
      Output->CopyToClipboard();
      Output->SelLength = 0;
 }
+//---------------------------------------------------------------------------
 //ШРИФТ
 void __fastcall TBaseForm::FontEditAccept(TObject *Sender)
 {
@@ -593,15 +620,16 @@ void __fastcall TBaseForm::ConstructCExecute(TObject *Sender)
    Output->Lines->Add("----------------------------------------");
 }
 //---------------------------------------------------------------------------
-void __fastcall TBaseForm::Test1Click(TObject *Sender)
-{
-     Output->Lines->Add("L T W H S H");
-     Output->Lines->Add(Table->Left);
-     Output->Lines->Add(Table->Top);
-     Output->Lines->Add(Table->Width);
-     Output->Lines->Add(Table->Height);
-     Output->Lines->Add(Table->Font->Size);
-     Output->Lines->Add(Table->Font->Height);
+//ВЫВЕСТИ ОТЧЕТ ПО МЕТОДАМ
+void __fastcall TBaseForm::ReportExecute(TObject *Sender)
+{       
+     Output->Lines->Add("Отчет по работе методов");
+     Output->Lines->Add( "Исходная ДПЦ: "+IntToStr(ProductionCycle()) );
+     Output->Lines->Add( "ДПЦ после оптимизации" );
+     for (int i=0; i<5; ++i)
+          if (TimeCycleMethod[i] != 0)
+               Output->Lines->Add( Method[i]+": "+IntToStr(TimeCycleMethod[i]) );
+     Output->Lines->Add("----------------------------------------");
 }
 //---------------------------------------------------------------------------
 

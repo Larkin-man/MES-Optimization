@@ -1,5 +1,5 @@
 object GraphicForm: TGraphicForm
-  Left = 150
+  Left = 192
   Top = 105
   Width = 763
   Height = 465
@@ -724,12 +724,13 @@ object GraphicForm: TGraphicForm
     Top = 64
   end
   object SavePictureDialog1: TSavePictureDialog
-    DefaultExt = 'jpg'
+    DefaultExt = '.jpg'
     Filter = 
       'JPEG Image File (*.jpg)|*.jpg|JPEG Image File (*.jpeg)|*.jpeg|Bi' +
       'tmaps (*.bmp)|*.bmp|Icons (*.ico)|*.ico|Enhanced Metafiles (*.em' +
       'f)|*.emf|Metafiles (*.wmf)|*.wmf|All (*.jpg;*.jpeg;*.bmp;*.ico;*' +
       '.emf;*.wmf)|*.jpg;*.jpeg;*.bmp;*.ico;*.emf;*.wmf'
+    Options = [ofHideReadOnly, ofExtensionDifferent, ofPathMustExist, ofNoTestFileCreate, ofNoNetworkButton, ofEnableSizing, ofDontAddToRecent]
     Left = 40
     Top = 64
   end

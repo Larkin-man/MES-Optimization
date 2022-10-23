@@ -15,6 +15,7 @@
 #define MVG 2
 #define MVGM 3
 #define MNEW 4
+#define METCOUNT 5
 
 class MachineOptimizer
 {
@@ -51,7 +52,7 @@ public:
      void ClearData(int MethodID); //Функция очищает память, отрицательное число - полностью
      int DjonsonRun(); //Запуск алгоритма Джонсона
      int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
-     int MethodBHRun (int version = 0, bool idleall = false, TStaticText *out = NULL); //Method  of branches and hordes
+     int MethodBHRun (int version = 0, TStaticText *out = NULL); //Method  of branches and hordes
      int GetN() {return N;}
      int NewMethodRun();
 
@@ -162,8 +163,11 @@ void MachineOptimizer::ClearData(int MethodID) //Функция очищает память
           if (OptimalBH != NULL)
                DeleteLinks(OptimalBH);
           if (OutMatrix != NULL)
+          {
                for (i=0; i<M; i++)
                     delete [] OutMatrix[i];
+               delete [] OutMatrix;
+          }
           OutMatrix = NULL;
      }
 
@@ -425,7 +429,8 @@ int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
      return TimeCycle;
 }
 
-int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) //Method  of branches and hordes
+// version: 0 - оригинальный
+int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of branches and hordes
 {
      //ShowMessage("version="+IntToStr(version)+" bool1="+IntToStr(idleclean)+" bool1="+IntToStr(idleall));
      if (out != NULL)
@@ -451,6 +456,7 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
      int *D = new int [M+1];  //DONE: Один раз создать
      int *E = new int [M+1];
      int *Fi = new int[M+1];
+     Cdos = new Link* [M+1];    //Из кода сюда
      CdosEnd = new Link* [M+1];
 
 
@@ -566,7 +572,7 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                //-----сдесь должен быть отбор блокированых
                //Нужно заблокировать детали, которые уже иду в обработку
                //Создание Сдос
-               Cdos = new Link* [E[0]+1];
+//Cdos = new Link* [E[0]+1];         //Убрал из всех циклов
 
                for (i = 0; i<E[0]+1; i++)
                {
@@ -664,11 +670,9 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                          //else
                          //     Report->Add("rowind(D,det) is FALSE");
                     }
-
-
                      switch (version)
                      {
-                        case 1:
+                        case 2: //1 Максимальный на посл станке Мин. время обработки на посл. станке
                         //{
                            Fi[det]=0;
                            for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
@@ -678,12 +682,12 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                            }
                            break;
                         //}
-                        case 2:
+                        case 3: //2 Как у ПС  Мин. время ожидания поступления
                         //{
                            Fi[det]=ProductionCycle(Cdos[det]);
                            break;
                         //}
-                        case 3:
+                        case 4: //3 Минимизация предп простоя
                         {
                            Fi[det]=0;
                            int *Duration = new int [N];
@@ -692,9 +696,7 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                                  if (Linker->curr->m == E[det])
                                  {
                                     for (j=0; j<N; j++)
-                                    {
                                         Duration[j]=Linker->curr->T[j];
-                                    }
                                     break;
                                  }
                            }
@@ -732,7 +734,7 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                            delete []Duration;
                            break;
                         }
-                        case 4:
+                        case 5: //4 ДПЦ Мин. время поступления на посл. станок
                         {
                            ///////////////////////////////
 
@@ -751,14 +753,12 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                                         if (debugging)
                                              Report->Add("Детали №"+IntToStr(Linker->curr->m)+" нету в D");
                                         netu=true;
-
                                    }
                                    else
                                    {
                                         if (debugging)
                                              Report->Add("Деталь №"+IntToStr(Linker->curr->m)+" есть в D");
                                         netu=false;
-
                                    }
                                for (i=s-1; i<N; i++)
                                {
@@ -778,7 +778,7 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                            break;
                         }
                         default:
-                        //{
+                        //{ version 0 and 1   Мин. длительность производств. цикла
                            // 7) Начнем поиск минимальных и сортировку по предпоследнему станку для нахождения фи
                            int T = 0;   // 8) T
                            Link *minimal=Cdos[det];          //минимальный = первый
@@ -863,69 +863,6 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
                }  //Все Cdosы удалены
 
           } ///Закрылся цикл очередностей
-          if (idleall)
-          {
-               if (s>1)
-               {
-                    //Алгоритм ищет ненужный простой между каждыми двумя деталями в очереди
-                    //И убирает его
-                    int z;
-                    Link *minimal=OptimalBH;          //минимальный = первый
-                    int min;//=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
-
-                    for (i=0; i<M; i++)
-                    {    //
-                         min=max;
-                         for (Linker = OptimalBH; Linker!=NULL; Linker=Linker->next) //Для поиска минимального
-                         {
-                              if ((Linker->curr->T[s-1] < min) && (Linker->curr->m >=0))    
-                              {
-                                   minimal=Linker;
-                                   min=Linker->curr->T[s-1];
-                              }    //Цикл находит минимальнуую длит. обработки среди всех деталей на станке s-1
-
-                         }
-
-                         //минимальный найден
-                         Added+=IntToStr(minimal->curr->m)+"  ";
-                         minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-                         //Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
-                         if (i==0)
-                              z=minimal->curr->T[s-1];
-                         //z - Время окончания обработки предыдущей детали
-                         else
-                         {
-                              int A = (minimal->curr->T[s-1])-(minimal->down->curr->T[s-1]);
-                              //А - время начала обработки следующей детали
-                              if (A != z)
-                              {
-                                   if(A != (minimal->curr->T[s-2]))
-                                   {
-                                        minimal->curr->T[s-1] = (z > (minimal->curr->T[s-2]))? z : (minimal->curr->T[s-2]);
-                                        (minimal->curr->T[s-1])+=(minimal->down->curr->T[s-1]);
-                                        if (debugging)
-                                             Report->Add("Убран простой детали "+IntToStr(-minimal->curr->m));
-                                   }
-                         }
-                         z = minimal->curr->T[s-1];
-                         }
-                         //Грубо говоря, между z и А если есть простой, он будет уничтожен
-
-                    } //Закончился цикл по всем деталям
-
-                    for (Linker = OptimalBH; Linker!=NULL; Linker=Linker->next)  //Уберем минусы
-                         if (Linker->curr->m < 0)
-                              Linker->curr->m=-Linker->curr->m;
-                    
-                    if (debugging)
-                    {
-                         Report->Add("Отсортированные детали в OptimalBH");
-                         Report->Add(Added);
-                    }
-                    Added="";
-               }
-          }//Закончилась обработка простоев на текущем станке
-
           //Для создания Выходной матрицы
           int max=0;
           for (Linker = OptimalBH; Linker!=NULL; Linker=Linker->next)
@@ -970,6 +907,69 @@ int MachineOptimizer::MethodBHRun (int version, bool idleall, TStaticText *out) 
           }
 
      } //Закрылся цикл по станкам
+     //Алгоритм ищет ненужный простой между каждыми двумя деталями в очереди
+     //И убирает его
+     if ( version > 0 )
+     {
+          for (s = 2; s<N+1; s++)   // 2. Цикл по станкам!
+          {                 
+             int z; //z - Время окончания обработки предыдущей детали
+             Link *minimal=OptimalBH;          //минимальный = первый
+             int min;//=Cdos[det]->curr->T[s-1];  //int min=Cdos[det]->curr->T[N-2];
+
+             for (i=0; i<M; i++)
+             {    //
+                  min=max;
+                  for (Linker = OptimalBH; Linker!=NULL; Linker=Linker->next) //Для поиска минимального
+                  {
+                       //Report->Add("curr="+IntToStr(Linker->curr->T[s-1]));
+                       if ((Linker->curr->T[s-1] < min) && (Linker->curr->m >=0))
+                       {
+                            minimal=Linker;
+                            min=Linker->curr->T[s-1];
+                       }    //Цикл находит минимальнуую длит. обработки среди всех деталей на станке s-1
+
+                  }
+                  //минимальный найден
+                  Added+=IntToStr(minimal->curr->m)+"  ";
+                  minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
+                  //Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
+                  if (i==0)
+                  {
+                       z=minimal->curr->T[s-1];
+                  }
+                  else
+                  {
+                       int A = (minimal->curr->T[s-1])-(minimal->down->curr->T[s-1]);
+                       //А - время начала обработки следующей детали
+
+                       if (A != z)
+                       {
+                            if(A != (minimal->curr->T[s-2]))
+                            {
+                                 minimal->curr->T[s-1] = (z > (minimal->curr->T[s-2]))? z : (minimal->curr->T[s-2]);
+                                 (minimal->curr->T[s-1])+=(minimal->down->curr->T[s-1]);
+                                 if (debugging)
+                                      Report->Add("Убран простой детали "+IntToStr(-minimal->curr->m));
+                            }
+                       }
+                       z = minimal->curr->T[s-1];
+                  }
+                  //Грубо говоря, между z и А если есть простой, он будет уничтожен
+
+             } //Закончился цикл по всем деталям
+
+             for (Linker = OptimalBH; Linker!=NULL; Linker=Linker->next)  //Уберем минусы
+                  if (Linker->curr->m < 0)
+                       Linker->curr->m=-Linker->curr->m;
+             if (debugging)
+             {
+                  Report->Add("Отсортированные детали в OptimalBH");
+                  Report->Add(Added);
+             }
+             Added="";
+          }
+     } //Закончилась обработка простоев на текущем станке
      
      //d=ProductionCycle(OptimalBH,output);
      //Расчет длительности производственного цикла

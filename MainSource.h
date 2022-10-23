@@ -28,14 +28,15 @@
 #include <time.h>
 #include <stdlib.h>
 #include "CGRID.h"
-#include "WinXP.hpp"
+//#include "WinXP.hpp"
 #include "CSPIN.h"
+#include "WinXP.hpp"
 
 const AnsiString Method[] = {                   //[]
      "Алгоритм Джонсона",                       //0
      "Метод Петрова-Соколицына",                //1
      "Метод ветвей и границ",                   //2
-     "Метод ветвей и границ (Модифицированный)",//3
+     "Модифицированный метод ветвей и границ",//3
      "Новый метод" };                           //4    
 //---------------------------------------------------------------------------
 
@@ -121,10 +122,9 @@ __published:	// IDE-managed Components
      TAction *ConstructC;
      TMenuItem *NCMatBuilt;
      TMenuItem *NCMatrix;
-     TWinXP *WinXP1;
      TLabel *PsdOut;
      TStaticText *StaticText1;
-     TMenuItem *Test1;
+   TWinXP *WinXP1;
      void __fastcall NCopyClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
      void __fastcall NClear1Click(TObject *Sender);
@@ -158,7 +158,7 @@ __published:	// IDE-managed Components
    void __fastcall TableSetEditText(TObject *Sender, int ACol, int ARow,
           const AnsiString Value);
    void __fastcall ConstructCExecute(TObject *Sender);
-     void __fastcall Test1Click(TObject *Sender);
+     void __fastcall ReportExecute(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
 
@@ -177,12 +177,14 @@ public:		// User declarations
           ColorSave; //Количество сохраненных цветов
 
      int M,N; //N - Станки, M - Детали
-     int TimeCycle[4];
+     int TimeCycleMethod[5];
      bool gantshow;
      TColor *ColorBox;   //Колорпит для разноцветных красивых блоков
      int Brightness;     //Яркость
      bool multicoloured, out;
-     DWORD Tick;
+     DWORD Tick;      
+     int CurrentCycle;
+     int MVGTimeCycle;
 
 void Ready(bool Access); //Готовность к запуску расчета
 void Swapf();
@@ -198,10 +200,10 @@ void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down
 void DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item);
 void PaintGant(); //Создание диаграммы Ганта и подготовка к рисованию
 void CountScale(int Scroller = 5); //Пересчитать масштаб диаграммы
-void DjonsonAlgorithm();
-void PetrovSokolMethod();
-void MethodBH (bool Modify = false); //Method  of branches and hordes
-void NewMethod();
+int DjonsonAlgorithm();
+int PetrovSokolMethod();
+int MethodBH (bool Modifycations); //Method  of branches and hordes
+int NewMethod();
 void ManualTableRefresh(bool full); //Обновить таблицу    
 int ProductionCycle2(); //Перерасчет длительности производственного цикла    
    int *top;
@@ -224,13 +226,17 @@ void TBaseForm :: Ready(bool Access)
 //Перерасчет ДПЦ
 void TBaseForm ::Swapf()
 {
+      MVGTimeCycle = 100000;
      StatusBar1->Panels->Items[0]->Width=400;
      StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
      StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
      if ((M == 0) || (N == 0))
           StatusBar1->Panels->Items[3]->Text="";
      else
-          StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
+     {
+          CurrentCycle = ProductionCycle();
+          StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(CurrentCycle));
+     }
      NTranspon->Enabled=true;
      if (NManualMode->Checked)
           ManualTableRefresh(true);
@@ -359,11 +365,11 @@ void TBaseForm :: DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *Li
           for (int o = 0 ; o < N+1; o++)
                SX[o]=0;
      MachineOptimizer::Detal *Item;
-     if (Edge < 60)
+     if (Edge < 20)
           Edge = 0;
-     if (Edge >= 60)
+     if (Edge >= 20)
           for (int s = 0 ; s < N; s++)       //Названия станков
-               Gant->Canvas->TextOut(TX,vertix+(BH+BI)*s+TY,"Станок "+IntToStr(s+1));
+               Gant->Canvas->TextOut(TX,vertix+(BH+BI)*s+TY,""+IntToStr(s+1)+":");
 
      for (;List != NULL;List = List->next)   //По деталям
      {
@@ -397,11 +403,11 @@ void TBaseForm :: DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item
 {
      vertix+=BH;
      int N = Optimizer->GetN();
-     if (Edge < 60)
+     if (Edge < 20)
           Edge = 0;
-     if (Edge >= 60)
+     if (Edge >= 20)
           for (int s = 0 ; s < N; s++)       //Названия станков
-               Gant->Canvas->TextOut(TX,vertix+(BH+BI)*s+TY,"Станок "+IntToStr(s+1));
+               Gant->Canvas->TextOut(TX,vertix+(BH+BI)*s+TY,""+IntToStr(s+1)+":");
 
      for (;Item != NULL;Item = Item->next)   //По деталям
           {
@@ -420,7 +426,7 @@ void TBaseForm :: DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item
                }
           } 
      Gant->Canvas->Brush->Color=GraphicForm->ColorBox1->Selected;
-     Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Длительность производственного цикла: "+FloatToStr(TimeCycle[3]));
+     Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Длительность производственного цикла: "+FloatToStr(MVGTimeCycle));
      vertix=vertix+(BH+BI)*N-BI+BH;
 }
 //---------------------------------------------------------------------------
@@ -436,10 +442,12 @@ void TBaseForm :: PaintGant()
      TX=(scale-8)/2;
      TY=(BH-14)/2;
      //if (Optimizer == NULL) return;
-     GantW=TimeCycle[0];
-     for (int i=1;i<4;i++)
-          if (TimeCycle[i] > GantW)
-               GantW=TimeCycle[i];
+     GantW = CurrentCycle;
+     if ( TimeCycleMethod[Methods->ItemIndex] > GantW )
+          GantW = TimeCycleMethod[Methods->ItemIndex];
+     /*for (int i=0; i<5; i++)
+          if (TimeCycleMethod[i] > GantW)
+               GantW=TimeCycleMethod[i];       */
      //ShowMessage("Gant weight="+IntToStr(GantW));
      GantW=GantW*scale+2+Edge;
      GantH=(BH+BI)*(N-1)*2+BH*6;
@@ -501,12 +509,10 @@ void TBaseForm :: CountScale(int Scroller)
 }
 //---------------------------------------------------------------------------
 //Запуск Алгоритма Джонсона
-void TBaseForm :: DjonsonAlgorithm()
+int TBaseForm :: DjonsonAlgorithm()
 {
      //StatusBar1->Panels->Items[0]->Text=("Алгоритм Джонсона для двух станков");
-     TimeCycle[1] = Optimizer->DjonsonRun();  //Запуск алгоритма джонсона
-     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
-     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
+     TimeCycleMethod[MDJ] = Optimizer->DjonsonRun();   //Запуск алгоритма Петрова-Соколицина
      if (out)
      {
           Output->Lines->Add("Оптимальная последовательность запуска деталей:");
@@ -514,20 +520,15 @@ void TBaseForm :: DjonsonAlgorithm()
           for (int i=0;i<M;i++)
                Output->Text=Output->Text+IntToStr(data[i])+" ";
      }
-     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[1]));
-     float eff=((float)TimeCycle[0]/(float)TimeCycle[1]-1)*100;
-     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
+     return TimeCycleMethod[MDJ];
 }
 //---------------------------------------------------------------------------
 //Запуск метода Петрова - Соколицына
-void TBaseForm :: PetrovSokolMethod()
+int TBaseForm :: PetrovSokolMethod()
 {
      //StatusBar1->Panels->Items[0]->Text=("Метод Петрова-Соколицина");
-     TimeCycle[2] = Optimizer->PetrovSokolRun();   //Запуск алгоритма Петрова-Соколицина
-     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
-     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
+     TimeCycleMethod[MPS] = Optimizer->PetrovSokolRun();   //Запуск алгоритма Петрова-Соколицина
      top = new int[N];
-
      if (OptionsForm->Debug->Checked)
      {
           Output->Lines->Add("Матрица сумм:");
@@ -569,63 +570,69 @@ void TBaseForm :: PetrovSokolMethod()
           Output->Lines->Add("");
      }
      if (out)
-     {
-
+     {        
           Output->Lines->Add("Оптимальная последовательность запуска деталей: ");
           int *data = Optimizer->OutSequence;
           for (int i=0;i<M;i++)
                Output->Text=Output->Text+IntToStr(data[i])+" ";
      }
-          Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[2]));
-          float eff=((float)TimeCycle[0]/(float)TimeCycle[2]-1)*100;
-          Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
-          delete [] top;
+     delete [] top;
+     return TimeCycleMethod[MPS];
 }
 //---------------------------------------------------------------------------
 //Запуск Метода ветвей и границ и модифицированного МВГ
-void TBaseForm :: MethodBH (bool Modify) //Method  of branches and hordes
+int TBaseForm :: MethodBH (bool Modifycations) //Method  of branches and hordes
 {
      int version = 0;
      ProgressText->Visible=true;
-     if (Modify)
+     if (Modifycations)
      {
-          version = (OptionsForm->MVGModify->ItemIndex);
-          TimeCycle[3]=Optimizer->MethodBHRun(version,
-               OptionsForm->MvgIdleAll->Checked, ProgressText);
+          version = (OptionsForm->MVGModify->ItemIndex + 1);
+          TimeCycleMethod[MVGM]=Optimizer->MethodBHRun(version, ProgressText);
+          MVGTimeCycle = TimeCycleMethod[MVGM];
+          if ( (OptionsForm->MvgMore->Checked) && (TimeCycleMethod[MVGM] > TimeCycleMethod[MVG]) )//если итоговая ДПС хуже оригинального
+           {
+                //Output->Lines->Add("ХУЖЕ");
+                if (version == 1 )
+                     version = 3;
+                else
+                     version = 1;
+                Output->Lines->Add("Повторный расчет с другим критерием оптимальности");
+                //Optimizer->ClearData(MVG);
+                delete Optimizer;
+                Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
+               //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
+               out=!(OptionsForm->NoOut->Checked);
+               Optimizer->output=OptionsForm->Debug->Checked;
+               Optimizer->debugging=OptionsForm->Debug->Checked;
+                int *T = new int[N];   //Придется по новому считать входные данные
+                for (int i = 1;i<M+1;i++)
+                {
+                      for (int j = 1;j<N+1;j++)
+                          T[j-1]=StrToFloat(Table->Cells[j][i]);
+                       Optimizer->add(T, N);
+                }
+                delete [] T;
+                TimeCycleMethod[MVGM]=Optimizer->MethodBHRun(version, ProgressText);
+           }
+           else
+           {
+               switch (version)
+               {
+                    case 1 : Output->Lines->Add("Критерий минимизации ДПЦ"); break;
+                    case 2 : Output->Lines->Add("Критерий минимизации времени обработки на последнем станке"); break;
+                    case 3 : Output->Lines->Add("Критерий минимизации времени  простоя при ожидании поступления"); break;
+                    case 4 : Output->Lines->Add("Критерий минимизации предполагаемого простоя"); break;
+                    case 5 : Output->Lines->Add("Критерий минимизации времени поступления на последний станок"); break;
+               }
+           }
      }
-     else
+     else //Оригинальный МВГ
      {
-          TimeCycle[3]=Optimizer->MethodBHRun(0,
-               false, ProgressText);
+          TimeCycleMethod[MVG] = Optimizer->MethodBHRun(0, ProgressText);
+          MVGTimeCycle = TimeCycleMethod[MVG];
      }
-     if (TimeCycle[3] > TimeCycle[0]) //если итоговая ДПС хуже исходных данных
-     {
-          //Output->Lines->Add("ХУЖЕ");
-          if (version == 0 )
-               version = 1;
-          else
-               version = 0;
-          Output->Lines->Add("Повторный расчет по другой модификации");
-          //Optimizer->ClearData(MVG);
-          delete Optimizer;
-          Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
-     //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
-     out=!(OptionsForm->NoOut->Checked);
-     Optimizer->output=OptionsForm->Debug->Checked;
-     Optimizer->debugging=OptionsForm->Debug->Checked;
-          int *T = new int[N];   //Придется по новому считать входные данные
-          for (int i = 1;i<M+1;i++)
-          {
-                for (int j = 1;j<N+1;j++)
-                    T[j-1]=StrToFloat(Table->Cells[j][i]);
-                 Optimizer->add(T, N);
-          }
-          delete [] T;
-          TimeCycle[3]=Optimizer->MethodBHRun(version,
-               OptionsForm->MvgIdleAll->Checked, ProgressText);
-     }
-     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
-     StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
+
      ProgressText->Caption="Ok";
      //Вывод отчета - может повесить прогу
      if (out)
@@ -653,22 +660,15 @@ void TBaseForm :: MethodBH (bool Modify) //Method  of branches and hordes
           PrintMatrix(Optimizer->OptimalBH,N,false,true);
           Output->Lines->Add(" ");
      }
-     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
-     float eff=((float)TimeCycle[0]/(float)TimeCycle[3]-1)*100;
-     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
+     return MVGTimeCycle;
 }
 //---------------------------------------------------------------------------
 //Запуск Нового метода
-void TBaseForm :: NewMethod()
+int TBaseForm :: NewMethod()
 {
      //StatusBar1->Panels->Items[0]->Text=("Новый метод запущен");
-     TimeCycle[3]=Optimizer->NewMethodRun();
-     Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
-     StatusBar1->Panels->Items[0]->Text=("Время расчета: "+FloatToStr(Tick)+" миллисек.");
-     Output->Lines->Add("Длительность производственного цикла: "+IntToStr(TimeCycle[3]));
-     float eff=((float)TimeCycle[0]/(float)TimeCycle[3]-1)*100;
-     Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
-
+     TimeCycleMethod[MNEW] = Optimizer->NewMethodRun();
+     return TimeCycleMethod[MNEW];
 }
 //---------------------------------------------------------------------------
 //Обновить таблицу ручного размещения

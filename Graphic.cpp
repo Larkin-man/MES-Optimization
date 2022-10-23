@@ -59,7 +59,7 @@ void __fastcall TGraphicForm::SpeedBtnColorClick(TObject *Sender)
 //Кнопка - Сохранить изображение диаграммы
 void __fastcall TGraphicForm::SpeedBtnColorSaveClick(TObject *Sender)
 {
-     if (SavePictureDialog1->Execute())
+     if (SavePictureDialog1->Execute() == ID_OK)
      {
           //BitMap->Assign (gant->Picture) ;
           BaseForm->Gant->SaveToFile(SavePictureDialog1->FileName);
@@ -173,7 +173,7 @@ void TGraphicForm::DrawGant(int PosX, int PosY)
 void __fastcall TGraphicForm::CheckBoxNoutClick(TObject *Sender)
 {
      if (CheckBoxNout->Checked)
-          BaseForm->Edge=60;
+          BaseForm->Edge=20;
      else
           BaseForm->Edge=0;
      BaseForm->PaintGant();
