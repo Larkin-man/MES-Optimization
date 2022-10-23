@@ -1,5 +1,4 @@
 //---------------------------------------------------------------------------
-
 #ifndef MainSourceH
 #define MainSourceH
 //---------------------------------------------------------------------------
@@ -13,7 +12,7 @@
 #include <Dialogs.hpp>
 #include <ComCtrls.hpp>
 #include <Buttons.hpp>
-#include "About.h" 
+#include "About.h"
 #include "OptimizationMtds.h"
 #include <math.h>
 #include <ToolWin.hpp>
@@ -29,10 +28,15 @@
 #include <time.h>
 #include <stdlib.h>
 #include "CGRID.h"
-#include "CSPIN.h"
 #include "WinXP.hpp"
+#include "CSPIN.h"
 
-//#include "CSPIN.h"
+const AnsiString Method[] = {                   //[]
+     "Алгоритм Джонсона",                       //0
+     "Метод Петрова-Соколицына",                //1
+     "Метод ветвей и границ",                   //2
+     "Метод ветвей и границ (Модифицированный)",//3
+     "Новый метод" };                           //4    
 //---------------------------------------------------------------------------
 
 #define max(A,B) (A>B ? A : B)
@@ -52,13 +56,12 @@ __published:	// IDE-managed Components
      TMenuItem *NSize;
      TMenuItem *NMenuHelp;
      TMenuItem *NAbout;
-     TRadioGroup *RadioGroup1;
+     TRadioGroup *Methods;
      TMenuItem *NMenuRun;
      TMenuItem *NOptSwitch;
      TMenuItem *NRun;
      TMenuItem *N9;
      TPopupMenu *PopupMenuGrid;
-     TMenuItem *NTest;
      TMenuItem *NTranspon;
      TMenuItem *NClear2;
      TMenuItem *NResize2;
@@ -110,21 +113,22 @@ __published:	// IDE-managed Components
      TPanel *Panel1;
      TStringGrid *ManualTable;
      TSpeedButton *AddToGantBtn;
-     TLabel *Label1;
-     TLabel *Label2;
+     TLabel *LabelPsd;
      TCSpinButton *Spinner;
      TSpeedButton *ProdBtn;
+     TStaticText *ProgressText;
+     TMenuItem *NHelp;
+     TAction *ConstructC;
+     TMenuItem *NCMatBuilt;
+     TMenuItem *NCMatrix;
+     TWinXP *WinXP1;
+     TLabel *PsdOut;
      TStaticText *StaticText1;
-   TMenuItem *NHelp;
-   TWinXP *WinXP1;
-   TAction *ConstructC;
-   TMenuItem *N1;
-   TMenuItem *N2;
+     TMenuItem *Test1;
      void __fastcall NCopyClick(TObject *Sender);
      void __fastcall NAboutClick(TObject *Sender);
      void __fastcall NClear1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-     void __fastcall NTestClick(TObject *Sender);
      void __fastcall NClear2Click(TObject *Sender);
      void __fastcall NTransponClick(TObject *Sender);
      void __fastcall NOptionsClick(TObject *Sender);
@@ -136,13 +140,10 @@ __published:	// IDE-managed Components
      void __fastcall GantDiagramExecute(TObject *Sender);
      void __fastcall ResizeTableExecute(TObject *Sender);
      void __fastcall FontEditAccept(TObject *Sender);
-     void __fastcall TableColumnMoved(TObject *Sender, int FromIndex,
-          int ToIndex);
-     void __fastcall TableRowMoved(TObject *Sender, int FromIndex,
-          int ToIndex);
+     void __fastcall TableColumnMoved(TObject *Sender, int FromIndex, int ToIndex);
+     void __fastcall TableRowMoved(TObject *Sender, int FromIndex, int ToIndex);
      void __fastcall GoGantBtnClick(TObject *Sender);
      void __fastcall RandomExecute(TObject *Sender);
-     void __fastcall StatusBar1DblClick(TObject *Sender);
      void __fastcall FontEditBeforeExecute(TObject *Sender);
      void __fastcall NManualModeClick(TObject *Sender);
      void __fastcall ManualTableSelectCell(TObject *Sender, int ACol,
@@ -151,19 +152,13 @@ __published:	// IDE-managed Components
      void __fastcall SpinnerUpClick(TObject *Sender);
      void __fastcall ManualTableExit(TObject *Sender);
      void __fastcall ProdBtnClick(TObject *Sender);
-     void __fastcall ManualTableRowMoved(TObject *Sender, int FromIndex,
-          int ToIndex);
+     void __fastcall ManualTableRowMoved(TObject *Sender, int FromIndex, int ToIndex);
      void __fastcall FileSaveBeforeExecute(TObject *Sender);
    void __fastcall NHelpClick(TObject *Sender);
    void __fastcall TableSetEditText(TObject *Sender, int ACol, int ARow,
           const AnsiString Value);
-   void __fastcall TableGetEditText(TObject *Sender, int ACol, int ARow,
-          AnsiString &Value);
-   void __fastcall TableSelectCell(TObject *Sender, int ACol, int ARow,
-          bool &CanSelect);
-   void __fastcall TableGetEditMask(TObject *Sender, int ACol, int ARow,
-          AnsiString &Value);
    void __fastcall ConstructCExecute(TObject *Sender);
+     void __fastcall Test1Click(TObject *Sender);
 private:	// User declarations
 //Только в пределах данного модуля
 
@@ -189,8 +184,35 @@ public:		// User declarations
      bool multicoloured, out;
      DWORD Tick;
 
+void Ready(bool Access); //Готовность к запуску расчета
+void Swapf();
+void TableRefresh(); //Обновить таблицу
+void ColorPit(); //Генератор случайных цветов
+//Функция выводит матрицу. down - с переходом вниз по дереву; subtractb - с вычитанием матрицы длительностей
+void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subtractb);
+//Функция ищет длительность производственного цикла
+int __fastcall ProductionCycle();
+//Функция рисует диаграмму Ганта c помощью матрицы длительностей обработки
+void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down);
+//Функция рисует диаграмму Ганта c помощью матрицы окончаний обработки (С)
+void DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item);
+void PaintGant(); //Создание диаграммы Ганта и подготовка к рисованию
+void CountScale(int Scroller = 5); //Пересчитать масштаб диаграммы
+void DjonsonAlgorithm();
+void PetrovSokolMethod();
+void MethodBH (bool Modify = false); //Method  of branches and hordes
+void NewMethod();
+void ManualTableRefresh(bool full); //Обновить таблицу    
+int ProductionCycle2(); //Перерасчет длительности производственного цикла    
+   int *top;
+void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left);
+
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TBaseForm *BaseForm;
+//---------------------------------------------------------------------------
 //Готовность к запуску расчета
-void Ready(bool Access)
+void TBaseForm :: Ready(bool Access)
 {    
      FileSave->Enabled=Access;
      Optimization->Enabled=Access;
@@ -198,19 +220,24 @@ void Ready(bool Access)
      Report->Enabled=Access;
      NManualMode->Enabled=Access;
 }
-
-void Swapf()
+//---------------------------------------------------------------------------
+//Перерасчет ДПЦ
+void TBaseForm ::Swapf()
 {
      StatusBar1->Panels->Items[0]->Width=400;
      StatusBar1->Panels->Items[1]->Text=("Станков: "+IntToStr(N));
      StatusBar1->Panels->Items[2]->Text=("Деталей: "+IntToStr(M));
-     StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
+     if ((M == 0) || (N == 0))
+          StatusBar1->Panels->Items[3]->Text="";
+     else
+          StatusBar1->Panels->Items[3]->Text=("Длительность производственного цикла: "+IntToStr(ProductionCycle()));
      NTranspon->Enabled=true;
      if (NManualMode->Checked)
           ManualTableRefresh(true);
 }
+//---------------------------------------------------------------------------
 //Обновить таблицу
-void TableRefresh()
+void TBaseForm :: TableRefresh()
 {
      Table->Cells[0][0]="    Станок:";
      //Строки - детали Столбцы - станки
@@ -223,10 +250,12 @@ void TableRefresh()
      else if (Table->RowCount <= 100)
           Table->ColWidths[0]=88;
      else
-          Table->ColWidths[0]=96;  
+          Table->ColWidths[0]=96;
+     ManualTable->ColWidths[0] = Table->ColWidths[0];
 }
+//---------------------------------------------------------------------------
 //Генератор случайных цветов
-void ColorPit()
+void TBaseForm :: ColorPit()
 {
      TColor red,green,blue;
      srand(time(NULL));
@@ -263,9 +292,9 @@ void ColorPit()
      }
      //ToolBar1->Color=red; RadioGroup1->Color=green; Table->Color=blue;
 }
-
+//---------------------------------------------------------------------------
 //Функция выводит матрицу. down - с переходом вниз по дереву; subtractb - с вычитанием матрицы длительностей
-void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subtractb)
+void TBaseForm :: PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subtractb)
 {
      //ShowMessage("n="+IntToStr(n));
      AnsiString row;
@@ -299,10 +328,9 @@ void PrintMatrix(const MachineOptimizer::Link *list, int n, bool down, bool subt
           }
      }    
 }
-
-
+//---------------------------------------------------------------------------
 //Функция ищет длительность производственного цикла
-int ProductionCycle()
+int __fastcall TBaseForm :: ProductionCycle()
 {
      float *top = new float[N];
      float left;
@@ -321,9 +349,9 @@ int ProductionCycle()
      delete [] top;
      return left;
 }
-
+//---------------------------------------------------------------------------
 //Функция рисует диаграмму Ганта c помощью матрицы длительностей обработки
-void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down)
+void TBaseForm :: DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down)
 {
      vertix+=BH;
      int N = Optimizer->GetN();
@@ -363,8 +391,9 @@ void DrawDiagramFromDurationMatrix(const MachineOptimizer::Link *List, bool down
      vertix=vertix+(BH+BI)*N-BI+BH;
      delete [] SX;
 }
+//---------------------------------------------------------------------------
 //Функция рисует диаграмму Ганта c помощью матрицы окончаний обработки (С)
-void DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item)
+void TBaseForm :: DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item)
 {
      vertix+=BH;
      int N = Optimizer->GetN();
@@ -394,13 +423,14 @@ void DrawDiagramFromEndingMatrix(const MachineOptimizer::Link *Item)
      Gant->Canvas->TextOut(TX,vertix+(BH+BI)*N-BI+TY,"Длительность производственного цикла: "+FloatToStr(TimeCycle[3]));
      vertix=vertix+(BH+BI)*N-BI+BH;
 }
+//---------------------------------------------------------------------------
 //Создание диаграммы Ганта и подготовка к рисованию
-void PaintGant()
+void TBaseForm :: PaintGant()
 {
      if (!gantshow)
           return;
      delete Gant;
-     Gant = new Graphics::TBitmap;    
+     Gant = new Graphics::TBitmap;
      vertix=0;
      int N = Optimizer->GetN();
      TX=(scale-8)/2;
@@ -423,27 +453,27 @@ void PaintGant()
      Gant->Canvas->TextOut(TX,TY,"Исходные данные:");
      DrawDiagramFromDurationMatrix(Optimizer->InitBegin,false);
      Gant->Canvas->CopyMode=cmSrcCopy;
-     if ((RadioGroup1->ItemIndex == 0) && (Optimizer->OptimalDJ != NULL))    //TODO: switch case
+     if ((Methods->ItemIndex == 0) && (Optimizer->OptimalDJ != NULL))    //TODO: switch case
      {
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по алгоритму Джонсона:");
           DrawDiagramFromDurationMatrix(Optimizer->OptimalDJ,false);
      }
-     if ((RadioGroup1->ItemIndex == 1) && (Optimizer->PSBegin[1] != NULL))
+     if ((Methods->ItemIndex == 1) && (Optimizer->PSBegin[1] != NULL))
      {
-          Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по методу Петрова-Соколицина:");
+          Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по методу Петрова-Соколицына:");
           DrawDiagramFromDurationMatrix(Optimizer->OptimalPS,true);
      }
-     if ((RadioGroup1->ItemIndex == 2) && (Optimizer->OptimalBH != NULL))
+     if ((Methods->ItemIndex == 2) && (Optimizer->OptimalBH != NULL))
      {
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по методу ветвей и границ:");
           DrawDiagramFromEndingMatrix(Optimizer->OptimalBH);
      }
-     if ((RadioGroup1->ItemIndex == 3) && (Optimizer->OptimalBH != NULL))
+     if ((Methods->ItemIndex == 3) && (Optimizer->OptimalBH != NULL))
      {
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по модифицированому методу ветвей и границ:");
           DrawDiagramFromEndingMatrix(Optimizer->OptimalBH);
      }
-     if ((RadioGroup1->ItemIndex == 4) && (Optimizer->OptimalNew != NULL))
+     if ((Methods->ItemIndex == 4) && (Optimizer->OptimalNew != NULL))
      {
           //ShowMessage("IHHA");
           Gant->Canvas->TextOut(TX,vertix+TY,"Оптимизация по новому методу:");
@@ -452,12 +482,12 @@ void PaintGant()
 
      GraphicForm->ClearGantField();
      if (gantshow)
-          GraphicForm->DrawGant(GraphicForm->ScrollBar1->Position,GraphicForm->ScrollBar2->Position);
+          GraphicForm->DrawGant(GraphicForm->ScrollBarHorz->Position,GraphicForm->ScrollBarVert->Position);
 
 }
-
+//---------------------------------------------------------------------------
 //Пересчитать масштаб диаграммы
-void CountScale(int Scroller = 5)
+void TBaseForm :: CountScale(int Scroller)
 {
      scale=Scroller+12+Scroller/3;
      if (OptionsForm->WorkTimeOut->Checked)
@@ -469,8 +499,9 @@ void CountScale(int Scroller = 5)
           BI=BH/3;         
      }
 }
-
-void DjonsonAlgorithm()
+//---------------------------------------------------------------------------
+//Запуск Алгоритма Джонсона
+void TBaseForm :: DjonsonAlgorithm()
 {
      //StatusBar1->Panels->Items[0]->Text=("Алгоритм Джонсона для двух станков");
      TimeCycle[1] = Optimizer->DjonsonRun();  //Запуск алгоритма джонсона
@@ -487,8 +518,9 @@ void DjonsonAlgorithm()
      float eff=((float)TimeCycle[0]/(float)TimeCycle[1]-1)*100;
      Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 }
-
-void PetrovSokolMethod()
+//---------------------------------------------------------------------------
+//Запуск метода Петрова - Соколицына
+void TBaseForm :: PetrovSokolMethod()
 {
      //StatusBar1->Panels->Items[0]->Text=("Метод Петрова-Соколицина");
      TimeCycle[2] = Optimizer->PetrovSokolRun();   //Запуск алгоритма Петрова-Соколицина
@@ -502,7 +534,7 @@ void PetrovSokolMethod()
           PrintMatrix(Optimizer->PSBegin[0],3,false,false);
           Output->Lines->Add(" ");
 
-          Output->Lines->Add("Сортировка по возрастанию первого столбца:");
+          Output->Lines->Add("Сортировка по убыванию первой суммы:");
           PrintMatrix(Optimizer->PSBegin[1],N,true,false);
           Output->Lines->Add(" ");
 
@@ -513,7 +545,7 @@ void PetrovSokolMethod()
           PrintMatrixPS(Optimizer->PSBegin[1],N,0,0);
           Output->Lines->Add(" ");
 
-          Output->Lines->Add("Сортировка по убыванию второго столбца:");
+          Output->Lines->Add("Сортировка по возрастанию второй суммы:");
           PrintMatrix(Optimizer->PSBegin[2],N,true,false);
           Output->Lines->Add(" ");
 
@@ -524,7 +556,7 @@ void PetrovSokolMethod()
           PrintMatrixPS(Optimizer->PSBegin[2],N,0,0);
           Output->Lines->Add(" ");
 
-          Output->Lines->Add("Сортировка по убыванию третьего столбца:");
+          Output->Lines->Add("Сортировка по убыванию разности:");
           PrintMatrix(Optimizer->PSBegin[3],N,true,false);
           Output->Lines->Add(" ");
 
@@ -549,28 +581,52 @@ void PetrovSokolMethod()
           Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
           delete [] top;
 }
-
-void MethodBH (bool Modify = false) //Method  of branches and hordes
+//---------------------------------------------------------------------------
+//Запуск Метода ветвей и границ и модифицированного МВГ
+void TBaseForm :: MethodBH (bool Modify) //Method  of branches and hordes
 {
-     char version = 0;
-
-     StaticText1->Visible=true;
+     int version = 0;
+     ProgressText->Visible=true;
      if (Modify)
      {
-          //StatusBar1->Panels->Items[0]->Text=("Модифицированный метод ветвей и границ");
           version = (OptionsForm->MVGModify->ItemIndex);
           TimeCycle[3]=Optimizer->MethodBHRun(version,
-               OptionsForm->MvgIdleAll->Checked, StaticText1);
+               OptionsForm->MvgIdleAll->Checked, ProgressText);
      }
      else
      {
-          //StatusBar1->Panels->Items[0]->Text=("Метод ветвей и границ");
           TimeCycle[3]=Optimizer->MethodBHRun(0,
-               false, StaticText1);
+               false, ProgressText);
+     }
+     if (TimeCycle[3] > TimeCycle[0]) //если итоговая ДПС хуже исходных данных
+     {
+          //Output->Lines->Add("ХУЖЕ");
+          if (version == 0 )
+               version = 1;
+          else
+               version = 0;
+          Output->Lines->Add("Повторный расчет по другой модификации");
+          //Optimizer->ClearData(MVG);
+          delete Optimizer;
+          Optimizer = new MachineOptimizer;  //Экземпляр класса, необходимый для работы. Объявлен в библиотеке OptimizationMtds.h
+     //Optimizer->output=!(OptionsForm->NoOut->Checked);  //а это можно в аид ок опций когда баг 5 строками выше будет решен
+     out=!(OptionsForm->NoOut->Checked);
+     Optimizer->output=OptionsForm->Debug->Checked;
+     Optimizer->debugging=OptionsForm->Debug->Checked;
+          int *T = new int[N];   //Придется по новому считать входные данные
+          for (int i = 1;i<M+1;i++)
+          {
+                for (int j = 1;j<N+1;j++)
+                    T[j-1]=StrToFloat(Table->Cells[j][i]);
+                 Optimizer->add(T, N);
+          }
+          delete [] T;
+          TimeCycle[3]=Optimizer->MethodBHRun(version,
+               OptionsForm->MvgIdleAll->Checked, ProgressText);
      }
      Tick = ::GetTickCount() - Tick;  //Вычислить время расчета
      StatusBar1->Panels->Items[0]->Text=("Время расчета : "+FloatToStr(Tick)+" миллисек.");
-     StaticText1->Caption="Ok";
+     ProgressText->Caption="Ok";
      //Вывод отчета - может повесить прогу
      if (out)
      {
@@ -601,8 +657,9 @@ void MethodBH (bool Modify = false) //Method  of branches and hordes
      float eff=((float)TimeCycle[0]/(float)TimeCycle[3]-1)*100;
      Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 }
-
-void NewMethod()
+//---------------------------------------------------------------------------
+//Запуск Нового метода
+void TBaseForm :: NewMethod()
 {
      //StatusBar1->Panels->Items[0]->Text=("Новый метод запущен");
      TimeCycle[3]=Optimizer->NewMethodRun();
@@ -613,10 +670,9 @@ void NewMethod()
      Output->Lines->Add("Эффективность: "+FloatToStrF(eff,ffGeneral,3,7)+"%");
 
 }
-
-
-//Обновить таблицу
-void ManualTableRefresh(bool full)
+//---------------------------------------------------------------------------
+//Обновить таблицу ручного размещения
+void TBaseForm :: ManualTableRefresh(bool full)
 {
      if (full)
      {
@@ -627,7 +683,7 @@ void ManualTableRefresh(bool full)
                {
                     ManualTable->Cells[i][j]=j;
                }
-          Label2->Caption=IntToStr(ProductionCycle2());
+          PsdOut->Caption=IntToStr(ProductionCycle2());
      }
 
      ManualTable->Cells[0][0]="Станок:";
@@ -636,8 +692,9 @@ void ManualTableRefresh(bool full)
      for (int j=1;j<ManualTable->ColCount;j++)
           ManualTable->Cells[j][0]=j;
 }
+//---------------------------------------------------------------------------
 //Перерасчет длительности производственного цикла
-int ProductionCycle2()
+int TBaseForm :: ProductionCycle2()
 {
      float *top = new float[M+1];
      float left=0;
@@ -664,9 +721,9 @@ int ProductionCycle2()
      delete [] top;
      return left;
 }
-
-     int *top;
-void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
+//---------------------------------------------------------------------------
+//
+void TBaseForm :: PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
 {
      if (list != NULL)   //TODO: Убрать эту функцию
      {
@@ -697,27 +754,5 @@ void PrintMatrixPS(const MachineOptimizer::Link *list,int n,int one,int left)
           PrintMatrixPS(list,n,one,left);
      }
 }
-
-};
 //---------------------------------------------------------------------------
-extern PACKAGE TBaseForm *BaseForm;
-//---------------------------------------------------------------------------
-//Сюда могут помещатся объявления типов, переменных, функций
-//которые не включаются в класс формы
-class SequenceStartMethods
-{
-public:
-     int Sequence[4];
-     void addMethod(int MethodID)
-     {
-     }
-     SequenceStartMethods()
-     {
-          for (int i = 0;i<4;i++)
-               Sequence[i]=0;
-     }
-
-};
-
-
 #endif

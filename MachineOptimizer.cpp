@@ -4,22 +4,22 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 USEFORM("MainSource.cpp", BaseForm);
-USEFORM("About.cpp", AboutBox1);
+USEFORM("About.cpp", AboutForm);
 USEFORM("Graphic.cpp", GraphicForm);
 USEFORM("EnterData.cpp", EnterDataForm);
-USEFORM("Options.cpp", OptionsForm);            
+USEFORM("Options.cpp", OptionsForm);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
      try
      {
            Application->Initialize();
-           Application->Title = "(@)^(@)";
-           Application->HelpFile = "C:\\Documents and Settings\\Алекс\\Мои документы\\Билдер\\Оптимизация\\HELPMOISOUP.HLP";
+           Application->Title = "MES Optimization";
+       Application->HelpFile = "C:\\Documents and Settings\\Алекс\\Мои документы\\Билдер\\Оптимизация\\HELPMOISOUP.HLP";
            Application->CreateForm(__classid(TBaseForm), &BaseForm);
-           Application->CreateForm(__classid(TGraphicForm), &GraphicForm);
-           Application->CreateForm(__classid(TOptionsForm), &OptionsForm);
-           Application->Run();
+       Application->CreateForm(__classid(TGraphicForm), &GraphicForm);
+       Application->CreateForm(__classid(TOptionsForm), &OptionsForm);
+       Application->Run();
      }
      catch (Exception &exception)
      {

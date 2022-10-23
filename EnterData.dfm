@@ -69,7 +69,7 @@ object EnterDataForm: TEnterDataForm
     OnClick = Field2Click
     OnExit = Field2Exit
   end
-  object BitBtn2: TBitBtn
+  object BitBtnCancel: TBitBtn
     Left = 208
     Top = 28
     Width = 48
@@ -79,7 +79,7 @@ object EnterDataForm: TEnterDataForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
-    OnClick = BitBtn2Click
+    OnClick = BitBtnCancelClick
     Glyph.Data = {
       360C0000424D360C000000000000360000002800000020000000200000000100
       180000000000000C0000120B0000120B00000000000000000000FFFF00FFFF00

@@ -1,6 +1,6 @@
 object GraphicForm: TGraphicForm
-  Left = 110
-  Top = 107
+  Left = 150
+  Top = 105
   Width = 763
   Height = 465
   Anchors = []
@@ -47,7 +47,7 @@ object GraphicForm: TGraphicForm
       ButtonHeight = 44
       Caption = 'ToolBar1'
       TabOrder = 0
-      object BitBtn4: TBitBtn
+      object BitBtnToMain: TBitBtn
         Left = 0
         Top = 2
         Width = 46
@@ -216,12 +216,12 @@ object GraphicForm: TGraphicForm
         Caption = 'ToolButton1'
         Style = tbsSeparator
       end
-      object SpeedButton3: TSpeedButton
+      object SpeedBtnColorSave: TSpeedButton
         Left = 50
         Top = 2
         Width = 48
         Height = 44
-        Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1076#1080#1072#1075#1088#1072#1084#1084#1091
+        Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1076#1080#1072#1075#1088#1072#1072#1084#1091
         Glyph.Data = {
           F6120000424DF612000000000000360000002800000028000000280000000100
           180000000000C0120000120B0000120B00000000000000000000FFFFFFFFFFFF
@@ -375,7 +375,7 @@ object GraphicForm: TGraphicForm
           26369926359929389829389929389A29389A29389929399A29399A2A399A2A39
           9A2A399A2A399A2A3A9A2A399A2A3A9A2A399A2A399A2A399A2A3A9A293A9A27
           399C273798273A9C2531992A3FA6D6D9F2FFFFFFFFFFFFFFFFFF}
-        OnClick = SpeedButton3Click
+        OnClick = SpeedBtnColorSaveClick
       end
       object ToolButton2: TToolButton
         Left = 98
@@ -385,7 +385,7 @@ object GraphicForm: TGraphicForm
         ImageIndex = 0
         Style = tbsSeparator
       end
-      object SpeedButton2: TSpeedButton
+      object SpeedBtnColor: TSpeedButton
         Left = 102
         Top = 2
         Width = 48
@@ -544,7 +544,7 @@ object GraphicForm: TGraphicForm
           FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
           00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
           FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00}
-        OnClick = SpeedButton2Click
+        OnClick = SpeedBtnColorClick
       end
       object ToolButton3: TToolButton
         Left = 150
@@ -563,7 +563,7 @@ object GraphicForm: TGraphicForm
       ButtonHeight = 35
       Caption = 'ToolBar2'
       TabOrder = 1
-      object Label2: TLabel
+      object LabelScale: TLabel
         Left = 0
         Top = 2
         Width = 72
@@ -654,7 +654,7 @@ object GraphicForm: TGraphicForm
         Ctl3D = True
         ParentCtl3D = False
         TabOrder = 0
-        object CheckBox1: TCheckBox
+        object CheckBoxNout: TCheckBox
           Left = 4
           Top = 4
           Width = 97
@@ -663,7 +663,7 @@ object GraphicForm: TGraphicForm
           Checked = True
           State = cbChecked
           TabOrder = 0
-          OnClick = CheckBox1Click
+          OnClick = CheckBoxNoutClick
         end
         object CheckBoxColorSave: TCheckBox
           Left = 4
@@ -676,7 +676,7 @@ object GraphicForm: TGraphicForm
       end
     end
   end
-  object ScrollBar1: TScrollBar
+  object ScrollBarHorz: TScrollBar
     Left = 0
     Top = 414
     Width = 755
@@ -687,9 +687,9 @@ object GraphicForm: TGraphicForm
     Position = 1
     SmallChange = 5
     TabOrder = 1
-    OnScroll = ScrollBar1Scroll
+    OnScroll = ScrollBarHorzScroll
   end
-  object ScrollBar2: TScrollBar
+  object ScrollBarVert: TScrollBar
     Left = 738
     Top = 56
     Width = 17
@@ -698,7 +698,7 @@ object GraphicForm: TGraphicForm
     Kind = sbVertical
     PageSize = 50
     TabOrder = 2
-    OnScroll = ScrollBar2Scroll
+    OnScroll = ScrollBarVertScroll
   end
   object GantBrushColor: TColorDialog
     Ctl3D = True
@@ -736,20 +736,20 @@ object GraphicForm: TGraphicForm
   object PopupMenu1: TPopupMenu
     Left = 72
     Top = 64
-    object N1: TMenuItem
+    object NRefresh: TMenuItem
       Caption = #1054#1073#1085#1086#1074#1080#1090#1100
-      OnClick = N1Click
+      OnClick = NRefreshClick
     end
-    object N2: TMenuItem
+    object NWorkOut: TMenuItem
       Caption = #1042#1099#1074#1086#1076#1080#1090#1100' '#1074#1088#1077#1084#1103' '#1088#1072#1073#1086#1090#1099
-      OnClick = N2Click
+      OnClick = NWorkOutClick
     end
-    object N3: TMenuItem
+    object NLineOut: TMenuItem
       Caption = #1042#1099#1074#1077#1089#1090#1080' '#1083#1080#1085#1080#1080' '#1089#1077#1090#1082#1080
     end
-    object N4: TMenuItem
+    object NColorBlock: TMenuItem
       Caption = #1062#1074#1077#1090#1085#1099#1077' '#1073#1083#1086#1082#1080
-      OnClick = N4Click
+      OnClick = NColorBlockClick
     end
     object NChangeColor: TMenuItem
       Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1094#1074#1077#1090' '#1076#1077#1090#1072#1083#1080

@@ -1,5 +1,4 @@
 //---------------------------------------------------------------------------
-
 #ifndef GraphicH
 #define GraphicH
 //---------------------------------------------------------------------------
@@ -27,13 +26,13 @@ __published:	// IDE-managed Components
      TSavePictureDialog *SavePictureDialog1;
      TControlBar *ControlBar1;
      TToolBar *ToolBar1;
-     TBitBtn *BitBtn4;
-     TSpeedButton *SpeedButton3;
-     TSpeedButton *SpeedButton2;
+     TBitBtn *BitBtnToMain;
+     TSpeedButton *SpeedBtnColorSave;
+     TSpeedButton *SpeedBtnColor;
      TToolButton *ToolButton1;
      TToolButton *ToolButton2;
      TToolBar *ToolBar2;
-     TLabel *Label2;
+     TLabel *LabelScale;
      TTrackBar *TrackBar1;
      TToolBar *ToolBar3;
      TPanel *Panel1;
@@ -41,32 +40,32 @@ __published:	// IDE-managed Components
      TColorBox *ColorBox1;
      TToolButton *ToolButton3;
      TPopupMenu *PopupMenu1;
-     TMenuItem *N1;
-     TMenuItem *N2;
-     TMenuItem *N3;
-     TMenuItem *N4;
-     TScrollBar *ScrollBar1;
-     TScrollBar *ScrollBar2;
+     TMenuItem *NRefresh;
+     TMenuItem *NWorkOut;
+     TMenuItem *NLineOut;
+     TMenuItem *NColorBlock;
+     TScrollBar *ScrollBarHorz;
+     TScrollBar *ScrollBarVert;
      TToolBar *ToolBar4;
      TPanel *Panel2;
-     TCheckBox *CheckBox1;
-   TCheckBox *CheckBoxColorSave;
-   TMenuItem *NChangeColor;
+     TCheckBox *CheckBoxNout;
+     TCheckBox *CheckBoxColorSave;
+     TMenuItem *NChangeColor;
      void __fastcall BitBtn1Click(TObject *Sender);
      void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-     void __fastcall SpeedButton2Click(TObject *Sender);
-     void __fastcall SpeedButton3Click(TObject *Sender);
+     void __fastcall SpeedBtnColorClick(TObject *Sender);
+     void __fastcall SpeedBtnColorSaveClick(TObject *Sender);
      void __fastcall FormShow(TObject *Sender);
      void __fastcall TrackBar1Change(TObject *Sender);
      void __fastcall ColorBox1Change(TObject *Sender);
-     void __fastcall N1Click(TObject *Sender);
-     void __fastcall N2Click(TObject *Sender);
-     void __fastcall N4Click(TObject *Sender);
-     void __fastcall ScrollBar1Scroll(TObject *Sender,
+     void __fastcall NRefreshClick(TObject *Sender);
+     void __fastcall NWorkOutClick(TObject *Sender);
+     void __fastcall NColorBlockClick(TObject *Sender);
+     void __fastcall ScrollBarHorzScroll(TObject *Sender,
           TScrollCode ScrollCode, int &ScrollPos);
-     void __fastcall ScrollBar2Scroll(TObject *Sender,
+     void __fastcall ScrollBarVertScroll(TObject *Sender,
           TScrollCode ScrollCode, int &ScrollPos);
-     void __fastcall CheckBox1Click(TObject *Sender);
+     void __fastcall CheckBoxNoutClick(TObject *Sender);
      void __fastcall NChangeColorClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
@@ -76,16 +75,8 @@ public:		// User declarations
      int scr1,scr2;
      int
           GantH,    //Gant Height
-          GantW;    //Gant Weight
-
-
-void ClearGantField()
-     {
-          gant->Canvas->Brush->Color=ColorBox1->Selected;
-          gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
-
-     }
-
+          GantW;    //Gant Weight   
+void __fastcall inline ClearGantField();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TGraphicForm *GraphicForm;

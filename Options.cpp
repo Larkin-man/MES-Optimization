@@ -1,5 +1,4 @@
 //---------------------------------------------------------------------------
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -7,19 +6,16 @@
 #include "MainSource.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "CSPIN"
+#pragma link "AdvSpin"
 #pragma resource "*.dfm"
 TOptionsForm *OptionsForm;
 //---------------------------------------------------------------------------
 __fastcall TOptionsForm::TOptionsForm(TComponent* Owner) : TForm(Owner)
 {
      Info->Caption="";
-     //OptimizationWindow=false;
-          //TabSheet4->Hide();
      ShowOptimization(false);
      Cvetpit=ColorOptions->ItemIndex;
-     //MVGModify->ItemIndex=MVGModify->Items->Count-1;
-     BitBtn1Click(NULL);
+     BitBtnOKClick(NULL);
 }
 //---------------------------------------------------------------------------
 //ПОКАЗАТЬ ФОРМУ
@@ -51,7 +47,6 @@ void __fastcall TOptionsForm::NoOutClick(TObject *Sender)
 void __fastcall TOptionsForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
      ShowOptimization(false);
-     //ShowMessage("On Close");
 }
 //---------------------------------------------------------------------------
 //Изменение яркости
@@ -64,17 +59,8 @@ void __fastcall TOptionsForm::SpinBrightnessChange(TObject *Sender)
 void __fastcall TOptionsForm::ColorOptionsClick(TObject *Sender)
 {
      SpinBrightness->Enabled=ColorOptions->ItemIndex;
-     GraphicForm->N4->Checked=ColorOptions->ItemIndex;
+     GraphicForm->NColorBlock->Checked=ColorOptions->ItemIndex;
      GraphicForm->NChangeColor->Enabled=ColorOptions->ItemIndex;
-}
-//---------------------------------------------------------------------------
-//Проверка
-void __fastcall TOptionsForm::OpenCheckChange(TObject *Sender)
-{
-     if (OpenCheck->Value==0)
-          Info->Caption="Проверка отключена";
-     else
-          Info->Caption="";
 }
 //---------------------------------------------------------------------------
 //Масштабировать высоту - OnClick
@@ -83,23 +69,27 @@ void __fastcall TOptionsForm::HeightScalingClick(TObject *Sender)
      SpinBI->Enabled=!HeightScaling->Checked;
 }
 //---------------------------------------------------------------------------
-//Ограничить снизу максимальное
-void __fastcall TOptionsForm::RandomFromChange(TObject *Sender)
+//Управление отображением
+void __fastcall TOptionsForm::ShowOptimization(bool OptimizatinWindow)
 {
-     RandomTo->MinValue=RandomFrom->Value+1;
+    //Окно опции
+    TabSheetGeneral->TabVisible = !OptimizatinWindow;
+    TabSheetMMVG->TabVisible = !OptimizatinWindow;
+    TabSheetGant->TabVisible = !OptimizatinWindow;
+    TabSheetGeneral->Enabled = !OptimizatinWindow;
+    TabSheetMMVG->Enabled = !OptimizatinWindow;
+    TabSheetGant->Enabled = !OptimizatinWindow;
+    //Окно оптимизации
+    TabSheetOptim->TabVisible = OptimizatinWindow;
+    TabSheetOptim->Enabled = OptimizatinWindow;
 }
 //---------------------------------------------------------------------------
-//Ограничить сверху минимальное
-void __fastcall TOptionsForm::RandomToChange(TObject *Sender)
-{
-     RandomFrom->MaxValue=RandomTo->Value-1;
-}
-//---------------------------------------------------------------------------
-void __fastcall TOptionsForm::BitBtn1Click(TObject *Sender)
+//Кнопка ОК - Сохранение настроек
+void __fastcall TOptionsForm::BitBtnOKClick(TObject *Sender)
 {
    OptionBool[0]=NoOut->Checked;
    OptionBool[1]=Debug->Checked;
-      OptionInt[0]=OpenCheck->Value;
+      //OptionInt[0]=OpenCheck->Value;  удалил опцию
       OptionInt[1]=RandomFrom->Value;
       OptionInt[2]=RandomTo->Value;  //--------
    OptionBool[2]=MvgIdleAll->Checked;
@@ -110,14 +100,15 @@ void __fastcall TOptionsForm::BitBtn1Click(TObject *Sender)
    OptionBool[5]=Contrast->Checked;
    OptionBool[6]=HeightScaling->Checked;
       OptionInt[5]=SpinBI->Value;
+   OptionBool[7]=OpenCheck->Checked;
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TOptionsForm::BitBtn2Click(TObject *Sender)
+//Кнопка Cancel - Отмена всех изменений
+void __fastcall TOptionsForm::BitBtnCancelClick(TObject *Sender)
 {
    NoOut->Checked=OptionBool[0];
    Debug->Checked=OptionBool[1];
-      OpenCheck->Value=OptionInt[0];
+      //OpenCheck->Value=OptionInt[0];
       RandomFrom->Value=OptionInt[1];
       RandomTo->Value=OptionInt[2];  //--------
    MvgIdleAll->Checked=OptionBool[2];
@@ -128,6 +119,33 @@ void __fastcall TOptionsForm::BitBtn2Click(TObject *Sender)
    Contrast->Checked=OptionBool[5];
    HeightScaling->Checked=OptionBool[6];
       SpinBI->Value=OptionInt[5];
+   OpenCheck->Checked=OptionBool[7];
+}
+//---------------------------------------------------------------------------
+//Ограничить снизу максимальное
+void __fastcall TOptionsForm::RandomFromChange(TObject *Sender)
+{
+   RandomTo->MinValue=RandomFrom->Value+1;
+   if (RandomTo->Value < RandomFrom->Value)
+      RandomTo->Value = RandomFrom->Value+1;
+}
+//---------------------------------------------------------------------------
+//Ограничить сверху минимальное
+void __fastcall TOptionsForm::RandomToChange(TObject *Sender)
+{
+   RandomFrom->MaxValue=RandomTo->Value-1;
+}
+//---------------------------------------------------------------------------
+//Критерий мин. ДПЦ.
+void __fastcall TOptionsForm::Crit1Click(TObject *Sender)
+{
+   Crit1->Checked = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TOptionsForm::Crit2Click(TObject *Sender)
+{
+   Info->Caption = "Не работает.";
 }
 //---------------------------------------------------------------------------
 

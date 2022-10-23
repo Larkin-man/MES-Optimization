@@ -1,5 +1,4 @@
-//---------------------------------------------------------------------------
-
+//-------------------------------------------------------------------------- -
 #include <vcl.h>
 #pragma hdrstop
 
@@ -16,19 +15,14 @@ __fastcall TGraphicForm::TGraphicForm(TComponent* Owner) : TForm(Owner)
      GraphicForm->Width=Screen->WorkAreaWidth;
      GraphicForm->Left=Screen->WorkAreaLeft;
      GraphicForm->Top=Screen->WorkAreaTop;
-     //ShowMessage("Screen-> width="+IntToStr(Screen->Width)+" he="+IntToStr(Screen->Height));
-     //ShowMessage("Desktop width="+IntToStr(Screen->WorkAreaWidth)+" he="+IntToStr(Screen->WorkAreaHeight));
-     //GraphicForm->Align=alClient;
-     //ShowMessage("Screen-> width="+IntToStr(GraphicForm->Width)+" hei="+IntToStr(GraphicForm->Height));
-     //BitMap = new Graphics::TBitmap;
      gant->Canvas->Brush->Color=clRed;
      SavePictureDialog1->InitialDir=GetCurrentDir();
      scr1=0;
      scr2=0;
-     N4->Checked=true;
+     NColorBlock->Checked=true;
 }
 //---------------------------------------------------------------------------
-//Переход в модуль расчета
+//Кнопка - Переход в модуль расчета
 void __fastcall TGraphicForm::BitBtn1Click(TObject *Sender)
 {
      BaseForm->BringToFront();
@@ -40,32 +34,30 @@ void __fastcall TGraphicForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
      //DONE: BitMap->Canvas-> Канва в битмапе!
      BaseForm->gantshow=false;
-     //BaseForm->GantDiagramExecute(NULL);
      BaseForm->SetFocus();
      BaseForm->GantBtn->Down=false;
      //BitMap->Free();
 }
 //---------------------------------------------------------------------------
-//Цветпит
-void __fastcall TGraphicForm::SpeedButton2Click(TObject *Sender)
+//Кнопка - изменение цвета
+void __fastcall TGraphicForm::SpeedBtnColorClick(TObject *Sender)
 {
-     if (N4->Checked)
-          NChangeColorClick(Sender);
-
+     if (NColorBlock->Checked)
+          NChangeColorClick(Sender);    
      else
      {
           if (GantBrushColor->Execute() == IDOK)
           {
                OptionsForm->ColorOptions->ItemIndex=0;
                BaseForm->multicoloured=false;
-               N4->Checked=false;
+               NColorBlock->Checked=false;
                BaseForm->PaintGant();
           }
      }                  
 }
 //---------------------------------------------------------------------------
-//Сохранить изображение диаграммы
-void __fastcall TGraphicForm::SpeedButton3Click(TObject *Sender)
+//Кнопка - Сохранить изображение диаграммы
+void __fastcall TGraphicForm::SpeedBtnColorSaveClick(TObject *Sender)
 {
      if (SavePictureDialog1->Execute())
      {
@@ -79,14 +71,11 @@ void __fastcall TGraphicForm::SpeedButton3Click(TObject *Sender)
 void __fastcall TGraphicForm::FormShow(TObject *Sender)
 {
      //gant->Picture->Free();
-     //gant->Canvas->CleanupInstance();
      //gant->Canvas->Free();
-     //ShowMessage(" gant form show");
      BaseForm->CountScale(TrackBar1->Position);
      ClearGantField();
      TrackBar1->Height=35;
      Label1->Height=35;
-     //gant->Assign()
 }
 //---------------------------------------------------------------------------
 //МАСШТАБ 
@@ -97,32 +86,32 @@ void __fastcall TGraphicForm::TrackBar1Change(TObject *Sender)
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
-
+//Изменение цвета фона
 void __fastcall TGraphicForm::ColorBox1Change(TObject *Sender)
 {
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
 //Обновить
-void __fastcall TGraphicForm::N1Click(TObject *Sender)
+void __fastcall TGraphicForm::NRefreshClick(TObject *Sender)
 {
      gant->Refresh();
-     BitBtn4->SetFocus();
+     BitBtnToMain->SetFocus();
 }
 //---------------------------------------------------------------------------
 //Выводить время работы
-void __fastcall TGraphicForm::N2Click(TObject *Sender)
+void __fastcall TGraphicForm::NWorkOutClick(TObject *Sender)
 {
-     N2->Checked=!N2->Checked;
-     OptionsForm->WorkTimeOut->Checked=N2->Checked;
+     NWorkOut->Checked=!NWorkOut->Checked;
+     OptionsForm->WorkTimeOut->Checked=NWorkOut->Checked;
      BaseForm->CountScale(GraphicForm->TrackBar1->Position);
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
 //Цветные блоки
-void __fastcall TGraphicForm::N4Click(TObject *Sender)
+void __fastcall TGraphicForm::NColorBlockClick(TObject *Sender)
 {
-     N4->Checked=true;
+     NColorBlock->Checked=true;
      OptionsForm->ColorOptions->ItemIndex=1;
      BaseForm->multicoloured=true;
      BaseForm->PaintGant();
@@ -130,28 +119,28 @@ void __fastcall TGraphicForm::N4Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 //Горизонтальный ползунок двигается
-void __fastcall TGraphicForm::ScrollBar1Scroll(TObject *Sender,
+void __fastcall TGraphicForm::ScrollBarHorzScroll(TObject *Sender,
       TScrollCode ScrollCode, int &ScrollPos)  //параметр ScrollPos - позиция бегунка, передается
 {                                            //по ссылке, можно изменять
      if (scr1 == ScrollPos)
           return;
      scr1=ScrollPos;
      ClearGantField();
-     DrawGant(ScrollPos,ScrollBar2->Position);
+     DrawGant(ScrollPos,ScrollBarVert->Position);
 }
 //---------------------------------------------------------------------------
 //Вертикальный ползунок двигается
-void __fastcall TGraphicForm::ScrollBar2Scroll(TObject *Sender,
+void __fastcall TGraphicForm::ScrollBarVertScroll(TObject *Sender,
       TScrollCode ScrollCode, int &ScrollPos)
 {
      if (scr2 == ScrollPos)
           return;
      scr2=ScrollPos;
      ClearGantField();
-     DrawGant(ScrollBar1->Position,ScrollPos);
+     DrawGant(ScrollBarHorz->Position,ScrollPos);
 }
 //---------------------------------------------------------------------------
-
+//Отрисовка диаграммы при движении ползунков
 void TGraphicForm::DrawGant(int PosX, int PosY)
 {
      int FormH=gant->ClientHeight;
@@ -159,37 +148,38 @@ void TGraphicForm::DrawGant(int PosX, int PosY)
      int K;
      if (BaseForm->GantW > FormW)
      {
-          ScrollBar1->Enabled=true;
+          ScrollBarHorz->Enabled=true;
           K = BaseForm->GantW - FormW;
-          ScrollBar1->Max=K+50;
+          ScrollBarHorz->Max=K+50;
      }
      else
-          ScrollBar1->Enabled=false;
+          ScrollBarHorz->Enabled=false;
 
      if (BaseForm->GantH > FormH)
      {
-          ScrollBar2->Enabled=true;
+          ScrollBarVert->Enabled=true;
           K = BaseForm->GantH - FormH;
-          ScrollBar2->Max=K+50;
+          ScrollBarVert->Max=K+50;
      }
      else
-          ScrollBar2->Enabled=false;
+          ScrollBarVert->Enabled=false;
       gant->Canvas->CopyRect(
                Rect(0,0,FormW,FormH),
                BaseForm->Gant->Canvas,
                Rect(PosX,PosY,FormW+PosX,FormH+PosY));
 }
-
-void __fastcall TGraphicForm::CheckBox1Click(TObject *Sender)
+//---------------------------------------------------------------------------
+//Установить флажок - станки
+void __fastcall TGraphicForm::CheckBoxNoutClick(TObject *Sender)
 {
-     if (CheckBox1->Checked)
+     if (CheckBoxNout->Checked)
           BaseForm->Edge=60;
      else
           BaseForm->Edge=0;
      BaseForm->PaintGant();
 }
 //---------------------------------------------------------------------------
-
+//Установить цвет детали
 void __fastcall TGraphicForm::NChangeColorClick(TObject *Sender)
 {
      Application->CreateForm( __classid(TEnterDataForm),&EnterDataForm);
@@ -200,4 +190,10 @@ void __fastcall TGraphicForm::NChangeColorClick(TObject *Sender)
      EnterDataForm->Free();
 }
 //---------------------------------------------------------------------------
-
+//Очистить диаграмму
+void __fastcall inline TGraphicForm::ClearGantField()
+{
+    gant->Canvas->Brush->Color=ColorBox1->Selected;
+    gant->Canvas->FillRect(Rect(0,0,gant->Width,gant->Height));
+}
+//---------------------------------------------------------------------------

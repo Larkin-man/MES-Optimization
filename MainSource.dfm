@@ -1,12 +1,13 @@
 object BaseForm: TBaseForm
-  Left = 119
-  Top = 96
+  Left = 93
+  Top = 119
   Width = 784
-  Height = 500
+  Height = 454
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   Caption = #1054#1087#1090#1080#1084#1080#1079#1072#1094#1080#1103' '#1079#1072#1087#1091#1089#1082#1072' '#1076#1077#1090#1072#1083#1077#1081' '#1074' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1086
   Color = clBtnFace
-  Constraints.MinHeight = 6
+  Constraints.MinHeight = 275
+  Constraints.MinWidth = 350
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -16
@@ -19,12 +20,12 @@ object BaseForm: TBaseForm
   OnClose = FormClose
   DesignSize = (
     776
-    446)
+    400)
   PixelsPerInch = 96
   TextHeight = 20
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 424
+    Top = 378
     Width = 776
     Height = 22
     Panels = <
@@ -41,12 +42,11 @@ object BaseForm: TBaseForm
         Width = 200
       end>
     SimplePanel = False
-    OnDblClick = StatusBar1DblClick
   end
-  object RadioGroup1: TRadioGroup
+  object Methods: TRadioGroup
     Left = 8
     Top = 56
-    Width = 272
+    Width = 289
     Height = 160
     BiDiMode = bdLeftToRight
     Caption = #1040#1083#1075#1086#1088#1080#1090#1084#1099' '#1086#1087#1090#1080#1084#1080#1079#1072#1094#1080#1080
@@ -55,7 +55,7 @@ object BaseForm: TBaseForm
     ItemIndex = 0
     Items.Strings = (
       #1040#1083#1075#1086#1088#1080#1090#1084' '#1044#1078#1086#1085#1089#1086#1085#1072
-      #1052#1077#1090#1086#1076' '#1055#1077#1090#1088#1086#1074#1072'-'#1057#1086#1082#1086#1083#1080#1094#1080#1085#1072
+      #1052#1077#1090#1086#1076' '#1055#1077#1090#1088#1086#1074#1072'-'#1057#1086#1082#1086#1083#1080#1094#1099#1085#1072
       #1052#1077#1090#1086#1076' '#1074#1077#1090#1074#1077#1081' '#1080' '#1075#1088#1072#1085#1080#1094
       #1052#1077#1090#1086#1076' '#1074#1077#1090#1074#1077#1081' '#1080' '#1075#1088#1072#1085#1080#1094' ('#1052#1086#1076'.)'
       #1053#1086#1074#1099#1081' '#1084#1077#1090#1086#1076)
@@ -2189,10 +2189,10 @@ object BaseForm: TBaseForm
     end
   end
   object Output: TMemo
-    Left = 284
+    Left = 304
     Top = 64
-    Width = 253
-    Height = 357
+    Width = 233
+    Height = 311
     Align = alCustom
     Anchors = [akLeft, akTop, akRight, akBottom]
     Constraints.MinHeight = 152
@@ -2210,35 +2210,35 @@ object BaseForm: TBaseForm
   object Table: TStringGrid
     Left = 8
     Top = 220
-    Width = 272
-    Height = 200
+    Width = 289
+    Height = 154
     Align = alCustom
     Anchors = [akLeft, akTop, akBottom]
     ColCount = 9
     DefaultColWidth = 32
     RowCount = 10
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowMoving, goColMoving, goEditing]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goRowMoving, goColMoving, goEditing]
     PopupMenu = PopupMenuGrid
     TabOrder = 4
     OnColumnMoved = TableColumnMoved
-    OnGetEditMask = TableGetEditMask
-    OnGetEditText = TableGetEditText
     OnRowMoved = TableRowMoved
-    OnSelectCell = TableSelectCell
     OnSetEditText = TableSetEditText
   end
   object Panel1: TPanel
     Left = 544
     Top = 64
     Width = 225
-    Height = 357
+    Height = 311
     Anchors = [akLeft, akTop, akRight, akBottom]
     BevelInner = bvLowered
     BevelOuter = bvNone
     TabOrder = 5
     Visible = False
+    DesignSize = (
+      225
+      311)
     object AddToGantBtn: TSpeedButton
-      Left = 217
+      Left = 161
       Top = 250
       Width = 48
       Height = 48
@@ -2400,22 +2400,24 @@ object BaseForm: TBaseForm
       ShowHint = True
       Visible = False
     end
-    object Label1: TLabel
+    object LabelPsd: TLabel
       Left = 64
-      Top = 248
+      Top = 246
       Width = 153
       Height = 57
+      Anchors = [akLeft, akBottom]
       AutoSize = False
       Caption = #1044#1083#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1077#1085#1085#1086#1075#1086' '#1094#1080#1082#1083#1072':'
       WordWrap = True
     end
-    object Label2: TLabel
+    object PsdOut: TLabel
       Left = 125
-      Top = 289
+      Top = 286
       Width = 92
       Height = 20
+      Anchors = [akLeft, akBottom]
       AutoSize = False
-      Caption = 'Label2'
+      Caption = 'PsdOut'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clGreen
       Font.Height = -16
@@ -2428,6 +2430,8 @@ object BaseForm: TBaseForm
       Top = 250
       Width = 48
       Height = 48
+      Hint = #1055#1077#1088#1077#1088#1072#1089#1095#1077#1090' '#1044#1055#1062
+      Anchors = [akLeft, akBottom]
       Flat = True
       Glyph.Data = {
         F6120000424DF612000000000000360000002800000028000000280000000100
@@ -2588,10 +2592,11 @@ object BaseForm: TBaseForm
     end
     object ManualTable: TStringGrid
       Left = 1
-      Top = 1
+      Top = 25
       Width = 223
-      Height = 240
+      Height = 215
       Align = alTop
+      Anchors = [akLeft, akTop, akRight, akBottom]
       Color = cl3DLight
       ColCount = 6
       DefaultColWidth = 36
@@ -2616,10 +2621,19 @@ object BaseForm: TBaseForm
         26
         26)
     end
+    object StaticText1: TStaticText
+      Left = 1
+      Top = 1
+      Width = 223
+      Height = 24
+      Align = alTop
+      Caption = ' '#1058#1072#1073#1083#1080#1094#1072' '#1087#1086#1088#1103#1076#1082#1072' '#1079#1072#1087#1091#1089#1082#1072
+      TabOrder = 1
+    end
   end
   object Spinner: TCSpinButton
     Left = 643
-    Top = 148
+    Top = 145
     Width = 15
     Height = 27
     DownGlyph.Data = {
@@ -2647,7 +2661,7 @@ object BaseForm: TBaseForm
     OnDownClick = SpinnerDownClick
     OnUpClick = SpinnerUpClick
   end
-  object StaticText1: TStaticText
+  object ProgressText: TStaticText
     Left = 448
     Top = 16
     Width = 75
@@ -2663,7 +2677,7 @@ object BaseForm: TBaseForm
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
-    Left = 672
+    Left = 608
     Top = 9
     object NMenuFile: TMenuItem
       Caption = '&'#1060#1072#1081#1083
@@ -2704,7 +2718,7 @@ object BaseForm: TBaseForm
     end
     object NMenuRun: TMenuItem
       Caption = '&'#1047#1072#1087#1091#1089#1082
-      object N1: TMenuItem
+      object NCMatBuilt: TMenuItem
         Action = ConstructC
       end
       object NRun: TMenuItem
@@ -2758,14 +2772,14 @@ object BaseForm: TBaseForm
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       OnClick = NCopyClick
     end
-    object NTest: TMenuItem
-      Caption = #1058#1077#1089#1090
-      OnClick = NTestClick
+    object Test1: TMenuItem
+      Caption = 'Test'
+      OnClick = Test1Click
     end
   end
   object PopupMenuGrid: TPopupMenu
     Left = 206
-    Top = 296
+    Top = 272
     object NClear2: TMenuItem
       Caption = #1054#1095#1080#1089#1090#1080#1090#1100' '#1090#1072#1073#1083#1080#1094#1091
       OnClick = NClear2Click
@@ -2782,13 +2796,13 @@ object BaseForm: TBaseForm
     object NRun2: TMenuItem
       Action = Run
     end
-    object N2: TMenuItem
+    object NCMatrix: TMenuItem
       Action = ConstructC
     end
   end
   object ActionList1: TActionList
     Images = ImageList1
-    Left = 704
+    Left = 664
     Top = 9
     object FileNew: TAction
       Category = 'File'
@@ -2894,7 +2908,7 @@ object BaseForm: TBaseForm
     end
   end
   object ImageList1: TImageList
-    Left = 736
+    Left = 720
     Top = 9
     Bitmap = {
       494C010110001300040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
@@ -3565,7 +3579,7 @@ object BaseForm: TBaseForm
       000000000000}
   end
   object WinXP1: TWinXP
-    Left = 640
-    Top = 8
+    Left = 552
+    Top = 10
   end
 end

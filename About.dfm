@@ -1,4 +1,4 @@
-object AboutBox1: TAboutBox1
+object AboutForm: TAboutForm
   Left = 301
   Top = 151
   BorderStyle = bsDialog
@@ -25,7 +25,7 @@ object AboutBox1: TAboutBox1
     ModalResult = 1
     TabOrder = 1
   end
-  object Panel1: TPanel
+  object AboutPanel: TPanel
     Left = 8
     Top = 8
     Width = 337
@@ -1682,16 +1682,18 @@ object AboutBox1: TAboutBox1
     object Version: TLabel
       Left = 16
       Top = 48
-      Width = 63
+      Width = 169
       Height = 17
-      Caption = #1042#1077#1088#1089#1080#1103' 3.5'
+      AutoSize = False
+      Caption = #1042#1077#1088#1089#1080#1103' 3.6'
       IsControl = True
     end
     object Copyright: TLabel
       Left = 16
       Top = 71
-      Width = 173
+      Width = 193
       Height = 34
+      AutoSize = False
       Caption = #1040#1074#1090#1086#1088': '#1040#1087#1086#1085#1072#1089#1077#1085#1082#1086' '#1040#1083#1077#1082#1089#1077#1081' '#1042#1083#1072#1076#1080#1084#1080#1088#1086#1074#1080#1095' '
       WordWrap = True
       IsControl = True
@@ -1699,39 +1701,43 @@ object AboutBox1: TAboutBox1
     object Comments: TLabel
       Left = 16
       Top = 151
-      Width = 168
+      Width = 193
       Height = 17
+      AutoSize = False
       Caption = #1059#1095#1077#1073#1085#1072#1103' '#1075#1088#1091#1087#1087#1072': '#1050#1048'13-03'#1052
       WordWrap = True
       IsControl = True
     end
-    object Label1: TLabel
+    object Company: TLabel
       Left = 16
       Top = 111
-      Width = 159
+      Width = 193
       Height = 34
+      AutoSize = False
       BiDiMode = bdRightToLeftReadingOnly
       Caption = #1057#1080#1073#1080#1088#1089#1082#1080#1081' '#1060#1077#1076#1077#1088#1072#1083#1100#1085#1099#1081' '#1059#1085#1080#1074#1077#1088#1089#1080#1090#1077#1090
       ParentBiDiMode = False
       WordWrap = True
       IsControl = True
     end
-    object Label3: TLabel
+    object Comment2: TLabel
       Left = 16
       Top = 171
-      Width = 171
+      Width = 193
       Height = 68
+      AutoSize = False
       Caption = 
         #1057#1074#1077#1076#1077#1085#1080#1103' '#1086' '#1085#1072#1081#1076#1077#1085#1085#1099#1093' '#1086#1096#1080#1073#1082#1072#1093' '#1080' '#1087#1088#1077#1076#1083#1086#1078#1077#1085#1080#1103' '#1087#1086' '#1091#1083#1091#1095#1096#1077#1085#1080#1102' '#1087#1088#1086#1075#1088#1072#1084#1084 +
         #1099' '#1085#1072#1087#1088#1072#1074#1083#1103#1090#1100' '#1085#1072' '#1101#1083'. '#1087#1086#1095#1090#1091':'
       WordWrap = True
       IsControl = True
     end
-    object Label2: TLabel
+    object Comment3: TLabel
       Left = 16
       Top = 239
-      Width = 117
+      Width = 193
       Height = 18
+      AutoSize = False
       Caption = 'psylonaut@mail.ru'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText

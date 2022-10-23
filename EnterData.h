@@ -1,5 +1,4 @@
 //---------------------------------------------------------------------------
-
 #ifndef EnterDataH
 #define EnterDataH
 //---------------------------------------------------------------------------
@@ -20,11 +19,11 @@ class TEnterDataForm : public TForm
 __published:	// IDE-managed Components
      TLabeledEdit *Field1;
      TLabeledEdit *Field2;
-     TBitBtn *BitBtn2;
+     TBitBtn *BitBtnCancel;
      TBitBtn *BitBtnOk;
      TColorDialog *ColorDialog1;
      void __fastcall FormShow(TObject *Sender);
-     void __fastcall BitBtn2Click(TObject *Sender);
+     void __fastcall BitBtnCancelClick(TObject *Sender);
      void __fastcall Field1Exit(TObject *Sender);
      void __fastcall Field2Exit(TObject *Sender);
      void __fastcall Field1Change(TObject *Sender);
@@ -74,7 +73,7 @@ public:
           Field2->Color=clBlue;
      }
 
-     void CheckConvert(TLabeledEdit *Sender)
+     void __fastcall CheckConvert(TLabeledEdit *Sender)
      {
           if (Sender->Text == "")
                return;

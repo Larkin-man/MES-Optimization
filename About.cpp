@@ -1,17 +1,17 @@
-//---------------------------------------------------------------------
+//-------------------------------------------------------------------- -
 #include <vcl.h>
 #pragma hdrstop
 
 #include "About.h"
-//--------------------------------------------------------------------- 
+//---------------------------------------------------------------------
 #pragma resource "*.dfm"
-TAboutBox1 *AboutBox1;
+TAboutForm *AboutForm;
 //--------------------------------------------------------------------- 
-__fastcall TAboutBox1::TAboutBox1(TComponent* AOwner)
+__fastcall TAboutForm::TAboutForm(TComponent* AOwner)
 	: TForm(AOwner)
 {
-     Panel1->Font->Size=10;
-     Panel1->Font->Height=-13;
+     AboutPanel->Font->Size=10;
+     AboutPanel->Font->Height=-13;
 }
 //---------------------------------------------------------------------
 

@@ -14,24 +14,24 @@
 #include <vcl\ExtCtrls.hpp>
 #include <jpeg.hpp>
 //----------------------------------------------------------------------------
-class TAboutBox1 : public TForm
+class TAboutForm : public TForm
 {
 __published:
-	TPanel *Panel1;
+     TPanel *AboutPanel;
 	TImage *ProgramIcon;
 	TLabel *ProductName;
 	TLabel *Version;
 	TLabel *Copyright;
 	TLabel *Comments;
 	TButton *OKButton;
-     TLabel *Label1;
-   TLabel *Label3;
-   TLabel *Label2;
+     TLabel *Company;
+     TLabel *Comment2;
+     TLabel *Comment3;
 private:
 public:
-	virtual __fastcall TAboutBox1(TComponent* AOwner);
+	virtual __fastcall TAboutForm(TComponent* AOwner);
 };
 //----------------------------------------------------------------------------
-extern PACKAGE TAboutBox1 *AboutBox1;
+extern PACKAGE TAboutForm *AboutForm;
 //----------------------------------------------------------------------------
 #endif    

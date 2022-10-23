@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
-
 #include <vcl.h>
 #pragma hdrstop
+
 #include "EnterData.h"
 //---------------------------------------------------------------------------
 #include "MainSource.h"
@@ -18,17 +18,17 @@ __fastcall TEnterDataForm::TEnterDataForm(TComponent* Owner) : TForm(Owner)
 void __fastcall TEnterDataForm::FormShow(TObject *Sender)
 {    Field1->SetFocus();      }
 //---------------------------------------------------------------------------
-//Проверка введенных символов
+//Проверка введенных символов в поля 1 и 2
 void __fastcall TEnterDataForm::Field1Exit(TObject *Sender)
 {    CheckConvert((TLabeledEdit*)Sender);    }
 void __fastcall TEnterDataForm::Field2Exit(TObject *Sender)
 {    CheckConvert((TLabeledEdit*)Sender);    }
 //---------------------------------------------------------------------------
-
-void __fastcall TEnterDataForm::BitBtn2Click(TObject *Sender)
+//Закрыть форму
+void __fastcall TEnterDataForm::BitBtnCancelClick(TObject *Sender)
 {    Close();       }
 //---------------------------------------------------------------------------
-//Проверка отсутствия символов
+//Проверка отсутствия символов в полях 1 и 2
 void __fastcall TEnterDataForm::Field1Change(TObject *Sender)
 {    if (Result == random)
           BitBtnOk->Enabled=!((Field1->Text=="") && (Field2->Text==""));
@@ -38,7 +38,7 @@ void __fastcall TEnterDataForm::Field2Change(TObject *Sender)
           BitBtnOk->Enabled=!((Field1->Text=="") && (Field2->Text==""));
 }
 //---------------------------------------------------------------------------
-
+//Кнопка ОК
 void __fastcall TEnterDataForm::BitBtnOkClick(TObject *Sender)
 {
 //ИЗМЕНЕНИЕ РАЗМЕРА ТАБЛИЦЫ
