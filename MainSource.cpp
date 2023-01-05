@@ -54,7 +54,7 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
 {
 	TStringList *pStrings = new TStringList;
 	pStrings->LoadFromFile(FileOpen->Dialog->FileName);
-	char *s;
+	wchar_t *s;
 	int nC=0,nS=0;
 	//Цикл считает количество цифр и других символов
 	for(int i = 0; i < pStrings->Count; i++) //Цикл по строкам
@@ -74,8 +74,8 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
 	if (nS*4 > nC)
 	{
 		Application->MessageBox (
-			"Неверные данные. Файл должен содержать матрицу длительностей обработки",
-			"Ошибка открытия файла",
+			L"Неверные данные. Файл должен содержать матрицу длительностей обработки",
+			L"Ошибка открытия файла",
 			MB_OK + MB_ICONSTOP);
 		StatusBar1->Panels->Items[0]->Text="Ошибка открытия файла "+FileOpen->Dialog->FileName;
 		delete pStrings;
@@ -101,7 +101,7 @@ void __fastcall TBaseForm::FileOpenAccept(TObject *Sender)
 	int delrow=0;  //Удаленных строк
 	for(int i=0; i < pStrings->Count; i++) //Цикл по строкам
 	{
-		char *s = pStrings->Strings[i].c_str();
+		wchar_t *s = pStrings->Strings[i].c_str();
 		//-----------Поиск и удаление лишних строк----------------------------
 		bool deletestring = true;
 		for (int j =0;j < pStrings->Strings[i].Length();j++) //Цикл по символам для поиска цифр
@@ -197,7 +197,7 @@ void __fastcall TBaseForm::RunExecute(TObject *Sender)
 {
 	if ((M <= 1)||(N <= 1))
 	{
-		Application->MessageBox ("Не задано количество станков и деталей", "Ошибка" , MB_ICONSTOP) ;
+		Application->MessageBox (L"Не задано количество станков и деталей", L"Ошибка" , MB_ICONSTOP) ;
 		StatusBar1->Panels->Items[1]->Text=("Станков: ?");
 		StatusBar1->Panels->Items[2]->Text=("Деталей: ?");
 		StatusBar1->Panels->Items[3]->Text="";
@@ -380,7 +380,7 @@ void __fastcall TBaseForm::NTransponClick(TObject *Sender)
 	for (int i = 1; i<tempmax; i++)
 		for (int j=i+1; j<tempmax; j++)
 		{
-			temp=atoi(Table->Cells[i][j].c_str());
+			temp=_wtoi(Table->Cells[i][j].c_str());
 			Table->Cells[i][j]=Table->Cells[j][i];
 			Table->Cells[j][i]=temp;
 		}
@@ -408,9 +408,9 @@ void __fastcall TBaseForm::NOptionsClick(TObject *Sender)
 		CountScale(GraphicForm->TrackBar1->Position);
 		GraphicForm->NWorkOut->Checked=OptionsForm->WorkTimeOut->Checked;
 		GraphicForm->NColorBlock->Checked=OptionsForm->ColorOptions->ItemIndex;
-		if ((Brightness != OptionsForm->SpinBrightness->Value) || (OptionsForm->Contrast->Checked))
+		if ((Brightness != OptionsForm->SpinBrightness->Position) || (OptionsForm->Contrast->Checked))
 		{
-			Brightness = OptionsForm->SpinBrightness->Value;
+			Brightness = OptionsForm->SpinBrightness->Position;
 			if (gantshow)
 				ColorPit();
 		}
@@ -590,7 +590,7 @@ void __fastcall TBaseForm::ConstructCExecute(TObject *Sender)
 {
 	if ((N == 0) && (M == 0))
 	{
-		Application->MessageBox ("Не задана исходная матрица", "Ошибка" , MB_ICONSTOP) ;
+		Application->MessageBox (L"Не задана исходная матрица", L"Ошибка" , MB_ICONSTOP) ;
 		return;
 	}
 	Output->Lines->Add("Матрица окончаний обработки: ");
@@ -607,7 +607,7 @@ void __fastcall TBaseForm::ConstructCExecute(TObject *Sender)
 	for (int i=1;i<N+1;i++)
 	{
 		top[i-1]=max(top[i-1],left);
-		top[i-1]+=atof(Table->Cells[i][j].c_str());
+		top[i-1]+=_wtof(Table->Cells[i][j].c_str());
 		left = top[i-1];
 		row+=(FloatToStr(left)+"  ");
 	}

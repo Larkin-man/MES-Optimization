@@ -6,7 +6,6 @@
 #include "MainSource.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "AdvSpin"
 #pragma resource "*.dfm"
 TOptionsForm *OptionsForm;
 //---------------------------------------------------------------------------
@@ -23,10 +22,10 @@ void __fastcall TOptionsForm::FormShow(TObject *Sender)
 {
 	Info->Caption="";
 	SpinBrightness->Enabled=ColorOptions->ItemIndex;
-	Contrast->Visible=(SpinBrightness->Value>=150);
-	SpinBI->Value=BaseForm->BI;
-	SpinBI->MaxValue=BaseForm->BH;
-	if (SpinBrightness->Value<50)
+	Contrast->Visible=(SpinBrightness->Position >= 150);
+	SpinBI->Position=BaseForm->BI;
+	SpinBI->Max=BaseForm->BH;
+	if (SpinBrightness->Position<50)
 		Contrast->Checked=false;
 }
 //---------------------------------------------------------------------------
@@ -89,17 +88,17 @@ void __fastcall TOptionsForm::BitBtnOKClick(TObject *Sender)
 {
 	OptionBool[0]=NoOut->Checked;
 	OptionBool[1]=Debug->Checked;
-	//OptionInt[0]=OpenCheck->Value;  удалил опцию
-	OptionInt[1]=RandomFrom->Value;
-	OptionInt[2]=RandomTo->Value;  //--------
+	//OptionInt[0]=OpenCheck->Position;  удалил опцию
+	OptionInt[1]=RandomFrom->Position;
+	OptionInt[2]=RandomTo->Position;  //--------
 	//OptionBool[2]=MvgIdleAll->Checked;
 	OptionInt[3]=MVGModify->ItemIndex;
 	OptionBool[3]=WorkTimeOut->Checked;
 	OptionBool[4]=ColorOptions->ItemIndex;
-	OptionInt[4]=SpinBrightness->Value;
+	OptionInt[4]=SpinBrightness->Position;
 	OptionBool[5]=Contrast->Checked;
 	OptionBool[6]=HeightScaling->Checked;
-	OptionInt[5]=SpinBI->Value;
+	OptionInt[5]=SpinBI->Position;
 	OptionBool[7]=OpenCheck->Checked;
 	OptionBool[8]=MvgMore->Checked;
 	OptionBool[9]=NoMiddle->Checked;
@@ -110,17 +109,17 @@ void __fastcall TOptionsForm::BitBtnCancelClick(TObject *Sender)
 {
 	NoOut->Checked=OptionBool[0];
 	Debug->Checked=OptionBool[1];
-	//OpenCheck->Value=OptionInt[0];
-	RandomFrom->Value=OptionInt[1];
-	RandomTo->Value=OptionInt[2];  //--------
+	//OpenCheck->Position=OptionInt[0];
+	RandomFrom->Position=OptionInt[1];
+	RandomTo->Position=OptionInt[2];  //--------
 	//MvgIdleAll->Checked=OptionBool[2];
 	MVGModify->ItemIndex=OptionInt[3];
 	WorkTimeOut->Checked=OptionBool[3];
 	ColorOptions->ItemIndex=OptionBool[4];
-	SpinBrightness->Value=OptionInt[4];
+	SpinBrightness->Position=OptionInt[4];
 	Contrast->Checked=OptionBool[5];
 	HeightScaling->Checked=OptionBool[6];
-	SpinBI->Value=OptionInt[5];
+	SpinBI->Position=OptionInt[5];
 	OpenCheck->Checked=OptionBool[7];
 	MvgMore->Checked=OptionBool[8];
 	NoMiddle->Checked=OptionBool[9];
@@ -129,15 +128,15 @@ void __fastcall TOptionsForm::BitBtnCancelClick(TObject *Sender)
 //Ограничить снизу максимальное
 void __fastcall TOptionsForm::RandomFromChange(TObject *Sender)
 {
-	RandomTo->MinValue=RandomFrom->Value+1;
-	if (RandomTo->Value < RandomFrom->Value)
-	RandomTo->Value = RandomFrom->Value+1;
+	RandomTo->Min=RandomFrom->Position+1;
+	if (RandomTo->Position < RandomFrom->Position)
+	RandomTo->Position = RandomFrom->Position+1;
 }
 //---------------------------------------------------------------------------
 //Ограничить сверху минимальное
 void __fastcall TOptionsForm::RandomToChange(TObject *Sender)
 {
-	RandomFrom->MaxValue=RandomTo->Value-1;
+	RandomFrom->Max=RandomTo->Position-1;
 }
 //---------------------------------------------------------------------------
 //Критерий мин. ДПЦ.

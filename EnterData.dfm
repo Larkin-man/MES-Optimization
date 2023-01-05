@@ -35,8 +35,6 @@ object EnterDataForm: TEnterDataForm
     Font.Height = -13
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    LabelPosition = lpAbove
-    LabelSpacing = 3
     ParentFont = False
     TabOrder = 0
     OnChange = Field1Change
@@ -61,8 +59,6 @@ object EnterDataForm: TEnterDataForm
     Font.Height = -13
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    LabelPosition = lpAbove
-    LabelSpacing = 3
     ParentFont = False
     TabOrder = 1
     OnChange = Field2Change
@@ -75,11 +71,6 @@ object EnterDataForm: TEnterDataForm
     Width = 48
     Height = 48
     Hint = #1054#1090#1084#1077#1085#1080#1090#1100
-    ModalResult = 2
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 2
-    OnClick = BitBtnCancelClick
     Glyph.Data = {
       360C0000424D360C000000000000360000002800000020000000200000000100
       180000000000000C0000120B0000120B00000000000000000000FFFF00FFFF00
@@ -179,6 +170,11 @@ object EnterDataForm: TEnterDataForm
       FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
       00FFFF00FFFF00E0E0FFE0E0FFFFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
       FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00}
+    ModalResult = 2
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 2
+    OnClick = BitBtnCancelClick
   end
   object BitBtnOk: TBitBtn
     Left = 152
@@ -187,11 +183,6 @@ object EnterDataForm: TEnterDataForm
     Height = 48
     Hint = #1055#1088#1080#1085#1103#1090#1100
     Default = True
-    ModalResult = 1
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 3
-    OnClick = BitBtnOkClick
     Glyph.Data = {
       36180000424D3618000000000000360000002800000040000000200000000100
       18000000000000180000120B0000120B00000000000000000000FFFF00FFFF00
@@ -387,10 +378,14 @@ object EnterDataForm: TEnterDataForm
       FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
       00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
       FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00}
+    ModalResult = 1
     NumGlyphs = 2
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 3
+    OnClick = BitBtnOkClick
   end
   object ColorDialog1: TColorDialog
-    Ctl3D = True
     Left = 227
     Top = 75
   end

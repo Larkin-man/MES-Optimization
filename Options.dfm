@@ -49,6 +49,10 @@ object OptionsForm: TOptionsForm
     TabOrder = 0
     object TabSheetGeneral: TTabSheet
       Caption = #1054#1073#1097#1080#1077
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBoxRandom: TGroupBox
         Left = 8
         Top = 136
@@ -120,6 +124,10 @@ object OptionsForm: TOptionsForm
     object TabSheetMMVG: TTabSheet
       Caption = #1052#1086#1076#1080#1092#1080#1082#1072#1094#1080#1103' '#1052#1042#1043
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object MVGModify: TRadioGroup
         Left = 8
         Top = 12
@@ -155,6 +163,10 @@ object OptionsForm: TOptionsForm
     object TabSheetGant: TTabSheet
       Caption = #1044#1080#1072#1075#1088#1072#1084#1084#1072' '#1043#1072#1085#1090#1072
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LabelBR: TLabel
         Left = 8
         Top = 136
@@ -243,6 +255,10 @@ object OptionsForm: TOptionsForm
       Font.Style = []
       ImageIndex = 3
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Crit4: TCheckBox
         Left = 8
         Top = 112

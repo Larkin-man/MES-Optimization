@@ -6,7 +6,6 @@
 //---------------------------------------------------------------------------
 #include "MainSource.h"
 #pragma package(smart_init)
-#pragma link "CSPIN"
 #pragma resource "*.dfm"
 TEnterDataForm *EnterDataForm;
 //---------------------------------------------------------------------------
@@ -87,8 +86,8 @@ if (Result == random)
 		BaseForm->Table->ColCount = BaseForm->N+1;
 	BaseForm->TableRefresh();
 	srand(time(NULL));
-	int max=OptionsForm->RandomTo->Value;
-	int min=OptionsForm->RandomFrom->Value;
+	int max=OptionsForm->RandomTo->Position;
+	int min=OptionsForm->RandomFrom->Position;
 	if (OptionsForm->NoMiddle->Checked)
 	{
 		int Mid = (min + max) / 2;

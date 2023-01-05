@@ -10,7 +10,6 @@
 #include <ExtCtrls.hpp>
 #include <time.h>
 #include <stdlib.h>
-#include "CSPIN.h"
 #include <AppEvnts.hpp>
 #include <Dialogs.hpp>
 //---------------------------------------------------------------------------

@@ -27,8 +27,8 @@
 #include <StdActns.hpp>
 #include <time.h>
 #include <stdlib.h>
-#include "cspin.h"
 #include <System.Actions.hpp>
+#include "cspin.h"
 
 const AnsiString Method[] = {			//[]
 	"Алгоритм Джонсона",				//0
@@ -326,7 +326,7 @@ void TBaseForm :: PrintMatrix(const MachineOptimizer::Link *list, int n, bool do
 			row="";
 			row+=(IntToStr(list->curr->m)+"  |  ");
 			for (int i = 0;i<n;i++)
-				row+=(IntToStr(list->curr->T[i]-atoi(Table->Cells[i+1][j].c_str()))+"  ");
+				row+=(IntToStr(list->curr->T[i]-_wtoi(Table->Cells[i+1][j].c_str()))+"  ");
 			Output->Lines->Append(row);
 		}
 	}
@@ -345,7 +345,7 @@ int __fastcall TBaseForm :: ProductionCycle()
 		for (int i=1;i<N+1;i++)
 		{
 			top[i-1]=max(top[i-1],left);
-			top[i-1]+=atof(Table->Cells[i][j].c_str());
+			top[i-1]+=_wtoi(Table->Cells[i][j].c_str());
 			left = top[i-1];
 		}
 	}
@@ -497,7 +497,7 @@ void TBaseForm :: CountScale(int Scroller)
 	scale=Scroller+12+Scroller/3;
 	if (OptionsForm->WorkTimeOut->Checked)
 		scale+=4;
-	BI=OptionsForm->SpinBI->Value;
+	BI=OptionsForm->SpinBI->Position;
 	if (OptionsForm->HeightScaling->Checked)
 	{
 		BH=26+Scroller/2;
@@ -639,7 +639,7 @@ int TBaseForm :: MethodBH (bool Modifycations) //Method  of branches and hordes
 		{
 			Output->Lines->Add(Optimizer->Report->Strings[i]);
 			if (i == podric)
-				if (Application->MessageBox ("Остановить?", "Вывод отчета" , MB_YESNO + MB_ICONQUESTION) == IDNO)
+				if (Application->MessageBox (L"Остановить?", L"Вывод отчета" , MB_YESNO + MB_ICONQUESTION) == IDNO)
 				{
 					podric=podric*2+50;
 					Application->ProcessMessages();
@@ -700,7 +700,7 @@ int TBaseForm :: ProductionCycle2()
 	for (int i=1;i<M+1;i++)
 	{
 		det=StrToInt(ManualTable->Cells[1][i]);
-		left+=atof(Table->Cells[1][det].c_str());
+		left+=_wtof(Table->Cells[1][det].c_str());
 		top[det]=left;
 	}
 
@@ -711,7 +711,7 @@ int TBaseForm :: ProductionCycle2()
 		{
 			det=StrToInt(ManualTable->Cells[i][j]);	
 			top[det]=max(top[det],left);
-			top[det]+=atof(Table->Cells[i][det].c_str());
+			top[det]+=_wtof(Table->Cells[i][det].c_str());
 			left = top[det];
 		}
 	}
