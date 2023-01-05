@@ -1,10 +1,10 @@
 object BaseForm: TBaseForm
   Left = 119
   Top = 119
-  Width = 784
-  Height = 454
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   Caption = #1054#1087#1090#1080#1084#1080#1079#1072#1094#1080#1103' '#1079#1072#1087#1091#1089#1082#1072' '#1076#1077#1090#1072#1083#1077#1081' '#1074' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1086
+  ClientHeight = 395
+  ClientWidth = 768
   Color = clBtnFace
   Constraints.MinHeight = 275
   Constraints.MinWidth = 350
@@ -19,14 +19,14 @@ object BaseForm: TBaseForm
   Position = poScreenCenter
   OnClose = FormClose
   DesignSize = (
-    776
-    400)
+    768
+    395)
   PixelsPerInch = 96
   TextHeight = 20
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 378
-    Width = 776
+    Top = 373
+    Width = 768
     Height = 22
     Panels = <
       item
@@ -41,7 +41,6 @@ object BaseForm: TBaseForm
       item
         Width = 200
       end>
-    SimplePanel = False
   end
   object Methods: TRadioGroup
     Left = 8
@@ -67,7 +66,7 @@ object BaseForm: TBaseForm
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 776
+    Width = 768
     Height = 56
     ButtonHeight = 48
     ButtonWidth = 48
@@ -76,7 +75,7 @@ object BaseForm: TBaseForm
     TabOrder = 3
     object ToolButton2: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton2'
       ImageIndex = 1
@@ -84,7 +83,7 @@ object BaseForm: TBaseForm
     end
     object NewBtn: TSpeedButton
       Left = 4
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = FileNew
@@ -291,7 +290,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton4: TToolButton
       Left = 52
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton4'
       ImageIndex = 4
@@ -299,7 +298,7 @@ object BaseForm: TBaseForm
     end
     object OpenBtn: TSpeedButton
       Left = 56
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = FileOpen
@@ -507,7 +506,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton5: TToolButton
       Left = 104
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton5'
       ImageIndex = 4
@@ -515,7 +514,7 @@ object BaseForm: TBaseForm
     end
     object SaveBtn: TSpeedButton
       Left = 108
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = FileSave
@@ -722,7 +721,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton1: TToolButton
       Left = 156
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton1'
       ImageIndex = 2
@@ -730,7 +729,7 @@ object BaseForm: TBaseForm
     end
     object RunBtn: TSpeedButton
       Left = 164
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = Run
@@ -1045,7 +1044,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton6: TToolButton
       Left = 212
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton6'
       ImageIndex = 4
@@ -1053,7 +1052,7 @@ object BaseForm: TBaseForm
     end
     object OptimizationBtn: TSpeedButton
       Left = 216
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = Optimization
@@ -1369,7 +1368,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton7: TToolButton
       Left = 264
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton7'
       ImageIndex = 4
@@ -1377,7 +1376,7 @@ object BaseForm: TBaseForm
     end
     object GantBtn: TSpeedButton
       Left = 268
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = GantDiagram
@@ -1694,7 +1693,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton3: TToolButton
       Left = 316
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton3'
       ImageIndex = 5
@@ -1702,7 +1701,7 @@ object BaseForm: TBaseForm
     end
     object ReportBtn: TSpeedButton
       Left = 320
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Action = Report
@@ -2017,7 +2016,7 @@ object BaseForm: TBaseForm
     end
     object ToolButton8: TToolButton
       Left = 368
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton8'
       ImageIndex = 6
@@ -2025,7 +2024,7 @@ object BaseForm: TBaseForm
     end
     object GoGantBtn: TSpeedButton
       Left = 372
-      Top = 2
+      Top = 0
       Width = 48
       Height = 48
       Flat = True
@@ -2192,7 +2191,7 @@ object BaseForm: TBaseForm
     Left = 304
     Top = 64
     Width = 233
-    Height = 311
+    Height = 291
     Align = alCustom
     Anchors = [akLeft, akTop, akRight, akBottom]
     Constraints.MinHeight = 152
@@ -2211,7 +2210,7 @@ object BaseForm: TBaseForm
     Left = 8
     Top = 220
     Width = 289
-    Height = 154
+    Height = 134
     Align = alCustom
     Anchors = [akLeft, akTop, akBottom]
     ColCount = 9
@@ -2222,13 +2221,12 @@ object BaseForm: TBaseForm
     TabOrder = 4
     OnColumnMoved = TableColumnMoved
     OnRowMoved = TableRowMoved
-    OnSetEditText = TableSetEditText
   end
   object Panel1: TPanel
     Left = 544
     Top = 64
     Width = 225
-    Height = 311
+    Height = 291
     Anchors = [akLeft, akTop, akRight, akBottom]
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -2236,7 +2234,7 @@ object BaseForm: TBaseForm
     Visible = False
     DesignSize = (
       225
-      311)
+      291)
     object AddToGantBtn: TSpeedButton
       Left = 161
       Top = 250
@@ -2402,17 +2400,18 @@ object BaseForm: TBaseForm
     end
     object LabelPsd: TLabel
       Left = 64
-      Top = 246
+      Top = 226
       Width = 153
       Height = 57
       Anchors = [akLeft, akBottom]
       AutoSize = False
       Caption = #1044#1083#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1077#1085#1085#1086#1075#1086' '#1094#1080#1082#1083#1072':'
       WordWrap = True
+      ExplicitTop = 246
     end
     object PsdOut: TLabel
       Left = 125
-      Top = 286
+      Top = 266
       Width = 92
       Height = 20
       Anchors = [akLeft, akBottom]
@@ -2424,10 +2423,11 @@ object BaseForm: TBaseForm
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitTop = 286
     end
     object ProdBtn: TSpeedButton
       Left = 9
-      Top = 250
+      Top = 230
       Width = 48
       Height = 48
       Hint = #1055#1077#1088#1077#1088#1072#1089#1095#1077#1090' '#1044#1055#1062
@@ -2589,12 +2589,13 @@ object BaseForm: TBaseForm
       ParentShowHint = False
       ShowHint = True
       OnClick = ProdBtnClick
+      ExplicitTop = 250
     end
     object ManualTable: TStringGrid
       Left = 1
       Top = 25
       Width = 223
-      Height = 215
+      Height = 195
       Align = alTop
       Anchors = [akLeft, akTop, akRight, akBottom]
       Color = cl3DLight
@@ -2844,7 +2845,6 @@ object BaseForm: TBaseForm
       Dialog.Font.Height = -11
       Dialog.Font.Name = 'MS Sans Serif'
       Dialog.Font.Style = []
-      Dialog.MinFontSize = 0
       Dialog.MaxFontSize = 14
       Dialog.Options = [fdAnsiOnly, fdEffects, fdForceFontExist, fdNoOEMFonts, fdNoVectorFonts, fdLimitSize]
       Hint = 'Font Select'
@@ -2908,7 +2908,7 @@ object BaseForm: TBaseForm
     Left = 720
     Top = 9
     Bitmap = {
-      494C010110001300040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010110001300080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3574,9 +3574,5 @@ object BaseForm: TBaseForm
       00030000000090900003000000009090000300000000FFFF0003000000008080
       FC07000000008080FFFF00000000FFFF00000000000000000000000000000000
       000000000000}
-  end
-  object WinXP1: TWinXP
-    Left = 552
-    Top = 16
   end
 end

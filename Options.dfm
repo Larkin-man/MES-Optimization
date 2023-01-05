@@ -38,7 +38,7 @@ object OptionsForm: TOptionsForm
     Top = 8
     Width = 329
     Height = 281
-    ActivePage = TabSheetGeneral
+    ActivePage = TabSheetGant
     Align = alCustom
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -46,7 +46,6 @@ object OptionsForm: TOptionsForm
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
-    TabIndex = 0
     TabOrder = 0
     object TabSheetGeneral: TTabSheet
       Caption = #1054#1073#1097#1080#1077
@@ -57,63 +56,26 @@ object OptionsForm: TOptionsForm
         Height = 89
         Caption = #1044#1080#1072#1087#1072#1079#1086#1085' '#1089#1083#1091#1095#1072#1081#1085#1099#1093' '#1095#1080#1089#1077#1083
         TabOrder = 2
-        object RandomFrom: TAdvSpinEdit
-          Left = 32
-          Top = 24
-          Width = 57
-          Height = 26
-          AllowNullValue = False
-          Value = 2
-          FloatValue = 2
-          HexValue = 0
-          Enabled = True
-          IncrementFloat = 0.1
-          IncrementFloatPage = 1
-          LabelCaption = #1054#1090
-          LabelPosition = lpLeftCenter
-          LabelFont.Charset = DEFAULT_CHARSET
-          LabelFont.Color = clWindowText
-          LabelFont.Height = -15
-          LabelFont.Name = 'MS Sans Serif'
-          LabelFont.Style = []
-          MaxValue = 9
-          TabOrder = 0
-          Visible = True
-          Version = '1.4.4.4'
-          OnChange = RandomFromChange
-        end
-        object RandomTo: TAdvSpinEdit
-          Left = 128
-          Top = 24
-          Width = 57
-          Height = 26
-          AllowNullValue = False
-          Value = 10
-          FloatValue = 10
-          HexValue = 0
-          Enabled = True
-          IncrementFloat = 0.1
-          IncrementFloatPage = 1
-          LabelCaption = #1044#1086
-          LabelPosition = lpLeftCenter
-          LabelFont.Charset = DEFAULT_CHARSET
-          LabelFont.Color = clWindowText
-          LabelFont.Height = -15
-          LabelFont.Name = 'MS Sans Serif'
-          LabelFont.Style = []
-          MaxValue = 32000
-          MinValue = 3
-          TabOrder = 1
-          Visible = True
-          Version = '1.4.4.4'
-          OnChange = RandomToChange
-        end
         object NoMiddle: TCheckBox
           Left = 16
           Top = 64
           Width = 281
           Height = 17
           Caption = #1059#1073#1088#1072#1090#1100' '#1089#1088#1077#1076#1085#1080#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
+          TabOrder = 0
+        end
+        object RandomFrom: TUpDown
+          Left = 48
+          Top = 33
+          Width = 17
+          Height = 25
+          TabOrder = 1
+        end
+        object RandomTo: TUpDown
+          Left = 144
+          Top = 33
+          Width = 17
+          Height = 25
           TabOrder = 2
         end
       end
@@ -246,7 +208,7 @@ object OptionsForm: TOptionsForm
         Width = 249
         Height = 17
         Caption = #1052#1072#1089#1096#1090#1072#1073#1080#1088#1086#1074#1072#1090#1100' '#1074#1099#1089#1086#1090#1091
-        TabOrder = 4
+        TabOrder = 2
         OnClick = HeightScalingClick
       end
       object Contrast: TCheckBox
@@ -257,50 +219,19 @@ object OptionsForm: TOptionsForm
         Caption = #1059#1089#1080#1083#1080#1090#1100' '#1082#1086#1085#1090#1088#1072#1089#1090#1085#1086#1089#1090#1100
         TabOrder = 3
       end
-      object SpinBI: TAdvSpinEdit
-        Left = 200
-        Top = 196
-        Width = 65
-        Height = 26
-        AllowNullValue = False
-        Value = 10
-        FloatValue = 10
-        HexValue = 0
-        Enabled = True
-        IncrementFloat = 0.1
-        IncrementFloatPage = 1
-        LabelFont.Charset = DEFAULT_CHARSET
-        LabelFont.Color = clWindowText
-        LabelFont.Height = -11
-        LabelFont.Name = 'MS Sans Serif'
-        LabelFont.Style = []
-        MaxValue = 30
-        TabOrder = 5
-        Visible = True
-        Version = '1.4.4.4'
+      object SpinBI: TUpDown
+        Left = 96
+        Top = 136
+        Width = 17
+        Height = 25
+        TabOrder = 4
       end
-      object SpinBrightness: TAdvSpinEdit
-        Left = 72
-        Top = 132
-        Width = 57
-        Height = 26
-        AllowNullValue = False
-        Value = 10
-        FloatValue = 10
-        HexValue = 0
-        Enabled = True
-        IncrementFloat = 0.1
-        IncrementFloatPage = 1
-        LabelFont.Charset = DEFAULT_CHARSET
-        LabelFont.Color = clWindowText
-        LabelFont.Height = -11
-        LabelFont.Name = 'MS Sans Serif'
-        LabelFont.Style = []
-        MaxValue = 250
-        TabOrder = 2
-        Visible = True
-        Version = '1.4.4.4'
-        OnChange = SpinBrightnessChange
+      object SpinBrightness: TUpDown
+        Left = 264
+        Top = 191
+        Width = 17
+        Height = 25
+        TabOrder = 5
       end
     end
     object TabSheetOptim: TTabSheet
@@ -376,9 +307,6 @@ object OptionsForm: TOptionsForm
     Width = 48
     Height = 48
     Hint = #1055#1088#1080#1085#1103#1090#1100
-    ModalResult = 1
-    TabOrder = 1
-    OnClick = BitBtnOKClick
     Glyph.Data = {
       36180000424D3618000000000000360000002800000040000000200000000100
       18000000000000180000120B0000120B00000000000000000000FFFF00FFFF00
@@ -574,7 +502,10 @@ object OptionsForm: TOptionsForm
       FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
       00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF
       FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00}
+    ModalResult = 1
     NumGlyphs = 2
+    TabOrder = 1
+    OnClick = BitBtnOKClick
   end
   object BitBtnCancel: TBitBtn
     Left = 288
@@ -582,9 +513,6 @@ object OptionsForm: TOptionsForm
     Width = 48
     Height = 48
     Hint = #1054#1090#1084#1077#1085#1080#1090#1100
-    ModalResult = 2
-    TabOrder = 2
-    OnClick = BitBtnCancelClick
     Glyph.Data = {
       360C0000424D360C000000000000360000002800000020000000200000000100
       180000000000000C0000120B0000120B00000000000000000000FFFF00FFFF00
@@ -684,5 +612,8 @@ object OptionsForm: TOptionsForm
       FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00D1CBE9FFFF00FFFF00FFFF00FFFF
       00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00D9D4EDEF
       EDF7FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00}
+    ModalResult = 2
+    TabOrder = 2
+    OnClick = BitBtnCancelClick
   end
 end

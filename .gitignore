@@ -79,3 +79,6 @@ report*.txt
 *.GID
 *.HLP
 *.cgl
+*.\#*
+*.pch
+

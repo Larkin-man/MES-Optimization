@@ -10,8 +10,8 @@ TAboutForm *AboutForm;
 __fastcall TAboutForm::TAboutForm(TComponent* AOwner)
 	: TForm(AOwner)
 {
-     AboutPanel->Font->Size=10;
-     AboutPanel->Font->Height=-13;
+	AboutPanel->Font->Size=10;
+	AboutPanel->Font->Height=-13;
 }
 //---------------------------------------------------------------------
 
