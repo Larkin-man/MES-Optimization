@@ -41,6 +41,7 @@ object AboutForm: TAboutForm
     Font.Name = 'Book Antiqua'
     Font.Style = []
     ParentBiDiMode = False
+    ParentBackground = False
     ParentCtl3D = False
     ParentFont = False
     TabOrder = 0
@@ -1685,7 +1686,7 @@ object AboutForm: TAboutForm
       Width = 169
       Height = 17
       AutoSize = False
-      Caption = #1042#1077#1088#1089#1080#1103' 3.7'
+      Caption = #1042#1077#1088#1089#1080#1103' 3.8'
       IsControl = True
     end
     object Copyright: TLabel

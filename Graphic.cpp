@@ -53,7 +53,7 @@ void __fastcall TGraphicForm::SpeedBtnColorClick(TObject *Sender)
 			NColorBlock->Checked=false;
 			BaseForm->PaintGant();
 		}
-	}			   
+	}
 }
 //---------------------------------------------------------------------------
 //Êíîïêà - Ñîõğàíèòü èçîáğàæåíèå äèàãğàììû
@@ -63,7 +63,7 @@ void __fastcall TGraphicForm::SpeedBtnColorSaveClick(TObject *Sender)
 	{
 		//BitMap->Assign (gant->Picture) ;
 		BaseForm->Gant->SaveToFile(SavePictureDialog1->FileName);
-		//BitMap->SaveToFile (SavePictureDialog1->FileName) ;	   
+		//BitMap->SaveToFile (SavePictureDialog1->FileName) ;
 	}
 }
 //---------------------------------------------------------------------------
@@ -78,9 +78,9 @@ void __fastcall TGraphicForm::FormShow(TObject *Sender)
 	Label1->Height=35;
 }
 //---------------------------------------------------------------------------
-//ÌÀÑØÒÀÁ 
+//ÌÀÑØÒÀÁ
 void __fastcall TGraphicForm::TrackBar1Change(TObject *Sender)
-{							  
+{
 	BaseForm->CountScale(TrackBar1->Position);
 	ClearGantField();
 	BaseForm->PaintGant();

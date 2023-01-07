@@ -38,7 +38,7 @@ object OptionsForm: TOptionsForm
     Top = 8
     Width = 329
     Height = 281
-    ActivePage = TabSheetGant
+    ActivePage = TabSheetGeneral
     Align = alCustom
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -49,10 +49,6 @@ object OptionsForm: TOptionsForm
     TabOrder = 0
     object TabSheetGeneral: TTabSheet
       Caption = #1054#1073#1097#1080#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBoxRandom: TGroupBox
         Left = 8
         Top = 136
@@ -69,18 +65,50 @@ object OptionsForm: TOptionsForm
           TabOrder = 0
         end
         object RandomFrom: TUpDown
-          Left = 48
-          Top = 33
-          Width = 17
-          Height = 25
+          Left = 93
+          Top = 26
+          Width = 16
+          Height = 24
+          Associate = RFR
+          Max = 22222
+          Position = 2
           TabOrder = 1
         end
         object RandomTo: TUpDown
-          Left = 144
-          Top = 33
-          Width = 17
-          Height = 25
+          Left = 197
+          Top = 26
+          Width = 16
+          Height = 24
+          Associate = FTo
+          Max = 22222
+          Position = 10
           TabOrder = 2
+        end
+        object RFR: TLabeledEdit
+          Left = 32
+          Top = 26
+          Width = 61
+          Height = 24
+          EditLabel.Width = 17
+          EditLabel.Height = 16
+          EditLabel.Caption = #1054#1090
+          LabelPosition = lpLeft
+          NumbersOnly = True
+          TabOrder = 3
+          Text = '2'
+        end
+        object FTo: TLabeledEdit
+          Left = 136
+          Top = 26
+          Width = 61
+          Height = 24
+          EditLabel.Width = 17
+          EditLabel.Height = 16
+          EditLabel.Caption = #1044#1086
+          LabelPosition = lpLeft
+          NumbersOnly = True
+          TabOrder = 4
+          Text = '10'
         end
       end
       object GroupBoxReport: TGroupBox
@@ -124,10 +152,6 @@ object OptionsForm: TOptionsForm
     object TabSheetMMVG: TTabSheet
       Caption = #1052#1086#1076#1080#1092#1080#1082#1072#1094#1080#1103' '#1052#1042#1043
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object MVGModify: TRadioGroup
         Left = 8
         Top = 12
@@ -163,24 +187,6 @@ object OptionsForm: TOptionsForm
     object TabSheetGant: TTabSheet
       Caption = #1044#1080#1072#1075#1088#1072#1084#1084#1072' '#1043#1072#1085#1090#1072
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object LabelBR: TLabel
-        Left = 8
-        Top = 136
-        Width = 57
-        Height = 16
-        Caption = #1071#1088#1082#1086#1089#1090#1100':'
-      end
-      object LabelBI: TLabel
-        Left = 8
-        Top = 200
-        Width = 187
-        Height = 16
-        Caption = #1056#1072#1089#1089#1090#1086#1103#1085#1080#1077' '#1084#1077#1078#1076#1091' '#1073#1083#1086#1082#1072#1084#1080' :'
-      end
       object ColorOptions: TRadioGroup
         Left = 8
         Top = 40
@@ -224,26 +230,58 @@ object OptionsForm: TOptionsForm
         OnClick = HeightScalingClick
       end
       object Contrast: TCheckBox
-        Left = 142
-        Top = 136
+        Left = 143
+        Top = 142
         Width = 177
         Height = 17
         Caption = #1059#1089#1080#1083#1080#1090#1100' '#1082#1086#1085#1090#1088#1072#1089#1090#1085#1086#1089#1090#1100
         TabOrder = 3
       end
       object SpinBI: TUpDown
-        Left = 96
-        Top = 136
-        Width = 17
-        Height = 25
+        Left = 249
+        Top = 200
+        Width = 16
+        Height = 24
+        Associate = Era
+        Max = 250
+        Position = 10
         TabOrder = 4
       end
       object SpinBrightness: TUpDown
-        Left = 264
-        Top = 191
-        Width = 17
-        Height = 25
+        Left = 121
+        Top = 138
+        Width = 16
+        Height = 24
+        Associate = EYa
+        Max = 255
+        Position = 10
         TabOrder = 5
+      end
+      object EYa: TLabeledEdit
+        Left = 67
+        Top = 138
+        Width = 54
+        Height = 24
+        EditLabel.Width = 54
+        EditLabel.Height = 16
+        EditLabel.Caption = #1071#1088#1082#1086#1089#1090#1100
+        LabelPosition = lpLeft
+        NumbersOnly = True
+        TabOrder = 6
+        Text = '10'
+      end
+      object Era: TLabeledEdit
+        Left = 195
+        Top = 200
+        Width = 54
+        Height = 24
+        EditLabel.Width = 184
+        EditLabel.Height = 16
+        EditLabel.Caption = #1056#1072#1089#1089#1090#1086#1103#1085#1080#1077' '#1084#1077#1078#1076#1091' '#1073#1083#1086#1082#1072#1084#1080' '
+        LabelPosition = lpLeft
+        NumbersOnly = True
+        TabOrder = 7
+        Text = '10'
       end
     end
     object TabSheetOptim: TTabSheet
@@ -255,10 +293,6 @@ object OptionsForm: TOptionsForm
       Font.Style = []
       ImageIndex = 3
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Crit4: TCheckBox
         Left = 8
         Top = 112

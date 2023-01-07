@@ -1,15 +1,16 @@
 /*************************************************************\
-*	Optimization metods h - library version 3.8		*
-*	Aleksey Aponasenko ©							*
-*	2023 All Rights Reserved ®						*
-*	The author is not responsible for any mistakes,	*
-*	found in this program							*
-*	or for inapropriate use of it or any of its parts.	*
+*	Optimization metods h - library version 3.8					  *
+*	Aleksey Aponasenko ©													  *
+*	2023 All Rights Reserved ®							              *
+*	The author is not responsible for any mistakes,	           *
+*	found in this program							                 *
+*	or for inapropriate use of it or any of its parts.	        *
 \*************************************************************/
 
 #ifndef OptimizationMtdsH
 #define OptimizationMtdsH
-//#define max(A,B) (A>B ? A : B)
+#include <Classes.hpp>
+#include <StdCtrls.hpp>
 #define MDJ 0
 #define MPS 1
 #define MVG 2
@@ -35,9 +36,9 @@ public:
 	}
 	*InitBegin,	//Список исходных деталей
 	*OptimalDJ,	//Список деталей по Джонсону
-	*OptimalPS,	//Список деталей по Петрову-Соколицину (->down)
+	*OptimalPS,	//Список деталей по Петрову-Соколицыну (->down)
 	*OptimalBH,	//Матрица С для метода ветвей и границ
-	*PSBegin[4],   //Начало списка деталей по Петрову-Соколицину
+	*PSBegin[4],   //Начало списка деталей по Петрову-Соколицыну
 	*OptimalNew;
 	int *OutSequence,   //Оптимальная последовательность обработки деталей для Джонсона и ПС
 		**OutMatrix;   //Оптимальная последовательность обработки деталей для МВГ
@@ -51,7 +52,7 @@ public:
 	void add(int time[], int n);  //Добавление ДЕТАЛИ
 	void ClearData(int MethodID); //Функция очищает память, отрицательное число - полностью
 	int DjonsonRun(); //Запуск алгоритма Джонсона
-	int PetrovSokolRun(); //Запуск метода Петрова-Соколицина
+	int PetrovSokolRun(); //Запуск метода Петрова-Соколицына
 	int MethodBHRun (int version = 0, TStaticText *out = NULL); //Method  of branches and hordes
 	int GetN() {return N;}
 	int NewMethodRun();
@@ -64,7 +65,7 @@ protected:
 	Link
 	*InitEnd,	//Конец списка иходных деталей
 	*OptimalEnd,   //Конец списка detals по Джонсону
-	*PSEnd[4],	//Конец списка detals по Петрову-Соколицину
+	*PSEnd[4],	//Конец списка detals по Петрову-Соколицыну
 	*Cend,		//end of OptimalBH matrix
 	*Linker,	//Temp
 	**Cdos,
@@ -77,7 +78,7 @@ protected:
 	void concatenate(Link *parent, Link *Item);
 	void DeleteLinks (Link *Item);
 	void DeleteList (Link *Item);
-	bool rowind(int *D, int &d);
+	bool IfDetInList(int *D, int &d);
 	int ProductionCycle(Link *Matrix, bool down = false);
 	int i, j;
 };
@@ -94,8 +95,7 @@ MachineOptimizer::MachineOptimizer()
 	Linker = NULL;
 	OptimalBH = NULL,
 	Cend = NULL;
-	max = 2000000000;   /* TODO : максимальный должен вычислятся с sizeof */
-	//max = ((2<<(sizeof(int)) * 8 - 2))-1;
+	max = INT_MAX;	//max = ((2<<(sizeof(int)) * 8 - 2))-1;
 	output = true;
 	debugging = false;
 	for (i=0; i<4; i++)
@@ -181,8 +181,9 @@ void MachineOptimizer::ClearData(int MethodID) //Функция очищает память
 	}
 }
 
-MachineOptimizer::Detal *MachineOptimizer::CreateItem (const int &n,const int &M,int *time)
-{			//Функция создает новую деталь
+//Функция создает новую деталь
+MachineOptimizer::Detal *MachineOptimizer::CreateItem(const int &n,const int &M,int *time)
+{			
 	Detal *pItem = new Detal;
 	pItem->T = new int[n];
 	pItem->m = M;
@@ -194,8 +195,9 @@ MachineOptimizer::Detal *MachineOptimizer::CreateItem (const int &n,const int &M
 	return pItem;
 }
 
-void MachineOptimizer::CreateLink (Link **Begin, Detal **Item, Link **End, Link **Down)
-{	//Добавляет элемент в конец (End) списка Begin
+//Добавляет элемент в конец (End) списка Begin
+void MachineOptimizer::CreateLink(Link **Begin, Detal **Item, Link **End, Link **Down)
+{	
 	Link *pLink = new Link;
 	pLink->next = NULL;
 	pLink->curr = *Item;
@@ -210,15 +212,16 @@ void MachineOptimizer::CreateLink (Link **Begin, Detal **Item, Link **End, Link 
 	*End = pLink;   //The end is always equal to a new item (Insert in the end of list)
 }
 
+//Функция соединяет два элемента
 void MachineOptimizer::concatenate(Link *parent, Link *Item)  //REMARKABLE!
-{			//Функция соединяет два элемента
+{			
 	if (parent != NULL)
 		parent->next = Item;
 	if (Item != NULL)
 		Item->down = parent;
 }
 
-void MachineOptimizer::DeleteList (Link *Item)
+void MachineOptimizer::DeleteList(Link *Item)
 {
 	if (Item == NULL) return;
 	for ( ;Item != NULL; Item = Item->next)
@@ -233,8 +236,9 @@ void MachineOptimizer::DeleteList (Link *Item)
 	}
 }
 
-void MachineOptimizer::DeleteLinks (Link *Item)
-{			//Функция удаляет список
+//Функция удаляет список
+void MachineOptimizer::DeleteLinks(Link *Item)
+{			
 	if (Item->next != NULL)
 	{
 		DeleteLinks (Item->next);
@@ -243,7 +247,8 @@ void MachineOptimizer::DeleteLinks (Link *Item)
 	Item = NULL;
 }
 
-bool MachineOptimizer::rowind(int *D, int &d) //проверка отсутствия детали d в списке D
+//проверка отсутствия детали d в списке D
+bool MachineOptimizer::IfDetInList(int *D, int &d)
 {
 	for (int ii = 1; ii<D[0]+2; ii++)
 		if (d == D[ii])
@@ -251,7 +256,8 @@ bool MachineOptimizer::rowind(int *D, int &d) //проверка отсутствия детали d в с
 		return true;		//Детали нет
 }
 
-int MachineOptimizer::ProductionCycle(Link *Matrix, bool downed) //Находит длительность производственного цикла для матрицы В
+//Находит длительность производственного цикла для матрицы В
+int MachineOptimizer::ProductionCycle(Link *Matrix, bool downed)
 {
 	int *top = new int[N];
 	int left;
@@ -280,9 +286,7 @@ int MachineOptimizer::DjonsonRun() //Запуск алгоритма Джонсона
 	int min[2];
 	for (Linker = InitBegin; Linker != NULL; Linker = Linker->next)
 		CreateLink(&OptimalDJ, &Linker->curr, &OptimalEnd);
-			//DONE: to issue as function!
-
-	Linker = OptimalDJ;		//
+	Linker = OptimalDJ;
 	Detal *Item = CreateItem(N, 0, NULL);	//TODO: found them and delete ?
 	Link *pLink = new Link;
 	pLink->next = NULL;
@@ -334,9 +338,6 @@ int MachineOptimizer::DjonsonRun() //Запуск алгоритма Джонсона
 	OptimalDJ->curr->m = Linker->curr->m;
 	for (i=0; i<N; i++)
 		OptimalDJ->curr->T[i] = Linker->curr->T[i];
-
-	//delete Linker->curr;
-	//delete Linker;
 	while(OptimalDJ->down != NULL)
 		OptimalDJ = OptimalDJ->down;
 	OutSequence = new int[M];
@@ -349,28 +350,28 @@ int MachineOptimizer::DjonsonRun() //Запуск алгоритма Джонсона
 	return ProductionCycle(OptimalDJ, false);
 }
 
-int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
+int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицына
 {
-	int S[3];
+	int Sum[3];
 	int TimeCycle = max;
 	OutSequence = new int[M];
 	for (Linker = InitBegin; Linker != NULL; Linker = Linker->next)
 	{		//Формирование матрицы сумм
-		S[0] = 0;  //Первый столбец - Сумма кроме первого станка
-		S[1] = 0;  //Второй столбец - Сумма кроме последнего станка
-		S[2] = 0;  //Третий столбец - Разность первого и второго
+		Sum[0] = 0;  //Первый столбец - Сумма кроме первого станка
+		Sum[1] = 0;  //Второй столбец - Сумма кроме последнего станка
+		Sum[2] = 0;  //Третий столбец - Разность первого и второго
 		for (i=0; i<N; i++)
 		{
 			if (i != (N-1))
-				S[1] += Linker->curr->T[i];
+				Sum[1] += Linker->curr->T[i];
 			if (i != 0)
-				S[0] += Linker->curr->T[i];
+				Sum[0] += Linker->curr->T[i];
 		}
-		S[2] = S[0] - S[1];
+		Sum[2] = Sum[0] - Sum[1];
 		//Создаем четыре одинаковых PSBegin
 		for (i=0; i<4; i++)
 		{
-			Detal *Item = CreateItem(3, Linker->curr->m, S);	//TODO : To remove from cycle!
+			Detal *Item = CreateItem(3, Linker->curr->m, Sum);	//TODO : To remove from cycle!
 			CreateLink(&PSBegin[i], &Item, &PSEnd[i], &Linker);
 		}
 	}
@@ -390,7 +391,7 @@ int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
 					//Если минимальных два - предпочтение станку с меньшим номером
 					if (Linker->curr->m > minimal->curr->m)
 						continue;
-				}   //*/
+				}
 
 				if (j == 2)
 				{
@@ -404,7 +405,6 @@ int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
 			if (PetrovSokol != minimal)
 			{
 				//Меняем местами указатели
-				//ShowMessage("Меняем: "+IntToStr(minimal->curr->m)+" и "+IntToStr(PetrovSokol->curr->m));
 				Temp->curr = minimal->curr;
 				Temp->down = minimal->down;
 				minimal->curr = PetrovSokol->curr;
@@ -429,12 +429,11 @@ int MachineOptimizer::PetrovSokolRun() //Запуск метода Петрова-Соколицина
 	return TimeCycle;
 }
 
-// version: 0 - оригинальный
-int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of branches and hordes
+//Method  of branches and hordes. version: 0 - оригинальный
+int MachineOptimizer::MethodBHRun (int version, TStaticText *out)
 {
-	//ShowMessage("version="+IntToStr(version)+" bool1="+IntToStr(idleclean)+" bool1="+IntToStr(idleall));
 	if (out != NULL)
-			out->Caption=1;
+		out->Caption=1;
 	int
 		s,   //Текущий станок
 		d,   //Текущая деталь
@@ -450,15 +449,13 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 	for(i = 0; i<M; i++)
 		for(j = 0; j<N; j++)
 			OutMatrix[i][j]=0;	//выходная матрица заполнена нулями
-
 	if (output == false)
 		debugging = false;  //NO OUTPUT
 	int *D = new int [M+1];  //DONE: Один раз создать
 	int *E = new int [M+1];
 	int *Fi = new int[M+1];
-	Cdos = new Link* [M+1];	//Из кода сюда
+	Cdos = new Link* [M+1];
 	CdosEnd = new Link* [M+1];
-
 
 	//Создание матрицы С
 	for (Linker = InitBegin; Linker!=NULL; Linker=Linker->next)
@@ -569,10 +566,10 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 
 			}
 
-			//-----сдесь должен быть отбор блокированых
+			//-----здесь должен быть отбор блокированных
 			//Нужно заблокировать детали, которые уже иду в обработку
 			//Создание Сдос
-//Cdos = new Link* [E[0]+1];		//Убрал из всех циклов
+			//Cdos = new Link* [E[0]+1];		//Убрал из всех циклов
 
 			for (i = 0; i<E[0]+1; i++)
 			{
@@ -602,20 +599,16 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 
 					if ((s == 1) && (Linker->curr->m == k))
 						R -= Linker->curr->T[s-1];  //Найдем С(k,s) //для о != 1
-
 				}
 				// minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-				//output->Lines->Add("minimal="+IntToStr(minimal.next->curr->m));
-				//Report->Add("R="+IntToStr(R));
 				//Формирование Сдос
 				for (Linker = OptimalBH; Linker!=NULL; Linker=Linker->next)
 				{
-					//output->Lines->Add("Linker "+IntToStr(Linker));
 					CreateLink(&Cdos[det],&Linker->curr,&CdosEnd[det],&Linker);
 					//Создает дерево Cdos, у которого down -> OptimalBH
 
-					if (rowind(D,Linker->curr->m))
-					{   //Если одинаковые данные то не создавать копию
+					if (IfDetInList(D,Linker->curr->m))
+					{   //Если одинаковые данные, то не создавать копию
 						Detal *pItem = new Detal;
 						pItem->T = new int[N];
 						pItem->m=Linker->curr->m;
@@ -638,10 +631,8 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 
 				if (output)
 				{
-					//Report->Add("CDOS");
 					for (Linker = Cdos[det];Linker!=NULL;Linker=Linker->next)
 					{	//Вывести матрицу на экран
-						//output->Lines->Add(IntToStr(Linker->curr->m)+"  |  ");
 						for (i = 0; i<N; i++)
 							Added+=IntToStr(Linker->curr->T[i])+"  ";
 						Report->Add(Added);
@@ -665,10 +656,6 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 					Added="";
 					Report->Add("det="+IntToStr(det));
 					Report->Add("k="+IntToStr(k));
-					//if (rowind(D,det))
-					//	Report->Add("rowind(D,det) is TRUE");
-					//else
-					//	Report->Add("rowind(D,det) is FALSE");
 				}
 				switch (version)
 				{
@@ -682,7 +669,7 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 					}
 					break;
 					//}
-					case 3: //2 Как у ПС  Мин. время ожидания поступления
+					case 3: //2 Как у ПС Мин. время ожидания поступления
 					//{
 					Fi[det]=ProductionCycle(Cdos[det]);
 					break;
@@ -703,10 +690,9 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 
 					for (Linker = InitBegin; Linker!=NULL; Linker=Linker->next)
 					{
-						if(rowind(D,Linker->curr->m))
+						if(IfDetInList(D,Linker->curr->m))
 						{
 							//Детали м нет в Д
-							//Report->Add("for "+IntToStr(Linker->curr->m));
 							int ts=Duration[s-1];
 							int st=Duration[s-1];
 							for (j=1; j<N; j++)
@@ -720,24 +706,14 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 								{
 									Fi[det]+=(st-ts);
 								}
-								//if (debugging)
-								//   Report->Add("ts="+IntToStr(ts)+"st="+IntToStr(st)+"fi="+IntToStr(Fi[det]));
 							}
 						}
 					}
-					//if ((s == 1)&&(o == 1))
-					//{
-					//   for (int i=0;i<(N-1);i++)
-					//	Fi[det]=Fi[det]+(Duration[i]*(N-i-1));
-					//}
-
-					delete []Duration;
+					delete [] Duration;
 					break;
 					}
 					case 5: //4 ДПЦ Мин. время поступления на посл. станок
 					{
-					///////////////////////////////
-
 					Fi[det]=0;
 					int *top;
 					top = new int [N];
@@ -748,29 +724,29 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 					{
 						left=0;
 						bool netu;
-						if (rowind(D, Linker->curr->m))
-							{
-								if (debugging)
-									Report->Add("Детали №"+IntToStr(Linker->curr->m)+" нету в D");
-								netu=true;
-							}
-							else
-							{
-								if (debugging)
-									Report->Add("Деталь №"+IntToStr(Linker->curr->m)+" есть в D");
-								netu=false;
-							}
+						if (IfDetInList(D, Linker->curr->m))
+						{
+							if (debugging)
+								Report->Add("Детали №"+IntToStr(Linker->curr->m)+" нету в D");
+							netu=true;
+						}
+						else
+						{
+							if (debugging)
+								Report->Add("Деталь №"+IntToStr(Linker->curr->m)+" есть в D");
+							netu=false;
+						}
 						for (i=s-1; i<N; i++)
 						{
-						top[i]=(top[i]>left)? top[i] : left;
-						if (netu)
-							netu = false;
-						else
-							top[i]+=Linker->down->down->curr->T[i];
-						left=top[i];
+							top[i]=(top[i]>left)? top[i] : left;
+							if (netu)
+								netu = false;
+							else
+								top[i]+=Linker->down->down->curr->T[i];
+							left=top[i];
 						}
 						if (debugging)
-						Report->Add("topN="+IntToStr(top[N-1]));
+							Report->Add("topN="+IntToStr(top[N-1]));
 					}
 					Fi[det]=top[N-1];
 					delete top;
@@ -778,7 +754,7 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 					break;
 					}
 					default:
-					//{ version 0 and 1   Мин. длительность производств. цикла
+					//{ version 0 and 1  Мин. длительность производств. цикла
 					// 7) Начнем поиск минимальных и сортировку по предпоследнему станку для нахождения фи
 					int T = 0;   // 8) T
 					Link *minimal=Cdos[det];		//минимальный = первый
@@ -791,17 +767,16 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 							if ((Linker->curr->T[N-2] < min) && (Linker->curr->m >=0))	//(Linker->curr->T[N-2] < min)	(Linker->curr->T[s-1] < min)
 						{
 							minimal=Linker;
-							min=Linker->curr->T[N-2];		//min=Linker->curr->T[N-2];	min=Linker->curr->T[s-1];
+							min=Linker->curr->T[N-2];		//min=Linker->curr->T[s-1];
 							}
 						}
 
 						//минимальный найден
 						minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-						//Почему я написал if (T <= minimal->curr->T[s-1])   то  T = minimal->curr->T[s];
 						if (T <= minimal->curr->T[N-2])   // 9) Сравниваем Т и С(fq,n-1)   // (T <= minimal->curr->T[N-2])
-						T = minimal->curr->T[N-1];							//T = minimal->curr->T[N-1];
+							T = minimal->curr->T[N-1];
 						else
-						T+=minimal->down->down->curr->T[N-1];				//T+=minimal->down->down->curr->T[N-1];
+							T+=minimal->down->down->curr->T[N-1];
 						//Report->Add("i = "+IntToStr(i)+" T= "+IntToStr(T)+" min m= "+IntToStr(minimal->curr->m));
 					}
 					Fi[det]=T;   //11
@@ -826,7 +801,7 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 
 				// 12) убрать d из D
 				D[D[0]+1]=-d;
-			}	// 13) закрылся цикл  по деталям
+			}	// 13) закрылся цикл по деталям
 			// 14) Находим минимальное Фи
 
 			k=1;
@@ -836,8 +811,6 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 					k = i;
 			}
 			k=E[k];
-			// С = С(ko,s)
-			//ShowMessage("Деталь: "+IntToStr(k)+" на станке: "+IntToStr(s)+" будет обрабатыватся: "+IntToStr(o)+" по счету.");
 			if (output)
 				Report->Add("Деталь №"+IntToStr(k)+" на станке №"+IntToStr(s)+" будет обрабатываться "+IntToStr(o)+"й по счету.");
 
@@ -850,15 +823,12 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 					if (Linker->curr != Linker->down->curr)
 					{
 						if (E[i] == k)
-							//ShowMessage("удален Linker->curr->m:"+IntToStr(Linker->curr->m));
 							for (j =0; j<N; j++)
 								Linker->down->curr->T[j]=Linker->curr->T[j];
-							//Linker->curr->m -=100;
 						delete Linker->curr;  //Удаление элемента
 						Linker->curr = NULL;
 					}
 				}
-				//delyal there
 				DeleteLinks(Cdos[i]);  //Стираниие списка
 			}  //Все Cdosы удалены
 
@@ -898,9 +868,7 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 			{
 				Added=IntToStr(i+1)+") ";
 				for (j=0; j<N; j++)
-				{
 					Added+=IntToStr(OutMatrix[i][j])+"  ";
-				}
 				Report->Add(Added);
 			}
 			Added="";
@@ -909,7 +877,7 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 	} //Закрылся цикл по станкам
 	//Алгоритм ищет ненужный простой между каждыми двумя деталями в очереди
 	//И убирает его
-	if ( version > 0 )
+	if (version > 0)
 	{
 		for (s = 2; s<N+1; s++)   // 2. Цикл по станкам!
 		{
@@ -933,10 +901,9 @@ int MachineOptimizer::MethodBHRun (int version, TStaticText *out) //Method  of b
 				//минимальный найден
 				Added+=IntToStr(minimal->curr->m)+"  ";
 				minimal->curr->m=-minimal->curr->m; //пометим минимальный (-)
-				//Почему я написал if (T <= minimal->curr->T[s-1])	то  T = minimal->curr->T[s];
 				if (i==0)
 				{
-					z=minimal->curr->T[s-1];
+					z = minimal->curr->T[s-1];
 				}
 				else
 				{
@@ -1009,7 +976,6 @@ int MachineOptimizer::NewMethodRun()
 	for (Linker = InitBegin; Linker!=NULL; Linker=Linker->next)   //Создание копии списка
 		CreateLink(&OptimalNew, &Linker->curr, &OptimalNewEnd);
 
-
 	int max = 0;
 	for (Linker = InitBegin; Linker!=NULL; Linker=Linker->next) //Для поиска минимального
 	{
@@ -1020,7 +986,6 @@ int MachineOptimizer::NewMethodRun()
 	}
 	int min = 1;
 	int max2 = max;
-
 
 	Link* Linker2 = NULL;
 	for (Linker = OptimalNew; Linker!=NULL; Linker=Linker->next)

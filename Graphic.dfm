@@ -1,10 +1,10 @@
 object GraphicForm: TGraphicForm
   Left = 192
   Top = 105
-  Width = 763
-  Height = 465
   Anchors = []
   Caption = #1044#1080#1072#1075#1088#1072#1084#1084#1072' '#1043#1072#1085#1090#1072
+  ClientHeight = 426
+  ClientWidth = 937
   Color = clBtnFace
   UseDockManager = True
   DockSite = True
@@ -14,7 +14,6 @@ object GraphicForm: TGraphicForm
   Font.Name = 'Courier'
   Font.Style = []
   OldCreateOrder = True
-  Position = poDefaultPosOnly
   OnClose = FormClose
   OnShow = FormShow
   PixelsPerInch = 96
@@ -22,16 +21,18 @@ object GraphicForm: TGraphicForm
   object gant: TImage
     Left = 0
     Top = 56
-    Width = 738
-    Height = 358
+    Width = 920
+    Height = 353
     Align = alClient
     IncrementalDisplay = True
     PopupMenu = PopupMenu1
+    ExplicitWidth = 738
+    ExplicitHeight = 358
   end
   object ControlBar1: TControlBar
     Left = 0
     Top = 0
-    Width = 755
+    Width = 937
     Height = 56
     Align = alTop
     DockSite = False
@@ -49,12 +50,10 @@ object GraphicForm: TGraphicForm
       TabOrder = 0
       object BitBtnToMain: TBitBtn
         Left = 0
-        Top = 2
+        Top = 0
         Width = 46
         Height = 44
         Hint = #1055#1077#1088#1077#1082#1083#1102#1095#1080#1090#1100#1089#1103' '#1085#1072' '#1084#1086#1076#1091#1083#1100' '#1088#1072#1089#1095#1077#1090#1072
-        TabOrder = 0
-        OnClick = BitBtn1Click
         Glyph.Data = {
           F6120000424DF612000000000000360000002800000028000000280000000100
           180000000000C0120000C30E0000C30E00000000000000000000FF00FFFF00FF
@@ -208,17 +207,19 @@ object GraphicForm: TGraphicForm
           FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
           FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
           00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
+        TabOrder = 0
+        OnClick = BitBtn1Click
       end
       object ToolButton1: TToolButton
         Left = 46
-        Top = 2
+        Top = 0
         Width = 4
         Caption = 'ToolButton1'
         Style = tbsSeparator
       end
       object SpeedBtnColorSave: TSpeedButton
         Left = 50
-        Top = 2
+        Top = 0
         Width = 48
         Height = 44
         Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1076#1080#1072#1075#1088#1072#1072#1084#1091
@@ -379,7 +380,7 @@ object GraphicForm: TGraphicForm
       end
       object ToolButton2: TToolButton
         Left = 98
-        Top = 2
+        Top = 0
         Width = 4
         Caption = 'ToolButton2'
         ImageIndex = 0
@@ -387,7 +388,7 @@ object GraphicForm: TGraphicForm
       end
       object SpeedBtnColor: TSpeedButton
         Left = 102
-        Top = 2
+        Top = 0
         Width = 48
         Height = 44
         Hint = #1048#1079#1084#1077#1085#1080#1090#1100' '#1094#1074#1077#1090
@@ -548,7 +549,7 @@ object GraphicForm: TGraphicForm
       end
       object ToolButton3: TToolButton
         Left = 150
-        Top = 2
+        Top = 0
         Width = 4
         Caption = 'ToolButton3'
         ImageIndex = 1
@@ -565,7 +566,7 @@ object GraphicForm: TGraphicForm
       TabOrder = 1
       object LabelScale: TLabel
         Left = 0
-        Top = 2
+        Top = 0
         Width = 72
         Height = 35
         Align = alCustom
@@ -576,51 +577,70 @@ object GraphicForm: TGraphicForm
       end
       object TrackBar1: TTrackBar
         Left = 72
-        Top = 2
+        Top = 0
         Width = 150
         Height = 35
         Align = alCustom
         Constraints.MinHeight = 35
         Max = 12
-        Orientation = trHorizontal
-        Frequency = 1
         Position = 5
-        SelEnd = 0
-        SelStart = 0
         TabOrder = 0
-        TickMarks = tmBottomRight
-        TickStyle = tsAuto
         OnChange = TrackBar1Change
       end
     end
-    object ToolBar3: TToolBar
-      Left = 414
+    object Panel3: TPanel
+      Left = 587
       Top = 2
-      Width = 160
+      Width = 150
       Height = 48
-      ButtonHeight = 48
-      Caption = 'ToolBar3'
+      BevelOuter = bvNone
+      Caption = 'Panel3'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Courier'
+      Font.Style = []
+      ParentFont = False
+      ShowCaption = False
       TabOrder = 2
       object Panel1: TPanel
-        Left = 0
-        Top = 2
+        Left = -13
+        Top = -2
         Width = 161
         Height = 48
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Courier'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 0
         object Label1: TLabel
-          Left = 3
+          Left = 0
           Top = 0
-          Width = 81
+          Width = 161
           Height = 16
+          Align = alTop
           Alignment = taCenter
           Caption = #1062#1074#1077#1090' '#1092#1086#1085#1072
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -16
+          Font.Name = 'Courier'
+          Font.Style = []
+          ParentFont = False
+          ExplicitLeft = 27
+          ExplicitTop = 2
+          ExplicitWidth = 81
         end
         object ColorBox1: TColorBox
-          Left = 2
-          Top = 18
-          Width = 156
+          Left = 18
+          Top = 22
+          Width = 135
           Height = 22
+          Margins.Left = 18
+          Align = alCustom
           NoneColorColor = clMaroon
           Selected = clWhite
           Style = [cbExtendedColors, cbIncludeNone, cbIncludeDefault, cbCustomColor, cbPrettyNames]
@@ -630,7 +650,6 @@ object GraphicForm: TGraphicForm
           Font.Height = -16
           Font.Name = 'Courier'
           Font.Style = []
-          ItemHeight = 16
           ParentBiDiMode = False
           ParentFont = False
           TabOrder = 0
@@ -638,48 +657,56 @@ object GraphicForm: TGraphicForm
         end
       end
     end
-    object ToolBar4: TToolBar
-      Left = 587
+    object Panel4: TPanel
+      Left = 414
       Top = 2
-      Width = 150
+      Width = 160
       Height = 48
-      ButtonHeight = 46
-      Caption = 'ToolBar4'
+      BevelOuter = bvNone
+      Caption = 'Panel4'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Courier'
+      Font.Style = []
+      ParentFont = False
+      ShowCaption = False
       TabOrder = 3
-      object Panel2: TPanel
-        Left = 0
-        Top = 2
-        Width = 152
-        Height = 46
-        Ctl3D = True
-        ParentCtl3D = False
+      object CheckBoxNout: TCheckBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 154
+        Height = 16
+        Align = alTop
+        Caption = #1057#1090#1072#1085#1082#1080
+        Checked = True
+        State = cbChecked
         TabOrder = 0
-        object CheckBoxNout: TCheckBox
-          Left = 4
-          Top = 4
-          Width = 97
-          Height = 16
-          Caption = #1057#1090#1072#1085#1082#1080
-          Checked = True
-          State = cbChecked
-          TabOrder = 0
-          OnClick = CheckBoxNoutClick
-        end
-        object CheckBoxColorSave: TCheckBox
-          Left = 4
-          Top = 24
-          Width = 144
-          Height = 17
-          Caption = #1047#1072#1087#1086#1084#1085#1080#1090#1100' '#1094#1074#1077#1090
-          TabOrder = 1
-        end
+        OnClick = CheckBoxNoutClick
+        ExplicitLeft = 4
+        ExplicitTop = 4
+        ExplicitWidth = 97
+      end
+      object CheckBoxColorSave: TCheckBox
+        AlignWithMargins = True
+        Left = 3
+        Top = 25
+        Width = 154
+        Height = 17
+        Align = alTop
+        Caption = #1047#1072#1087#1086#1084#1085#1080#1090#1100' '#1094#1074#1077#1090
+        TabOrder = 1
+        ExplicitLeft = 1
+        ExplicitTop = 30
+        ExplicitWidth = 158
       end
     end
   end
   object ScrollBarHorz: TScrollBar
     Left = 0
-    Top = 414
-    Width = 755
+    Top = 409
+    Width = 937
     Height = 17
     Align = alBottom
     LargeChange = 20
@@ -688,12 +715,14 @@ object GraphicForm: TGraphicForm
     SmallChange = 5
     TabOrder = 1
     OnScroll = ScrollBarHorzScroll
+    ExplicitLeft = 80
+    ExplicitTop = 415
   end
   object ScrollBarVert: TScrollBar
-    Left = 738
+    Left = 920
     Top = 56
     Width = 17
-    Height = 358
+    Height = 353
     Align = alRight
     Kind = sbVertical
     PageSize = 50
@@ -701,7 +730,6 @@ object GraphicForm: TGraphicForm
     OnScroll = ScrollBarVertScroll
   end
   object GantBrushColor: TColorDialog
-    Ctl3D = True
     Color = 16744576
     CustomColors.Strings = (
       'ColorA=FFFFFFFF'

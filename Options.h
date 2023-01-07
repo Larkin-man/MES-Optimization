@@ -29,9 +29,7 @@ __published:	// IDE-managed Components
 	TCheckBox *Crit3;
 	TRadioGroup *MVGModify;
 	TCheckBox *HeightScaling;
-	TLabel *LabelBR;
 	TCheckBox *Contrast;
-	TLabel *LabelBI;
 	TGroupBox *GroupBoxRandom;
 	TGroupBox *GroupBoxReport;
 	TCheckBox *NoOut;
@@ -47,6 +45,10 @@ __published:	// IDE-managed Components
 	TUpDown *RandomTo;
 	TUpDown *SpinBI;
 	TUpDown *SpinBrightness;
+	TLabeledEdit *RFR;
+	TLabeledEdit *FTo;
+	TLabeledEdit *EYa;
+	TLabeledEdit *Era;
 	void __fastcall NoOutClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);

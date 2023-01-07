@@ -15,7 +15,6 @@
 #include <Dialogs.hpp>
 #include <ExtDlgs.hpp>
 #include <Menus.hpp>
-//#include "MainSource.h"
 
 //---------------------------------------------------------------------------
 class TGraphicForm : public TForm
@@ -34,10 +33,6 @@ __published:	// IDE-managed Components
 	TToolBar *ToolBar2;
 	TLabel *LabelScale;
 	TTrackBar *TrackBar1;
-	TToolBar *ToolBar3;
-	TPanel *Panel1;
-	TLabel *Label1;
-	TColorBox *ColorBox1;
 	TToolButton *ToolButton3;
 	TPopupMenu *PopupMenu1;
 	TMenuItem *NRefresh;
@@ -46,11 +41,14 @@ __published:	// IDE-managed Components
 	TMenuItem *NColorBlock;
 	TScrollBar *ScrollBarHorz;
 	TScrollBar *ScrollBarVert;
-	TToolBar *ToolBar4;
-	TPanel *Panel2;
+	TMenuItem *NChangeColor;
+	TPanel *Panel3;
+	TPanel *Panel1;
+	TLabel *Label1;
+	TColorBox *ColorBox1;
+	TPanel *Panel4;
 	TCheckBox *CheckBoxNout;
 	TCheckBox *CheckBoxColorSave;
-	TMenuItem *NChangeColor;
 	void __fastcall BitBtn1Click(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall SpeedBtnColorClick(TObject *Sender);
@@ -67,9 +65,8 @@ __published:	// IDE-managed Components
 		TScrollCode ScrollCode, int &ScrollPos);
 	void __fastcall CheckBoxNoutClick(TObject *Sender);
 	void __fastcall NChangeColorClick(TObject *Sender);
-private:	// User declarations
-public:		// User declarations
-	//Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
+private:
+public:
 	__fastcall TGraphicForm(TComponent* Owner);
 	void DrawGant(int PosX, int PosY);
 	int scr1,scr2;
