@@ -73,16 +73,8 @@ object BaseForm: TBaseForm
     Caption = 'ToolBar1'
     EdgeBorders = [ebTop, ebBottom]
     TabOrder = 3
-    object ToolButton2: TToolButton
-      Left = 0
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton2'
-      ImageIndex = 1
-      Style = tbsSeparator
-    end
     object NewBtn: TSpeedButton
-      Left = 4
+      Left = 0
       Top = 0
       Width = 48
       Height = 48
@@ -288,16 +280,8 @@ object BaseForm: TBaseForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolButton4: TToolButton
-      Left = 52
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton4'
-      ImageIndex = 4
-      Style = tbsSeparator
-    end
     object OpenBtn: TSpeedButton
-      Left = 56
+      Left = 48
       Top = 0
       Width = 48
       Height = 48
@@ -504,16 +488,8 @@ object BaseForm: TBaseForm
       ShowHint = True
       Spacing = 6
     end
-    object ToolButton5: TToolButton
-      Left = 104
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton5'
-      ImageIndex = 4
-      Style = tbsSeparator
-    end
     object SaveBtn: TSpeedButton
-      Left = 108
+      Left = 96
       Top = 0
       Width = 48
       Height = 48
@@ -720,15 +696,15 @@ object BaseForm: TBaseForm
       ShowHint = True
     end
     object ToolButton1: TToolButton
-      Left = 156
+      Left = 144
       Top = 0
       Width = 8
       Caption = 'ToolButton1'
       ImageIndex = 2
-      Style = tbsDivider
+      Style = tbsSeparator
     end
     object RunBtn: TSpeedButton
-      Left = 164
+      Left = 152
       Top = 0
       Width = 48
       Height = 48
@@ -1042,16 +1018,8 @@ object BaseForm: TBaseForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolButton6: TToolButton
-      Left = 212
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton6'
-      ImageIndex = 4
-      Style = tbsSeparator
-    end
     object OptimizationBtn: TSpeedButton
-      Left = 216
+      Left = 200
       Top = 0
       Width = 48
       Height = 48
@@ -1366,16 +1334,8 @@ object BaseForm: TBaseForm
       ShowHint = True
       Visible = False
     end
-    object ToolButton7: TToolButton
-      Left = 264
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton7'
-      ImageIndex = 4
-      Style = tbsSeparator
-    end
     object GantBtn: TSpeedButton
-      Left = 268
+      Left = 248
       Top = 0
       Width = 48
       Height = 48
@@ -1691,20 +1651,13 @@ object BaseForm: TBaseForm
       ParentShowHint = False
       ShowHint = True
     end
-    object ToolButton3: TToolButton
-      Left = 316
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton3'
-      ImageIndex = 5
-      Style = tbsSeparator
-    end
     object ReportBtn: TSpeedButton
-      Left = 320
+      Left = 296
       Top = 0
       Width = 48
       Height = 48
       Action = Report
+      BiDiMode = bdLeftToRight
       Caption = '&'
       Flat = True
       Glyph.Data = {
@@ -2012,18 +1965,11 @@ object BaseForm: TBaseForm
         FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00}
       NumGlyphs = 2
       ParentShowHint = False
+      ParentBiDiMode = False
       ShowHint = True
     end
-    object ToolButton8: TToolButton
-      Left = 368
-      Top = 0
-      Width = 4
-      Caption = 'ToolButton8'
-      ImageIndex = 6
-      Style = tbsSeparator
-    end
     object GoGantBtn: TSpeedButton
-      Left = 372
+      Left = 344
       Top = 0
       Width = 48
       Height = 48
@@ -2215,8 +2161,15 @@ object BaseForm: TBaseForm
     Anchors = [akLeft, akTop, akBottom]
     ColCount = 9
     DefaultColWidth = 32
+    FixedColor = clAppWorkSpace
     RowCount = 10
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goRowMoving, goColMoving, goEditing]
+    ParentFont = False
     PopupMenu = PopupMenuGrid
     TabOrder = 4
     OnColumnMoved = TableColumnMoved
@@ -2630,38 +2583,14 @@ object BaseForm: TBaseForm
       Align = alTop
       Caption = ' '#1058#1072#1073#1083#1080#1094#1072' '#1087#1086#1088#1103#1076#1082#1072' '#1079#1072#1087#1091#1089#1082#1072
       TabOrder = 1
-      ExplicitWidth = 202
     end
-  end
-  object Spinner: TCSpinButton
-    Left = 643
-    Top = 145
-    Width = 15
-    Height = 27
-    DownGlyph.Data = {
-      0E010000424D0E01000000000000360000002800000009000000060000000100
-      200000000000D800000000000000000000000000000000000000008080000080
-      8000008080000080800000808000008080000080800000808000008080000080
-      8000008080000080800000808000000000000080800000808000008080000080
-      8000008080000080800000808000000000000000000000000000008080000080
-      8000008080000080800000808000000000000000000000000000000000000000
-      0000008080000080800000808000000000000000000000000000000000000000
-      0000000000000000000000808000008080000080800000808000008080000080
-      800000808000008080000080800000808000}
-    TabOrder = 6
-    UpGlyph.Data = {
-      0E010000424D0E01000000000000360000002800000009000000060000000100
-      200000000000D800000000000000000000000000000000000000008080000080
-      8000008080000080800000808000008080000080800000808000008080000080
-      8000000000000000000000000000000000000000000000000000000000000080
-      8000008080000080800000000000000000000000000000000000000000000080
-      8000008080000080800000808000008080000000000000000000000000000080
-      8000008080000080800000808000008080000080800000808000000000000080
-      8000008080000080800000808000008080000080800000808000008080000080
-      800000808000008080000080800000808000}
-    Visible = False
-    OnDownClick = SpinnerDownClick
-    OnUpClick = SpinnerUpClick
+    object Spinner: TUpDown
+      Left = 64
+      Top = 96
+      Width = 17
+      Height = 25
+      TabOrder = 2
+    end
   end
   object ProgressText: TStaticText
     Left = 448
@@ -2675,7 +2604,7 @@ object BaseForm: TBaseForm
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 6
   end
   object MainMenu1: TMainMenu
     Images = ImageList1
@@ -2909,7 +2838,7 @@ object BaseForm: TBaseForm
     Left = 720
     Top = 9
     Bitmap = {
-      494C0101100013000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010110001300140010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

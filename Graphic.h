@@ -15,7 +15,6 @@
 #include <Dialogs.hpp>
 #include <ExtDlgs.hpp>
 #include <Menus.hpp>
-//#include "MainSource.h"
 
 //---------------------------------------------------------------------------
 class TGraphicForm : public TForm
@@ -67,9 +66,8 @@ __published:	// IDE-managed Components
 		TScrollCode ScrollCode, int &ScrollPos);
 	void __fastcall CheckBoxNoutClick(TObject *Sender);
 	void __fastcall NChangeColorClick(TObject *Sender);
-private:	// User declarations
-public:		// User declarations
-	//Graphics::TBitmap *BitMap;// = new Graphics::TBitmap;
+private:
+public:
 	__fastcall TGraphicForm(TComponent* Owner);
 	void DrawGant(int PosX, int PosY);
 	int scr1,scr2;

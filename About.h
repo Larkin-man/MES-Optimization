@@ -2,17 +2,12 @@
 #ifndef AboutH
 #define AboutH
 //----------------------------------------------------------------------------
-//#include <vcl\System.hpp>
-//#include <vcl\Windows.hpp>
-//#include <vcl\SysUtils.hpp>
-//#include <vcl\Classes.hpp>
-//#include <vcl\Graphics.hpp>
-//#include <vcl\Forms.hpp>
-//#include <vcl\Controls.hpp>
-//#include <vcl\StdCtrls.hpp>
-//#include <vcl\Buttons.hpp>
-//#include <vcl\ExtCtrls.hpp>
 #include <jpeg.hpp>
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Graphics.hpp>
+#include <Vcl.StdCtrls.hpp>
 //----------------------------------------------------------------------------
 class TAboutForm : public TForm
 {
